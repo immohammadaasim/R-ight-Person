@@ -131,7 +131,7 @@ const currentDeviceID = localStorage.getItem('RP_DeviceID') || generateDeviceFin
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 4: OTP System & Send Logic (FORCE OTP FIX) <<=== */
+/* ===>> BLOCK JS 4: OTP System & Send Logic (CORS CLEAN FIX) <<=== */
 /* ===================================================================== */
 
 // OTP Auto-focus logic
@@ -154,13 +154,9 @@ async function sendOTP(email, type = 'login') {
     activeBtn.disabled = true;
 
     try {
-        // FORCE OTP: Hum explicitly redirect URL de rahe hain
+        // CLEAN OTP CALL: Humne extra options hata diye hain taaki CORS error na aaye
         const { error } = await _sb.auth.signInWithOtp({
-            email: email,
-            options: {
-                emailRedirectTo: window.location.href, // Wapas isi page par aao
-                shouldCreateUser: true // Dono case me true rakho taaki error na aaye
-            }
+            email: email
         });
 
         if (error) throw error;
@@ -171,8 +167,8 @@ async function sendOTP(email, type = 'login') {
         startOTPTimer();
 
     } catch (error) {
-        console.error("OTP Error Detail:", error);
-        showIsland(error.message || "422 Error: Template mismatch", "error");
+        console.error("Auth Error:", error.message);
+        showIsland("Security Block: Try Incognito Mode", "error");
     } finally {
         activeBtn.innerHTML = originalText;
         activeBtn.disabled = false;
