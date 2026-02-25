@@ -131,7 +131,7 @@ const currentDeviceID = localStorage.getItem('RP_DeviceID') || generateDeviceFin
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 4: OTP System & Send Logic (CORS CLEAN FIX) <<=== */
+/* ===>> BLOCK JS 4: Smart OTP System (Identity Check Fix) <<=== */
 /* ===================================================================== */
 
 // OTP Auto-focus logic
@@ -145,6 +145,9 @@ otpBoxes.forEach((box, index) => {
     });
 });
 
+/**
+ * sendOTP: Pehle identity check karega, phir hi code bhejega.
+ */
 async function sendOTP(email, type = 'login') {
     triggerHaptic();
     const activeBtn = type === 'login' ? loginBtn : signupNextBtn;
@@ -154,27 +157,58 @@ async function sendOTP(email, type = 'login') {
     activeBtn.disabled = true;
 
     try {
-        // CLEAN OTP CALL: Humne extra options hata diye hain taaki CORS error na aaye
+        // 1. DATABASE CHECK (Pehle dekho user hamare record me hai ya nahi)
+        const { data: userExists, error: dbError } = await _sb
+            .from('users')
+            .select('email')
+            .eq('email', email)
+            .maybeSingle();
+
+        if (dbError) throw new Error("Database connection error");
+
+        // 2. LOGIC GATE (Decision making)
+        if (type === 'login' && !userExists) {
+            // User login karna chahta hai par account nahi hai
+            showIsland("Account not found. Please sign up first.", "error");
+            activeBtn.innerHTML = originalText;
+            activeBtn.disabled = false;
+            return;
+        }
+
+        if (type === 'signup' && userExists) {
+            // User naya account banana chahta hai par email pehle se hai
+            showIsland("Email already registered. Please sign in.", "error");
+            activeBtn.innerHTML = originalText;
+            activeBtn.disabled = false;
+            return;
+        }
+
+        // 3. SEND OTP (Sirf tab jab upar ke rules pass honge)
         const { error } = await _sb.auth.signInWithOtp({
-            email: email
+            email: email,
+            options: {
+                shouldCreateUser: type === 'signup' // Signup me true, Login me false
+            }
         });
 
         if (error) throw error;
 
+        // Success UI change
         document.getElementById('display-email').textContent = email;
         otpOverlay.style.display = 'flex';
-        showIsland("OTP sent! Check your inbox.", "success");
+        showIsland("Verification code sent!", "success");
         startOTPTimer();
 
     } catch (error) {
         console.error("Auth Error:", error.message);
-        showIsland("Security Block: Try Incognito Mode", "error");
+        showIsland(error.message || "Failed to send code", "error");
     } finally {
         activeBtn.innerHTML = originalText;
         activeBtn.disabled = false;
     }
 }
 
+// Button Listeners
 loginBtn.addEventListener('click', () => {
     const email = document.getElementById('login-email').value;
     if (!email) return showIsland("Please enter email", "error");
@@ -187,6 +221,7 @@ signupNextBtn.addEventListener('click', () => {
     sendOTP(email, 'signup');
 });
 
+// Timer & Navigation
 let timer;
 function startOTPTimer() {
     let timeLeft = 120;
