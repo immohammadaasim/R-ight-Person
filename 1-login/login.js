@@ -216,19 +216,14 @@ backBtn.addEventListener('click', () => {
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 5: Verification & Database Finalization (FIXED) <<=== */
+/* ===>> BLOCK JS 5: Verification & Database Finalization (403 FIX) <<=== */
 /* ===================================================================== */
 
-/* --------------------------------------------------------------------- */
-/* --- Sub-Block 5A : OTP Verification Execution --- */
-/* --------------------------------------------------------------------- */
 verifyBtn.addEventListener('click', async () => {
     triggerHaptic();
     
-    // OTP Boxes se code ikhatha karo
     let token = "";
     otpBoxes.forEach(box => token += box.value);
-
     if (token.length < 6) return showIsland("Enter 6-digit code", "error");
 
     const email = document.getElementById('display-email').textContent;
@@ -237,29 +232,44 @@ verifyBtn.addEventListener('click', async () => {
     verifyBtn.disabled = true;
 
     try {
-        // FIX: Variable '_sb' use kiya hai verification ke liye
-        const { data, error } = await _sb.auth.verifyOtp({
+        // --- 403 FIX Logic ---
+        // Hum pehle 'magiclink' type try karenge kyunki Supabase OTP ko isi me count karta hai
+        let { data, error } = await _sb.auth.verifyOtp({
             email,
             token,
-            type: 'email'
+            type: 'magiclink' 
         });
+
+        // Agar magiclink fail ho, to 'signup' try karo (naye users ke liye)
+        if (error) {
+            console.log("Magiclink verify failed, trying signup type...");
+            const secondaryTry = await _sb.auth.verifyOtp({
+                email,
+                token,
+                type: 'signup'
+            });
+            data = secondaryTry.data;
+            error = secondaryTry.error;
+        }
 
         if (error) throw error;
 
         showIsland("Identity Verified!", "success");
         
-        // Signup check: Kya signup form khula hai?
         const isSignup = signupForm.style.display === 'block';
-        
         if (isSignup) {
             await finalizeSignup(data.user.id, email);
         } else {
-            // Login Logic: Device Check trigger karo
             handleLoginSuccess(data.user.id, email);
         }
 
     } catch (error) {
-        showIsland("Invalid code. Try again.", "error");
+        console.error("Verification Error:", error.message);
+        if (error.status === 403) {
+            showIsland("Too many attempts. Wait 15 mins.", "error");
+        } else {
+            showIsland("Invalid code. Try again.", "error");
+        }
         otpBoxes.forEach(box => box.value = "");
         otpBoxes[0].focus();
     } finally {
@@ -268,13 +278,8 @@ verifyBtn.addEventListener('click', async () => {
     }
 });
 
-/* --------------------------------------------------------------------- */
-/* --- Sub-Block 5B : Finalize Signup (Insert to PostgreSQL) --- */
-/* --------------------------------------------------------------------- */
 async function finalizeSignup(uid, email) {
-    showIsland("Saving your digital identity...", "info");
-
-    // Gender field selection (Block 2 logic se)
+    showIsland("Saving identity...", "info");
     const genderValue = document.querySelector('#gender-select .option.selected')?.getAttribute('data-value') || "not_specified";
 
     const userData = {
@@ -291,21 +296,12 @@ async function finalizeSignup(uid, email) {
     };
 
     try {
-        // FIX: '_sb' use kiya hai database insert ke liye
-        const { error } = await _sb
-            .from('users')
-            .insert([userData]);
-
+        const { error } = await _sb.from('users').insert([userData]);
         if (error) throw error;
-
-        showIsland("Signup Complete! Redirecting...", "success");
-        setTimeout(() => { 
-            window.location.href = '../dashboard/dashboard.html'; 
-        }, 1500);
-
+        showIsland("Signup Complete!", "success");
+        setTimeout(() => { window.location.href = '../dashboard/dashboard.html'; }, 1500);
     } catch (error) {
-        console.error("DB Error:", error);
-        showIsland("Database error. Contact admin.", "error");
+        showIsland("DB Error: Check if table exists", "error");
     }
 }
 /* ===================================================================== */
