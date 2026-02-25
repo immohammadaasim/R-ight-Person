@@ -1,0 +1,238 @@
+<!-- ===================================================================== -->
+<!-- ===>> DOCUMENTATION BLOCK : Project Architecture & Rules <<=== -->
+<!-- ===================================================================== -->
+<!-- 
+    FILE NAME: 1-login/login.html
+    PROJECT: R-ight Person (Digital Identity System)
+    
+    1. CONNECTED FILES:
+       - login.css : Saara iPadOS 18 (Spatial Glass) design aur transitions.
+       - login.js  : Saara logic (Supabase connection, OTP handling, Security).
+
+    2. DATA & CODE SOURCE:
+       - Code Location: GitHub Repository (R-ight-Person-App).
+       - Database: Supabase (PostgreSQL).
+       - URL: https://xtzdlepgpqvllwzjfrsh.supabase.co
+
+    3. SIGNUP FLOW:
+       - User form bharta hai (Name, DOB, Gender, Email, Mobile, Pincode, Language).
+       - Email OTP verify hota hai via Supabase Auth.
+       - Successful verification par "users" table me account create hota hai.
+
+    4. LOGIN FLOW:
+       - Email Only (No Password).
+       - OTP Verification.
+       - Device Check: Naye device par "Device Shift" logic trigger hoga.
+
+    5. DESIGN STANDARD:
+       - iPadOS 18 / visionOS (Spatial Glass).
+       - Super Squircles (20px-30px corners).
+       - SF Symbols vibe (Inline SVGs only - No FontAwesome).
+-->
+<!-- ===================================================================== -->
+<!-- ===>> END OF DOCUMENTATION BLOCK <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 0: Head & Essential Links <<=== -->
+<!-- ===================================================================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R-ight Person | Portal</title>
+    <!-- Apple-like Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Main CSS Link -->
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 0 file : 1-login/login.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 1: Dynamic Island Notification (Universal UI) <<=== -->
+<!-- ===================================================================== -->
+<div id="dynamic-island-container">
+    <div id="showIsland" class="dynamic-island">
+        <div class="island-content">
+            <!-- Inline SVG Icon (SF Symbols Style) -->
+            <div id="island-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+            </div>
+            <p id="island-message">System Ready</p>
+        </div>
+    </div>
+</div>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 1 file : 1-login/login.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 2: Main Access Portal (Spatial Glass Card) <<=== -->
+<!-- ===================================================================== -->
+<div id="app-container">
+    <div class="spatial-glass-card">
+        
+        <!-- --- Login Form Container --- -->
+        <div id="login-form" class="form-container active">
+            <h1 class="portal-title">Sign In</h1>
+            <p class="portal-subtitle">Access your secure digital identity.</p>
+            
+            <div class="input-group">
+                <input type="email" id="login-email" placeholder="Email Address" required autocomplete="off">
+            </div>
+            
+            <button id="login-send-otp-btn" class="ios-primary-btn haptic-feedback">
+                <span class="btn-text">Continue</span>
+                <div class="btn-loader" style="display:none;"></div>
+            </button>
+            
+            <p class="switch-text">New here? <a href="javascript:void(0)" id="go-to-signup">Create Identity</a></p>
+        </div>
+
+        <!-- --- Signup Form Container (All Fields Included) --- -->
+        <div id="signup-form" class="form-container" style="display:none;">
+            <h1 class="portal-title">New Identity</h1>
+            <p class="portal-subtitle">Fill in your real details to get started.</p>
+            
+            <div class="form-scroll-area">
+                <!-- Name -->
+                <div class="input-group">
+                    <input type="text" id="signup-name" placeholder="Full Name" required>
+                </div>
+                
+                <!-- Birthday -->
+                <div class="input-group">
+                    <input type="date" id="signup-birthday" required>
+                    <label class="input-hint">Birthday</label>
+                </div>
+                
+                <!-- Gender Selection (Apple Style) -->
+                <div class="custom-select" id="gender-select">
+                    <div class="select-trigger">Gender</div>
+                    <div class="select-options-glass">
+                        <div class="option" data-value="male">Male</div>
+                        <div class="option" data-value="female">Female</div>
+                        <div class="option" data-value="other">Other</div>
+                    </div>
+                </div>
+                
+                <!-- Email -->
+                <div class="input-group">
+                    <input type="email" id="signup-email" placeholder="Email Address" required>
+                </div>
+                
+                <!-- Mobile & Country -->
+                <div class="mobile-wrapper">
+                    <div class="country-btn" id="country-btn">
+                        <span id="flag">🇮🇳</span>
+                        <span id="code">+91</span>
+                    </div>
+                    <input type="tel" id="signup-mobile" placeholder="Mobile" required>
+                </div>
+                
+                <!-- Pincode -->
+                <div class="input-group">
+                    <input type="text" id="signup-pincode" placeholder="Pincode / Postcode" required>
+                </div>
+                
+                <!-- Language -->
+                <div class="input-group">
+                    <input type="text" id="signup-language" placeholder="Preferred Language" required>
+                </div>
+            </div>
+
+            <button id="signup-next-btn" class="ios-primary-btn haptic-feedback">Next</button>
+            <p class="switch-text">Already a member? <a href="javascript:void(0)" id="go-to-login">Sign In</a></p>
+        </div>
+
+    </div>
+</div>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 2 file : 1-login/login.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 3: OTP Verification Overlay <<=== -->
+<!-- ===================================================================== -->
+<div id="otp-overlay" class="glass-overlay" style="display:none;">
+    <div class="otp-card floating-animation">
+        <button class="ios-back-btn" id="otp-back">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <h2>Security Check</h2>
+        <p>Enter code sent to <br><strong id="display-email"></strong></p>
+        
+        <div class="otp-input-wrapper">
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+        </div>
+        
+        <div class="otp-footer">
+            <span id="otp-timer">02:00</span>
+            <button id="resend-otp-link" disabled>Resend Code</button>
+        </div>
+        
+        <button id="verify-otp-btn" class="ios-primary-btn haptic-feedback">Verify & Enter</button>
+    </div>
+</div>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 3 file : 1-login/login.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 4: Security System Overlays (Shift/Alert) <<=== -->
+<!-- ===================================================================== -->
+<div id="security-system">
+    <!-- Device Shift Logic -->
+    <div id="shift-popup" class="glass-alert-card" style="display:none;">
+        <div class="alert-header">Device Shift Request</div>
+        <p>A new device is trying to access your identity.</p>
+        <div class="progress-ring-container">
+            <div id="shift-timer-text">3:00</div>
+        </div>
+        <div class="alert-actions">
+            <button id="reject-shift-btn" class="ios-danger-btn">Reject</button>
+            <button id="approve-shift-btn" class="ios-success-btn">Approve</button>
+        </div>
+    </div>
+
+    <!-- High Alert (Block) Screen -->
+    <div id="block-screen" class="glass-overlay-dark" style="display:none;">
+        <div class="block-content">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ff3b30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <h1>Access Denied</h1>
+            <p>This device has been permanently flagged for suspicious activity.</p>
+            <button id="support-btn" class="ios-secondary-btn">Contact Security</button>
+        </div>
+    </div>
+</div>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 4 file : 1-login/login.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 5: Backend & Script Initialization <<=== -->
+<!-- ===================================================================== -->
+<!-- Supabase SDK v2 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Logic File -->
+<script src="login.js"></script>
+</body>
+</html>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 5 file : 1-login/login.html <<=== -->
+<!-- ===================================================================== -->
