@@ -131,7 +131,7 @@ const currentDeviceID = localStorage.getItem('RP_DeviceID') || generateDeviceFin
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 4: OTP System & Send Logic (FIXED) <<=== */
+/* ===>> BLOCK JS 4: OTP System & Send Logic (FORCE OTP FIX) <<=== */
 /* ===================================================================== */
 
 // OTP Auto-focus logic
@@ -145,9 +145,6 @@ otpBoxes.forEach((box, index) => {
     });
 });
 
-/**
- * sendOTP: Supabase Auth ka use karke OTP bhejta hai.
- */
 async function sendOTP(email, type = 'login') {
     triggerHaptic();
     const activeBtn = type === 'login' ? loginBtn : signupNextBtn;
@@ -157,10 +154,13 @@ async function sendOTP(email, type = 'login') {
     activeBtn.disabled = true;
 
     try {
-        // FIX: Variable '_sb' use kiya hai
+        // FORCE OTP: Hum explicitly redirect URL de rahe hain
         const { error } = await _sb.auth.signInWithOtp({
             email: email,
-            options: { shouldCreateUser: type === 'signup' }
+            options: {
+                emailRedirectTo: window.location.href, // Wapas isi page par aao
+                shouldCreateUser: true // Dono case me true rakho taaki error na aaye
+            }
         });
 
         if (error) throw error;
@@ -171,14 +171,14 @@ async function sendOTP(email, type = 'login') {
         startOTPTimer();
 
     } catch (error) {
-        showIsland(error.message || "Failed to send OTP", "error");
+        console.error("OTP Error Detail:", error);
+        showIsland(error.message || "422 Error: Template mismatch", "error");
     } finally {
         activeBtn.innerHTML = originalText;
         activeBtn.disabled = false;
     }
 }
 
-// Button Listeners
 loginBtn.addEventListener('click', () => {
     const email = document.getElementById('login-email').value;
     if (!email) return showIsland("Please enter email", "error");
@@ -191,7 +191,6 @@ signupNextBtn.addEventListener('click', () => {
     sendOTP(email, 'signup');
 });
 
-// Timer Logic
 let timer;
 function startOTPTimer() {
     let timeLeft = 120;
