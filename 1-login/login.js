@@ -179,7 +179,7 @@ console.log("Modular Engine: Device ID Identified ->", currentDeviceID);
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 3: Entry Engine & Identity Routing <<=== */
+/* ===>> BLOCK JS 3: Entry Engine & Identity Routing (FULL BLOCK) <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
@@ -231,7 +231,7 @@ continueBtn.addEventListener('click', async () => {
 
         if (error) throw error;
 
-        // 4. Temporary storage (taaki gateway.html ko pata chale ki kaun aaya hai)
+        // 4. Temporary storage (taaki Verification.html ko pata chale ki kaun aaya hai)
         sessionStorage.setItem('RP_Temp_Email', email);
         sessionStorage.setItem('RP_Temp_Phone', phone);
 
@@ -243,21 +243,18 @@ continueBtn.addEventListener('click', async () => {
                 resetBtnState();
                 return;
             }
-            
-            // Purane user ki ID aur registered device store karo verification ke liye
             sessionStorage.setItem('RP_User_Type', 'OLD');
             sessionStorage.setItem('RP_Active_DID', user.device_fingerprint);
-            
-            showIsland("Account identified. Proceeding to Gateway...", "success");
+            showIsland("Account identified. Proceeding...", "success");
         } else {
             // CASE: NEW USER
             sessionStorage.setItem('RP_User_Type', 'NEW');
             showIsland("New Identity detected. Welcome!", "success");
         }
 
-        // 6. Final Transition: Bhejo gateway.html par
+        // 6. Final Transition: Bhejo Verification.html par (PATH FIXED)
         setTimeout(() => {
-            window.location.href = './2-verification/Verification.html';
+            window.location.href = '../2-verification/Verification.html';
         }, 1200);
 
     } catch (err) {
@@ -284,99 +281,48 @@ function resetBtnState() {
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 4: Entry Validation & Gateway Routing <<=== */
+/* ===>> BLOCK JS 4: Entry Validation & Gateway Routing (FULL BLOCK) <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4A : Input Validation Rules --- */
+/* --- Sub-Block 4A : Extended Input Validation Rules --- */
 /* --------------------------------------------------------------------- */
 /**
  * validateInputs: Mobile aur Email ki strict validation karta hai.
  */
 function validateInputs(email, mobile) {
-    // Phone validation (minimum 7 digits, Indian format focus)
     if (!mobile || mobile.replace(/[^\d]/g, '').length < 7) {
         showIsland("Please enter a valid mobile number.", "error");
         mobileInput.focus();
         return false;
     }
     
-    // Email validation (Gmail focus, trusted providers)
     const emailRegex = /^[^\s@]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
     if (!email || !emailRegex.test(email)) {
         showIsland("Please enter a valid Gmail address.", "error");
         emailInput.focus();
         return false;
     }
-    
     return true;
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4B : Main Continue Button Logic --- */
+/* --- Sub-Block 4B : Global Continue Action (Path Safety) --- */
 /* --------------------------------------------------------------------- */
 /**
- * continueBtn.addEventListener: User ke "Continue" dabane par full execution.
+ * Note: Ye block extra validation layer ke liye hai. 
+ * Isme redirection path ko fix kar diya gaya hai.
  */
-continueBtn.addEventListener('click', async () => {
+async function triggerGlobalEntry() {
     const email = emailInput.value.trim().toLowerCase();
     const mobile = mobileInput.value.trim();
 
-    // 1. Real-time validation
     if (!validateInputs(email, mobile)) return;
 
-    // 2. Haptic + Loading state
-    triggerHapticFeedback();
-    continueBtn.disabled = true;
-    const btnText = continueBtn.querySelector('.btn-text');
-    const loader = continueBtn.querySelector('.btn-loader');
-    btnText.style.opacity = '0';
-    loader.style.display = 'block';
-
-    try {
-        // 3. Database Check (New vs Old User)
-        const { data: user, error } = await _sb
-            .from('users')
-            .select('id, device_fingerprint, is_blocked, identity_data')
-            .eq('email', email)
-            .maybeSingle();
-
-        if (error) throw new Error('Database connection failed');
-
-        // 4. Session Data Store (Gateway ke liye)
-        sessionStorage.setItem('RP_Email', email);
-        sessionStorage.setItem('RP_Mobile', mobile);
-        sessionStorage.setItem('RP_DeviceID', currentDeviceID);
-
-        if (user) {
-            // OLD USER
-            if (user.is_blocked) {
-                throw new Error('Account suspended');
-            }
-            sessionStorage.setItem('RP_UserType', 'OLD');
-            sessionStorage.setItem('RP_OldDID', user.device_fingerprint);
-            showIsland("Account found. Verifying device...", "info");
-        } else {
-            // NEW USER
-            sessionStorage.setItem('RP_UserType', 'NEW');
-            showIsland("New identity detected. Welcome!", "success");
-        }
-
-        // 5. Gateway par redirect
-        setTimeout(() => {
-            window.location.href = './2-verification/Verification.html';
-        }, 1200);
-
-    } catch (err) {
-        console.error("Entry Error:", err.message);
-        showIsland(err.message || "Validation failed. Try again.", "error");
-    } finally {
-        // Reset button
-        btnText.style.opacity = '1';
-        loader.style.display = 'none';
-        continueBtn.disabled = false;
-    }
-});
+    // Redirection call for safety (PATH FIXED)
+    console.log("Modular Architecture: Routing to Verification Module...");
+    // window.location.href = '../2-verification/Verification.html';
+}
 
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 4 file : 1-login/login.js <<=== */
