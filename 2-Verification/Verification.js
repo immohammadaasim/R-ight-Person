@@ -146,63 +146,199 @@ document.addEventListener('DOMContentLoaded', checkSession);
 // 1. Telegram Path (Primary Free Path)
 pathTelegram.addEventListener('click', () => {
     triggerHaptic();
-    const email = sessionStorage.getItem('RP_Temp_Email');
+    showIsland("Telegram path selected. Enter your Chat ID...", "info");
     
-    showIsland("Requesting Key via Telegram...", "info");
-    
-    // Asli OTP bhejne ka logic trigger karo
-    requestAccessKey(email, 'TELEGRAM');
+    // Chat ID input dikhao
+    showChatIDPrompt();
 });
 
 // 2. iMail Path (Coming Soon - Paid $1.00)
 pathEmail.addEventListener('click', () => {
     triggerHaptic();
-    showIsland("iMail Path is coming soon ($1.00 fee).", "warning");
+    showIsland("iMail Path is coming soon ($1.00 fee).", "info");
 });
 
 // 3. WhatsApp Path (Coming Soon - Paid $2.00)
 pathWhatsapp.addEventListener('click', () => {
     triggerHaptic();
-    showIsland("WhatsApp Premium is coming soon ($2.00 fee).", "warning");
+    showIsland("WhatsApp Premium is coming soon ($2.00 fee).", "info");
 });
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2B : Request Access Key (Supabase Auth) --- */
+/* --- Sub-Block 2B : Chat ID Prompt (Telegram User Identification) --- */
 /* --------------------------------------------------------------------- */
 /**
- * requestAccessKey: User ke chosen email par 6-digit code bhejta hai.
+ * showChatIDPrompt: User se uska Telegram Chat ID mangta hai.
+ * User apna Chat ID @userinfobot se pata kar sakta hai.
  */
-async function requestAccessKey(email, pathType) {
-    try {
-        // Supabase OTP System call
-        const { error } = await _sb.auth.signInWithOtp({
-            email: email,
-            options: {
-                // User naya ho ya purana, OTP jana chahiye
-                shouldCreateUser: sessionStorage.getItem('RP_User_Type') === 'NEW'
+function showChatIDPrompt() {
+    // Agar pehle se prompt hai to dobara mat banao
+    if (document.getElementById('chatid-wrapper')) return;
+
+    const selectionList = document.querySelector('.selection-list');
+
+    // Chat ID input wrapper banana
+    const wrapper = document.createElement('div');
+    wrapper.id = 'chatid-wrapper';
+    wrapper.style.cssText = `
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        animation: fadeSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    `;
+
+    wrapper.innerHTML = `
+        <style>
+            @keyframes fadeSlideIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
             }
+        </style>
+        <div style="
+            background: rgba(0,122,255,0.08);
+            border: 1px solid rgba(0,122,255,0.2);
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #007AFF;
+            line-height: 1.5;
+        ">
+            💡 Get your Chat ID: Open Telegram → Search <b>@userinfobot</b> → Send <b>/start</b> → Copy your ID
+        </div>
+        <div style="
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        " id="chatid-input-wrapper">
+            <input 
+                type="number" 
+                id="telegram-chat-id" 
+                placeholder="Your Telegram Chat ID"
+                style="
+                    flex: 1;
+                    height: 52px;
+                    padding: 0 16px;
+                    background: transparent;
+                    border: none;
+                    outline: none;
+                    font-size: 16px;
+                    font-family: inherit;
+                    color: inherit;
+                "
+            />
+            <button id="send-otp-btn" style="
+                height: 52px;
+                padding: 0 20px;
+                background: linear-gradient(180deg, #007AFF 0%, #0063CC 100%);
+                color: white;
+                border: none;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                font-family: inherit;
+                border-radius: 0 16px 16px 0;
+                transition: all 0.2s ease;
+            ">Send Key</button>
+        </div>
+    `;
+
+    selectionList.after(wrapper);
+
+    // Focus input par
+    setTimeout(() => {
+        document.getElementById('telegram-chat-id')?.focus();
+        
+        // Input focus glow
+        const inputWrapper = document.getElementById('chatid-input-wrapper');
+        document.getElementById('telegram-chat-id').addEventListener('focus', () => {
+            inputWrapper.style.borderColor = '#007AFF';
+            inputWrapper.style.boxShadow = '0 0 0 4px rgba(0,122,255,0.15)';
         });
+        document.getElementById('telegram-chat-id').addEventListener('blur', () => {
+            inputWrapper.style.borderColor = 'rgba(0,0,0,0.08)';
+            inputWrapper.style.boxShadow = 'none';
+        });
+    }, 100);
 
-        if (error) throw error;
-
-        // Success: UI update karo
-        document.getElementById('target-identity').textContent = pathType;
-        showIsland(`Access -R- Key sent to your ${pathType}!`, "success");
+    // Send button click
+    document.getElementById('send-otp-btn').addEventListener('click', () => {
+        triggerHaptic();
+        const chatId = document.getElementById('telegram-chat-id').value.trim();
         
-        // Transition to 6-digit boxes view
+        if (!chatId) {
+            showIsland("Please enter your Telegram Chat ID.", "error");
+            return;
+        }
+
+        // Chat ID session me save karo
+        sessionStorage.setItem('RP_Telegram_ChatID', chatId);
+        
+        // OTP bhejo
+        requestAccessKey(chatId);
+    });
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 2C : Request Access Key (Edge Function Call) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * requestAccessKey: Supabase Edge Function ko call karke Telegram par OTP bhejta hai.
+ */
+async function requestAccessKey(chatId) {
+    // Button loading state
+    const sendBtn = document.getElementById('send-otp-btn');
+    if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.textContent = '...';
+    }
+
+    showIsland("Sending your Access -R- Key...", "info");
+
+    try {
+        // Supabase Edge Function call
+        const response = await fetch(
+            'https://xtzdlepgpqvllwzjfrsh.supabase.co/functions/v1/send-telegram-otp',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.error || 'Unknown error');
+        }
+
+        // OTP session me save karo (verification ke liye)
+        sessionStorage.setItem('RP_Expected_OTP', result.otp);
+
+        showIsland("Access -R- Key sent to your Telegram!", "success");
+
+        // Key input view par le jao
+        document.getElementById('target-identity').textContent = 'Telegram';
         switchView(keyInputView, selectionView);
-        
-        // Timer shuru karo (Logic Block 3 me aayega)
         startOTPTimer();
 
     } catch (err) {
-        console.error("Auth Request Error:", err.message);
-        showIsland("Failed to send key. Check your connection.", "error");
+        console.error("OTP Send Error:", err.message);
+        showIsland("Failed to send key. Check your Chat ID.", "error");
+        
+        if (sendBtn) {
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Send Key';
+        }
     }
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2C : Navigation Helpers --- */
+/* --- Sub-Block 2D : Navigation Helpers --- */
 /* --------------------------------------------------------------------- */
 
 // "Edit Mobile/Gmail" dabane par wapis login page par bhejo
@@ -214,11 +350,14 @@ goBackBtn.addEventListener('click', () => {
 // "Change Path" dabane par wapis selection cards dikhao
 changePathBtn.addEventListener('click', () => {
     triggerHaptic();
+    // Chat ID wrapper hata do
+    const chatWrapper = document.getElementById('chatid-wrapper');
+    if (chatWrapper) chatWrapper.remove();
     switchView(selectionView, keyInputView);
 });
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK JS 2 file : 2-verification/Verification.js <<=== */
+/* ===>> END OF BLOCK JS 2 file : 2-Verification/Verification.js <<=== */
 /* ===================================================================== */
 
 
@@ -236,6 +375,9 @@ changePathBtn.addEventListener('click', () => {
 keyBoxes.forEach((box, index) => {
     // Number type karne par agle box me focus karo
     box.addEventListener('input', (e) => {
+        // Sirf numbers allow karo
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        
         if (e.target.value.length === 1 && index < keyBoxes.length - 1) {
             keyBoxes[index + 1].focus();
         }
@@ -247,57 +389,70 @@ keyBoxes.forEach((box, index) => {
             keyBoxes[index - 1].focus();
         }
     });
+
+    // Paste support (agar user poora code paste kare)
+    box.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+        if (pastedData.length === 6) {
+            keyBoxes.forEach((b, i) => {
+                b.value = pastedData[i] || '';
+            });
+            keyBoxes[5].focus();
+        }
+    });
 });
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 3B : Verify Identity Execution --- */
 /* --------------------------------------------------------------------- */
 /**
- * verifyKeyBtn: 6-digit code ko verify karke identity confirm karta hai.
+ * verifyKeyBtn: Session me saved OTP se match karke identity confirm karta hai.
  */
 verifyKeyBtn.addEventListener('click', async () => {
     triggerHaptic();
-    
-    // 1. Boxes se poora code nikalon
-    let token = "";
-    keyBoxes.forEach(box => token += box.value);
 
-    if (token.length < 6) {
+    // 1. Boxes se poora code nikalo
+    let enteredOTP = "";
+    keyBoxes.forEach(box => enteredOTP += box.value);
+
+    if (enteredOTP.length < 6) {
         return showIsland("Please enter the full 6-digit key.", "error");
     }
 
-    const email = sessionStorage.getItem('RP_Temp_Email');
-    
+    // 2. Session me saved OTP se match karo
+    const expectedOTP = sessionStorage.getItem('RP_Expected_OTP');
+
+    if (!expectedOTP) {
+        showIsland("Session expired. Please start again.", "error");
+        setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
+        return;
+    }
+
     // UI State: Loading
     verifyKeyBtn.disabled = true;
     verifyKeyBtn.querySelector('.btn-text').style.opacity = '0';
     verifyKeyBtn.querySelector('.btn-loader').style.display = 'block';
 
-    try {
-        // 2. Supabase Verification Call
-        // Note: Supabase me OTP ke liye 'magiclink' type use hota hai
-        const { data, error } = await _sb.auth.verifyOtp({
-            email: email,
-            token: token,
-            type: 'magiclink' 
-        });
-
-        if (error) throw error;
-
-        // 3. Success!
+    // 3. OTP match check
+    if (enteredOTP === expectedOTP) {
+        // OTP sahi hai
         showIsland("Identity Confirmed!", "success");
 
-        // 4. Routing Logic: Dashboard ya Device Guard?
-        handleIdentitySuccess(data.user.id);
+        // OTP session se hata do (security)
+        sessionStorage.removeItem('RP_Expected_OTP');
 
-    } catch (err) {
-        console.error("Verification Error:", err.message);
+        // 4. Routing Logic
+        await handleIdentitySuccess();
+
+    } else {
+        // OTP galat hai
         showIsland("Invalid Key. Please check and try again.", "error");
-        
-        // Boxes reset karo aur pehle par focus lao
+
+        // Boxes reset karo
         keyBoxes.forEach(box => box.value = "");
         keyBoxes[0].focus();
-        
+
         // Button reset
         verifyKeyBtn.disabled = false;
         verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
@@ -309,6 +464,7 @@ verifyKeyBtn.addEventListener('click', async () => {
 /* --- Sub-Block 3C : Countdown Timer & Resend Logic --- */
 /* --------------------------------------------------------------------- */
 let otpTimer;
+
 function startOTPTimer() {
     let timeLeft = 120; // 2 Minutes
     const timerDisplay = document.getElementById('resend-timer');
@@ -319,7 +475,7 @@ function startOTPTimer() {
         const mins = Math.floor(timeLeft / 60);
         const secs = timeLeft % 60;
         timerDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        
+
         if (timeLeft <= 0) {
             clearInterval(otpTimer);
             resendKeyBtn.disabled = false;
@@ -333,12 +489,23 @@ function startOTPTimer() {
 // Resend Button Click
 resendKeyBtn.addEventListener('click', () => {
     triggerHaptic();
-    const email = sessionStorage.getItem('RP_Temp_Email');
-    requestAccessKey(email, 'TELEGRAM'); // Block 2 function call
+    const chatId = sessionStorage.getItem('RP_Telegram_ChatID');
+    
+    if (!chatId) {
+        showIsland("Session lost. Please go back and try again.", "error");
+        return;
+    }
+
+    // Boxes reset karo
+    keyBoxes.forEach(box => box.value = "");
+    keyBoxes[0].focus();
+
+    // Naya OTP bhejo
+    requestAccessKey(chatId);
 });
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK JS 3 file : 2-verification/Verification.js <<=== */
+/* ===>> END OF BLOCK JS 3 file : 2-Verification/Verification.js <<=== */
 /* ===================================================================== */
 
 
@@ -352,23 +519,50 @@ resendKeyBtn.addEventListener('click', () => {
 /**
  * handleIdentitySuccess: Verification ke baad user ki pehchan aur device check karta hai.
  */
-async function handleIdentitySuccess(uid) {
+async function handleIdentitySuccess() {
     const currentDID = localStorage.getItem('RP_DeviceID');
     const userType = sessionStorage.getItem('RP_User_Type');
+    const email = sessionStorage.getItem('RP_Temp_Email');
 
-    // 1. Agar User bilkul naya (New Identity) hai
+    // 1. Agar User bilkul naya hai
     if (userType === 'NEW') {
-        showIsland("New Identity Confirmed. Welcome!", "success");
-        setTimeout(() => { window.location.href = '../3-dashboard/dashboard.html'; }, 1500);
+        try {
+            // Naye user ko database me save karo
+            const { error } = await _sb
+                .from('users')
+                .insert({
+                    email: email,
+                    phone: sessionStorage.getItem('RP_Temp_Phone'),
+                    device_fingerprint: currentDID,
+                    is_blocked: false,
+                    created_at: new Date().toISOString()
+                });
+
+            if (error) throw error;
+
+            showIsland("New Identity Confirmed. Welcome!", "success");
+            setTimeout(() => { 
+                window.location.href = '../3-dashboard/dashboard.html'; 
+            }, 1500);
+
+        } catch (err) {
+            console.error("New User Save Error:", err);
+            showIsland("Failed to save identity. Try again.", "error");
+            
+            // Button reset
+            verifyKeyBtn.disabled = false;
+            verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
+            verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
+        }
         return;
     }
 
-    // 2. Agar User purana hai, to database se uska registered device check karo
+    // 2. Agar User purana hai, device check karo
     try {
         const { data: user, error } = await _sb
             .from('users')
-            .select('device_fingerprint, is_blocked')
-            .eq('id', uid)
+            .select('id, device_fingerprint, is_blocked')
+            .eq('email', email)
             .single();
 
         if (error) throw error;
@@ -378,19 +572,26 @@ async function handleIdentitySuccess(uid) {
             return showHighAlert("This Identity is permanently suspended.");
         }
 
-        // 3. Device Comparison Logic
+        // 3. Device Comparison
         if (user.device_fingerprint === currentDID) {
-            // Wahi purana device hai
+            // Wahi purana device
             showIsland("Device Verified. Welcome back!", "success");
-            setTimeout(() => { window.location.href = '../3-dashboard/dashboard.html'; }, 1500);
+            setTimeout(() => { 
+                window.location.href = '../3-dashboard/dashboard.html'; 
+            }, 1500);
         } else {
-            // Naya device detected -> Shift Protocol trigger karo
-            triggerDeviceShiftProtocol(uid, currentDID);
+            // Naya device — Shift Protocol
+            triggerDeviceShiftProtocol(user.id, currentDID);
         }
 
     } catch (err) {
         console.error("Device Guard Error:", err);
-        showIsland("Security engine failed. Contact Support.", "error");
+        showIsland("Security check failed. Contact Support.", "error");
+        
+        // Button reset
+        verifyKeyBtn.disabled = false;
+        verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
+        verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
     }
 }
 
@@ -402,22 +603,31 @@ const timerRing = document.getElementById('timer-progress-ring');
 let shiftCountdown;
 
 function triggerDeviceShiftProtocol(uid, newDID) {
-    showIsland("Unauthorized Device! Authorization required.", "warning");
+    showIsland("New Device detected! Authorization required.", "error");
+
+    // Guard view dikhao
+    const cardContainer = document.querySelector('.spatial-glass-card');
     
-    // UI Switch: Key Input hatao aur Guard View dikhao
-    switchView(shiftGuardView, keyInputView);
+    // Purani views hatao
+    selectionView.style.display = 'none';
+    keyInputView.style.display = 'none';
     
-    let timeLeft = 180; // 3 Minutes (180 Seconds)
+    // Guard view dikhao
+    shiftGuardView.style.display = 'block';
+    void shiftGuardView.offsetWidth;
+    shiftGuardView.classList.add('active');
+
+    let timeLeft = 180;
     const totalTime = 180;
-    const ringCircumference = 339; // 2 * PI * 54
+    const ringCircumference = 339;
 
     clearInterval(shiftCountdown);
     shiftCountdown = setInterval(() => {
         let mins = Math.floor(timeLeft / 60);
         let secs = timeLeft % 60;
         shiftTimerText.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        
-        // Circular ring update logic
+
+        // Ring update
         const offset = ringCircumference - (timeLeft / totalTime) * ringCircumference;
         timerRing.style.strokeDashoffset = offset;
 
@@ -428,7 +638,7 @@ function triggerDeviceShiftProtocol(uid, newDID) {
         timeLeft--;
     }, 1000);
 
-    // Real-time listener shuru karo (Final Block me detail code aayega)
+    // Real-time listener
     startShiftSyncListener(uid, newDID);
 }
 
@@ -439,16 +649,20 @@ function showHighAlert(reason) {
     const blockScreen = document.getElementById('high-alert-screen');
     document.getElementById('block-reason').textContent = reason;
     blockScreen.style.display = 'flex';
-    appContainer.style.display = 'none'; // Poore portal ko lock kar do
+    
+    // Poore portal ko lock karo
+    document.getElementById('app-container').style.display = 'none';
 }
 
 function handleShiftExpiry() {
-    showIsland("Shift request expired. Try manual login.", "error");
-    setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
+    showIsland("Shift request expired. Please try again.", "error");
+    setTimeout(() => { 
+        window.location.href = '../1-login/login.html'; 
+    }, 2000);
 }
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK JS 4 file : 2-verification/Verification.js <<=== */
+/* ===>> END OF BLOCK JS 4 file : 2-Verification/Verification.js <<=== */
 /* ===================================================================== */
 
 
@@ -461,36 +675,38 @@ function handleShiftExpiry() {
 /* --------------------------------------------------------------------- */
 /**
  * startShiftSyncListener: Supabase Real-time channel ka use karke primary 
- * device se aane wale 'APPROVED' ya 'REJECTED' signal ko sunta hai.
+ * device se aane wale APPROVED ya REJECTED signal ko sunta hai.
  */
 function startShiftSyncListener(uid, newDID) {
-    // Unique channel for this specific user's sync
     const syncChannel = _sb.channel(`identity-sync-${uid}`);
 
     syncChannel
         .on('broadcast', { event: 'auth-response' }, async ({ payload }) => {
             const { action, targetDeviceID } = payload;
 
-            // Check karo ki ye signal isi naye device ke liye bheja gaya hai
             if (targetDeviceID === newDID) {
                 if (action === 'APPROVED') {
-                    // Stop timer and notify user
                     clearInterval(shiftCountdown);
-                    showIsland("Authorization Granted by Primary Device!", "success");
-                    
-                    // Naye device ko active banana
+                    showIsland("Authorization Granted!", "success");
                     await finalizeIdentityEntry(uid, newDID);
-                } 
-                else if (action === 'REJECTED') {
+                } else if (action === 'REJECTED') {
                     clearInterval(shiftCountdown);
-                    showHighAlert("Authorization REJECTED. This device is now flagged.");
+                    
+                    // Device ko permanently block karo
+                    await _sb
+                        .from('blocked_devices')
+                        .insert({ 
+                            device_id: newDID, 
+                            reason: 'Rejected by primary device',
+                            created_at: new Date().toISOString()
+                        });
+
+                    showHighAlert("Authorization REJECTED. This device is now permanently flagged.");
                 }
             }
         })
         .subscribe((status) => {
-            if (status === 'SUBSCRIBED') {
-                console.log("Modular Engine: Real-time sync active for UID ->", uid);
-            }
+            console.log("Real-time sync status:", status);
         });
 }
 
@@ -498,12 +714,11 @@ function startShiftSyncListener(uid, newDID) {
 /* --- Sub-Block 5B : Finalize Identity Entry (Database Sync) --- */
 /* --------------------------------------------------------------------- */
 /**
- * finalizeIdentityEntry: Naye device ki fingerprint ko 'users' table me 
- * permanent update karke dashboard par bhejta hai.
+ * finalizeIdentityEntry: Naye device ki fingerprint ko users table me 
+ * update karke dashboard par bhejta hai.
  */
 async function finalizeIdentityEntry(uid, newDID) {
     try {
-        // Database update command
         const { error } = await _sb
             .from('users')
             .update({ device_fingerprint: newDID })
@@ -511,46 +726,53 @@ async function finalizeIdentityEntry(uid, newDID) {
 
         if (error) throw error;
 
-        // Success: Transition to the Identity World
-        showIsland("Identity Sync Complete. Redirecting...", "success");
-        
+        showIsland("Device Sync Complete. Redirecting...", "success");
+
         setTimeout(() => {
             window.location.href = '../3-dashboard/dashboard.html';
         }, 1800);
 
     } catch (err) {
         console.error("Sync Error:", err);
-        showIsland("Database sync failed. Try manual re-entry.", "error");
+        showIsland("Sync failed. Please try manual re-entry.", "error");
     }
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 5C : Post-Verification Clean Exit --- */
+/* --- Sub-Block 5C : Email Shift Link (Lost Phone Protocol) --- */
 /* --------------------------------------------------------------------- */
-// Agar user 3 minute tak wait nahi karna chahta aur email rasta chunta hai
 document.getElementById('shift-via-email')?.addEventListener('click', (e) => {
     e.preventDefault();
     triggerHaptic();
-    showIsland("Email link will be active in 3 minutes.", "info");
+    showIsland("Email shift link will be active after 3 minutes.", "info");
 });
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 5D : Initial Module UI Polish --- */
+/* --- Sub-Block 5D : Page Load Animation (Apple visionOS Feel) --- */
 /* --------------------------------------------------------------------- */
-// Page load par halki si animation taaki Apple visionOS feel aaye
 window.addEventListener('load', () => {
+    // Session check
+    const tempEmail = sessionStorage.getItem('RP_Temp_Email');
+    if (!tempEmail) {
+        window.location.href = '../1-login/login.html';
+        return;
+    }
+
+    // Card entrance animation
     const card = document.querySelector('.spatial-glass-card');
-    if(card) {
+    if (card) {
         card.style.opacity = '0';
-        card.style.transform = 'scale(0.95)';
+        card.style.transform = 'scale(0.95) translateY(20px)';
         setTimeout(() => {
-            card.style.transition = 'all 0.8s var(--spring-bounce)';
+            card.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
             card.style.opacity = '1';
-            card.style.transform = 'scale(1)';
+            card.style.transform = 'scale(1) translateY(0)';
         }, 100);
     }
+
+    showIsland("Select your Identity Path", "info");
 });
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK JS 5 file : 2-verification/Verification.js <<=== */
+/* ===>> END OF BLOCK JS 5 file : 2-Verification/Verification.js <<=== */
 /* ===================================================================== */
