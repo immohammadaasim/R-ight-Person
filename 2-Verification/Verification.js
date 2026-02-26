@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', checkSession);
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 2: Path Selection & Access -R- Key Request <<=== */
+/* ===>> BLOCK JS 2: Path Selection & Telegram Deep Link Logic <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
@@ -146,10 +146,7 @@ document.addEventListener('DOMContentLoaded', checkSession);
 // 1. Telegram Path (Primary Free Path)
 pathTelegram.addEventListener('click', () => {
     triggerHaptic();
-    showIsland("Telegram path selected. Enter your Chat ID...", "info");
-    
-    // Chat ID input dikhao
-    showChatIDPrompt();
+    initiateTelegramFlow();
 });
 
 // 2. iMail Path (Coming Soon - Paid $1.00)
@@ -165,26 +162,52 @@ pathWhatsapp.addEventListener('click', () => {
 });
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2B : Chat ID Prompt (Telegram User Identification) --- */
+/* --- Sub-Block 2B : Telegram Flow Initiator (Deep Link Engine) --- */
 /* --------------------------------------------------------------------- */
 /**
- * showChatIDPrompt: User se uska Telegram Chat ID mangta hai.
- * User apna Chat ID @userinfobot se pata kar sakta hai.
+ * initiateTelegramFlow: User ka phone number le kar deep link banata hai.
+ * Bot link me phone number encode hoga — user START dabayega to OTP aayega.
  */
-function showChatIDPrompt() {
-    // Agar pehle se prompt hai to dobara mat banao
-    if (document.getElementById('chatid-wrapper')) return;
+function initiateTelegramFlow() {
+    // Session se phone number aur country code lo
+    const phone = sessionStorage.getItem('RP_Temp_Phone');
+    const countryCode = sessionStorage.getItem('RP_Country_Code') || '+91';
+
+    if (!phone) {
+        showIsland("Session expired. Please login again.", "error");
+        setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
+        return;
+    }
+
+    // Full number banao (country code + number)
+    const fullPhone = encodeURIComponent(countryCode + phone);
+
+    // Telegram Deep Link banao
+    const deepLink = `https://t.me/Rightpersonverification_bot?start=${fullPhone}`;
+
+    // UI me "Open Telegram" button dikhao
+    showTelegramOpenButton(deepLink, countryCode + phone);
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 2C : Telegram Open Button UI --- */
+/* --------------------------------------------------------------------- */
+/**
+ * showTelegramOpenButton: Selection view me "Open Telegram" button inject karta hai.
+ */
+function showTelegramOpenButton(deepLink, displayPhone) {
+    // Agar pehle se hai to dobara mat banao
+    if (document.getElementById('telegram-open-wrapper')) return;
 
     const selectionList = document.querySelector('.selection-list');
 
-    // Chat ID input wrapper banana
     const wrapper = document.createElement('div');
-    wrapper.id = 'chatid-wrapper';
+    wrapper.id = 'telegram-open-wrapper';
     wrapper.style.cssText = `
         margin-top: 16px;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
         animation: fadeSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     `;
 
@@ -195,6 +218,8 @@ function showChatIDPrompt() {
                 to { opacity: 1; transform: translateY(0); }
             }
         </style>
+
+        <!-- Info Box -->
         <div style="
             background: rgba(0,122,255,0.08);
             border: 1px solid rgba(0,122,255,0.2);
@@ -202,139 +227,71 @@ function showChatIDPrompt() {
             padding: 12px 14px;
             font-size: 13px;
             color: #007AFF;
-            line-height: 1.5;
+            line-height: 1.6;
         ">
-            💡 Get your Chat ID: Open Telegram → Search <b>@userinfobot</b> → Send <b>/start</b> → Copy your ID
+            📱 Number: <b>${displayPhone}</b><br>
+            Tap below → Telegram opens → Press <b>START</b> → Key arrives instantly!
         </div>
-        <div style="
+
+        <!-- Open Telegram Button -->
+        <a id="open-telegram-btn" href="${deepLink}" target="_blank" style="
             display: flex;
             align-items: center;
-            background: rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.08);
+            justify-content: center;
+            gap: 10px;
+            height: 54px;
+            background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%);
+            color: white;
             border-radius: 16px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        " id="chatid-input-wrapper">
-            <input 
-                type="number" 
-                id="telegram-chat-id" 
-                placeholder="Your Telegram Chat ID"
-                style="
-                    flex: 1;
-                    height: 52px;
-                    padding: 0 16px;
-                    background: transparent;
-                    border: none;
-                    outline: none;
-                    font-size: 16px;
-                    font-family: inherit;
-                    color: inherit;
-                "
-            />
-            <button id="send-otp-btn" style="
-                height: 52px;
-                padding: 0 20px;
-                background: linear-gradient(180deg, #007AFF 0%, #0063CC 100%);
-                color: white;
-                border: none;
-                font-size: 15px;
-                font-weight: 600;
-                cursor: pointer;
-                font-family: inherit;
-                border-radius: 0 16px 16px 0;
-                transition: all 0.2s ease;
-            ">Send Key</button>
-        </div>
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            box-shadow: 0 8px 20px rgba(42,171,238,0.3);
+            transition: all 0.2s ease;
+        ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.76-1.63 6.27-2.71 7.53-3.23 3.58-1.48 4.32-1.74 4.81-1.75.11 0 .35.03.5.16.13.11.17.26.18.37 0 .04.01.12 0 .19z"/>
+            </svg>
+            Open Telegram to get Key
+        </a>
+
+        <!-- Already got key button -->
+        <button id="already-got-key-btn" style="
+            width: 100%;
+            height: 48px;
+            background: transparent;
+            border: 1.5px solid rgba(0,122,255,0.3);
+            border-radius: 14px;
+            color: #007AFF;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        ">I have my Key → Enter it</button>
     `;
 
     selectionList.after(wrapper);
 
-    // Focus input par
-    setTimeout(() => {
-        document.getElementById('telegram-chat-id')?.focus();
-        
-        // Input focus glow
-        const inputWrapper = document.getElementById('chatid-input-wrapper');
-        document.getElementById('telegram-chat-id').addEventListener('focus', () => {
-            inputWrapper.style.borderColor = '#007AFF';
-            inputWrapper.style.boxShadow = '0 0 0 4px rgba(0,122,255,0.15)';
-        });
-        document.getElementById('telegram-chat-id').addEventListener('blur', () => {
-            inputWrapper.style.borderColor = 'rgba(0,0,0,0.08)';
-            inputWrapper.style.boxShadow = 'none';
-        });
-    }, 100);
-
-    // Send button click
-    document.getElementById('send-otp-btn').addEventListener('click', () => {
+    // Haptic on open telegram button
+    document.getElementById('open-telegram-btn').addEventListener('click', () => {
         triggerHaptic();
-        const chatId = document.getElementById('telegram-chat-id').value.trim();
+        showIsland("Opening Telegram...", "info");
         
-        if (!chatId) {
-            showIsland("Please enter your Telegram Chat ID.", "error");
-            return;
-        }
-
-        // Chat ID session me save karo
-        sessionStorage.setItem('RP_Telegram_ChatID', chatId);
-        
-        // OTP bhejo
-        requestAccessKey(chatId);
+        // 3 second baad "Enter Key" view automatically suggest karo
+        setTimeout(() => {
+            showIsland("Got your key? Tap 'I have my Key'", "info");
+        }, 3000);
     });
-}
 
-/* --------------------------------------------------------------------- */
-/* --- Sub-Block 2C : Request Access Key (Edge Function Call) --- */
-/* --------------------------------------------------------------------- */
-/**
- * requestAccessKey: Supabase Edge Function ko call karke Telegram par OTP bhejta hai.
- */
-async function requestAccessKey(chatId) {
-    // Button loading state
-    const sendBtn = document.getElementById('send-otp-btn');
-    if (sendBtn) {
-        sendBtn.disabled = true;
-        sendBtn.textContent = '...';
-    }
-
-    showIsland("Sending your Access -R- Key...", "info");
-
-    try {
-        // Supabase Edge Function call
-        const response = await fetch(
-            'https://xtzdlepgpqvllwzjfrsh.supabase.co/functions/v1/send-telegram-otp',
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId })
-            }
-        );
-
-        const result = await response.json();
-
-        if (!result.success) {
-            throw new Error(result.error || 'Unknown error');
-        }
-
-        // OTP session me save karo (verification ke liye)
-        sessionStorage.setItem('RP_Expected_OTP', result.otp);
-
-        showIsland("Access -R- Key sent to your Telegram!", "success");
-
-        // Key input view par le jao
+    // "I have my Key" button
+    document.getElementById('already-got-key-btn').addEventListener('click', () => {
+        triggerHaptic();
         document.getElementById('target-identity').textContent = 'Telegram';
         switchView(keyInputView, selectionView);
         startOTPTimer();
-
-    } catch (err) {
-        console.error("OTP Send Error:", err.message);
-        showIsland("Failed to send key. Check your Chat ID.", "error");
-        
-        if (sendBtn) {
-            sendBtn.disabled = false;
-            sendBtn.textContent = 'Send Key';
-        }
-    }
+    });
 }
 
 /* --------------------------------------------------------------------- */
@@ -350,9 +307,8 @@ goBackBtn.addEventListener('click', () => {
 // "Change Path" dabane par wapis selection cards dikhao
 changePathBtn.addEventListener('click', () => {
     triggerHaptic();
-    // Chat ID wrapper hata do
-    const chatWrapper = document.getElementById('chatid-wrapper');
-    if (chatWrapper) chatWrapper.remove();
+    const wrapper = document.getElementById('telegram-open-wrapper');
+    if (wrapper) wrapper.remove();
     switchView(selectionView, keyInputView);
 });
 
@@ -373,9 +329,8 @@ changePathBtn.addEventListener('click', () => {
  * keyBoxes: 6-digit boxes ka smart behavior handle karta hai.
  */
 keyBoxes.forEach((box, index) => {
-    // Number type karne par agle box me focus karo
+    // Sirf numbers allow karo
     box.addEventListener('input', (e) => {
-        // Sirf numbers allow karo
         e.target.value = e.target.value.replace(/[^0-9]/g, '');
         
         if (e.target.value.length === 1 && index < keyBoxes.length - 1) {
@@ -395,9 +350,7 @@ keyBoxes.forEach((box, index) => {
         e.preventDefault();
         const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
         if (pastedData.length === 6) {
-            keyBoxes.forEach((b, i) => {
-                b.value = pastedData[i] || '';
-            });
+            keyBoxes.forEach((b, i) => { b.value = pastedData[i] || ''; });
             keyBoxes[5].focus();
         }
     });
@@ -407,7 +360,7 @@ keyBoxes.forEach((box, index) => {
 /* --- Sub-Block 3B : Verify Identity Execution --- */
 /* --------------------------------------------------------------------- */
 /**
- * verifyKeyBtn: Session me saved OTP se match karke identity confirm karta hai.
+ * verifyKeyBtn: Supabase otp_store table se OTP match karke identity confirm karta hai.
  */
 verifyKeyBtn.addEventListener('click', async () => {
     triggerHaptic();
@@ -420,11 +373,12 @@ verifyKeyBtn.addEventListener('click', async () => {
         return showIsland("Please enter the full 6-digit key.", "error");
     }
 
-    // 2. Session me saved OTP se match karo
-    const expectedOTP = sessionStorage.getItem('RP_Expected_OTP');
+    const phone = sessionStorage.getItem('RP_Temp_Phone');
+    const countryCode = sessionStorage.getItem('RP_Country_Code') || '+91';
+    const fullPhone = countryCode + phone;
 
-    if (!expectedOTP) {
-        showIsland("Session expired. Please start again.", "error");
+    if (!phone) {
+        showIsland("Session expired. Please login again.", "error");
         setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
         return;
     }
@@ -434,20 +388,44 @@ verifyKeyBtn.addEventListener('click', async () => {
     verifyKeyBtn.querySelector('.btn-text').style.opacity = '0';
     verifyKeyBtn.querySelector('.btn-loader').style.display = 'block';
 
-    // 3. OTP match check
-    if (enteredOTP === expectedOTP) {
-        // OTP sahi hai
+    try {
+        // 2. Supabase otp_store se OTP check karo
+        const { data: otpRecord, error } = await _sb
+            .from('otp_store')
+            .select('otp, expires_at')
+            .eq('phone', fullPhone)
+            .single();
+
+        if (error || !otpRecord) {
+            throw new Error('OTP not found. Please request a new key.');
+        }
+
+        // 3. Expiry check karo
+        const now = new Date();
+        const expiry = new Date(otpRecord.expires_at);
+
+        if (now > expiry) {
+            // OTP expire ho gaya
+            await _sb.from('otp_store').delete().eq('phone', fullPhone);
+            throw new Error('Key expired. Please request a new one.');
+        }
+
+        // 4. OTP match check karo
+        if (enteredOTP !== otpRecord.otp) {
+            throw new Error('Invalid Key. Please check and try again.');
+        }
+
+        // 5. OTP sahi hai — delete karo (one-time use)
+        await _sb.from('otp_store').delete().eq('phone', fullPhone);
+
         showIsland("Identity Confirmed!", "success");
 
-        // OTP session se hata do (security)
-        sessionStorage.removeItem('RP_Expected_OTP');
-
-        // 4. Routing Logic
+        // 6. Routing Logic
         await handleIdentitySuccess();
 
-    } else {
-        // OTP galat hai
-        showIsland("Invalid Key. Please check and try again.", "error");
+    } catch (err) {
+        console.error("Verification Error:", err.message);
+        showIsland(err.message, "error");
 
         // Boxes reset karo
         keyBoxes.forEach(box => box.value = "");
@@ -489,19 +467,17 @@ function startOTPTimer() {
 // Resend Button Click
 resendKeyBtn.addEventListener('click', () => {
     triggerHaptic();
-    const chatId = sessionStorage.getItem('RP_Telegram_ChatID');
-    
-    if (!chatId) {
-        showIsland("Session lost. Please go back and try again.", "error");
-        return;
-    }
 
     // Boxes reset karo
     keyBoxes.forEach(box => box.value = "");
     keyBoxes[0].focus();
 
-    // Naya OTP bhejo
-    requestAccessKey(chatId);
+    // Wapis selection view par le jao
+    const wrapper = document.getElementById('telegram-open-wrapper');
+    if (wrapper) wrapper.remove();
+    switchView(selectionView, keyInputView);
+
+    showIsland("Please tap Telegram path again to resend.", "info");
 });
 
 /* ===================================================================== */

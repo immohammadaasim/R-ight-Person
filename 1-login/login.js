@@ -235,7 +235,11 @@ continueBtn.addEventListener('click', async () => {
         sessionStorage.setItem('RP_Temp_Email', email);
         sessionStorage.setItem('RP_Temp_Phone', phone);
 
-        // 5. Routing Logic
+        // 5. Country Code save karo (Telegram Deep Link ke liye)
+        const countryCode = document.querySelector('.country-code')?.textContent?.trim() || '+91';
+        sessionStorage.setItem('RP_Country_Code', countryCode);
+
+        // 6. Routing Logic
         if (user) {
             // CASE: OLD USER
             if (user.is_blocked) {
@@ -252,7 +256,7 @@ continueBtn.addEventListener('click', async () => {
             showIsland("New Identity detected. Welcome!", "success");
         }
 
-        // 6. Final Transition (PATH FIXED - Capital V)
+        // 7. Final Transition (PATH FIXED - Capital V)
         setTimeout(() => {
             window.location.href = '../2-Verification/Verification.html';
         }, 1200);
