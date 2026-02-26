@@ -257,7 +257,7 @@ continueBtn.addEventListener('click', async () => {
 
         // 6. Final Transition: Bhejo gateway.html par
         setTimeout(() => {
-            window.location.href = '../2-gateway/gateway.html';
+            window.location.href = './2-verification/Verification.html';
         }, 1200);
 
     } catch (err) {
