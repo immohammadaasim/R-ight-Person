@@ -37,45 +37,77 @@
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 1: System Initialization (FIXED VARIABLE) <<=== */
+/* ===>> BLOCK JS 1: Initialization & Global UI Engine (UPDATED) <<=== */
 /* ===================================================================== */
 
-// Project Credentials
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 1A : Supabase Client & Project Config --- */
+/* --------------------------------------------------------------------- */
 const SB_URL = "https://xtzdlepgpqvllwzjfrsh.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emRsZXBncHF2bGx3empmcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5OTI2MzcsImV4cCI6MjA4NzU2ODYzN30.NxX8BPCK_HNQYmn0-7YkdPv12gO8wKgOS5oP2R0OYZc";
 
-// FIX: Variable ka naam '_sb' rakha hai taaki library se kabhi clash na ho
+// Global Instance
 const _sb = supabase.createClient(SB_URL, SB_KEY);
 
-// DOM Elements Selection
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 1B : DOM Element Selection (Selection Portal IDs) --- */
+/* --------------------------------------------------------------------- */
+// Main Form Containers
 const appContainer = document.getElementById('app-container');
 const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
+const selectionPortal = document.getElementById('selection-portal');
 const otpOverlay = document.getElementById('otp-overlay');
-const loginBtn = document.getElementById('login-send-otp-btn');
+
+// Primary Buttons
+const loginContinueBtn = document.getElementById('login-continue-btn');
 const signupNextBtn = document.getElementById('signup-next-btn');
+const selectionBackBtn = document.getElementById('selection-back-btn');
 const verifyBtn = document.getElementById('verify-otp-btn');
-const resendBtn = document.getElementById('resend-otp-link');
-const backBtn = document.getElementById('otp-back');
+
+// Selection Portal Cards
+const chooseTelegram = document.getElementById('choose-telegram');
+const chooseEmail = document.getElementById('choose-email');
+const chooseWhatsapp = document.getElementById('choose-whatsapp');
+
+// Navigation Links
 const goToSignup = document.getElementById('go-to-signup');
 const goToLogin = document.getElementById('go-to-login');
+
+// Universal Notification Elements
 const dynamicIsland = document.getElementById('showIsland');
 const islandMsg = document.getElementById('island-message');
 const islandIcon = document.getElementById('island-icon');
 
-// Universal Notification System
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 1C : Universal Notification Engine --- */
+/* --------------------------------------------------------------------- */
+/**
+ * showIsland: User ko har action par Apple style visual feedback deta hai.
+ */
 function showIsland(msg, type = 'info') {
     islandMsg.textContent = msg;
     let iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
-    if(type === 'success') iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-    if(type === 'error') iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+    
+    if(type === 'success') {
+        iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    } else if(type === 'error') {
+        iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+    }
     
     islandIcon.innerHTML = iconSvg;
     dynamicIsland.classList.add('active');
-    setTimeout(() => { dynamicIsland.classList.remove('active'); }, 3500);
+    
+    setTimeout(() => {
+        dynamicIsland.classList.remove('active');
+    }, 3500);
 }
 
-function triggerHaptic() { if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10); }
+function triggerHaptic() {
+    if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(10); // Haptic feedback simulation
+    }
+}
 
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 1 file : 1-login/login.js <<=== */
@@ -131,119 +163,105 @@ const currentDeviceID = localStorage.getItem('RP_DeviceID') || generateDeviceFin
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 4: Smart OTP System (Identity Check Fix) <<=== */
+/* ===>> BLOCK JS 4: Selection Logic & Path Routing (Access -R- Key) <<=== */
 /* ===================================================================== */
 
-// OTP Auto-focus logic
-const otpBoxes = document.querySelectorAll('.otp-box');
-otpBoxes.forEach((box, index) => {
-    box.addEventListener('input', (e) => {
-        if (e.target.value.length === 1 && index < otpBoxes.length - 1) otpBoxes[index + 1].focus();
-    });
-    box.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && !box.value && index > 0) otpBoxes[index - 1].focus();
-    });
-});
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 4A : Selection Card Listeners --- */
+/* --------------------------------------------------------------------- */
 
-/**
- * sendOTP: Pehle identity check karega, phir hi code bhejega.
- */
-async function sendOTP(email, type = 'login') {
+// 1. Telegram Path (Free - Recommended)
+chooseTelegram.addEventListener('click', () => {
     triggerHaptic();
-    const activeBtn = type === 'login' ? loginBtn : signupNextBtn;
-    const originalText = activeBtn.innerHTML;
+    const phone = document.getElementById('login-mobile').value || document.getElementById('signup-mobile').value;
     
-    activeBtn.innerHTML = `<div class="btn-loader"></div>`;
-    activeBtn.disabled = true;
+    showIsland("Connecting to Telegram Bot...", "info");
+    
+    // Telegram Bot Logic yahan shuru hogi
+    handleVerificationPath('TELEGRAM', phone, 0);
+});
 
-    try {
-        // 1. DATABASE CHECK (Pehle dekho user hamare record me hai ya nahi)
-        const { data: userExists, error: dbError } = await _sb
-            .from('users')
-            .select('email')
-            .eq('email', email)
-            .maybeSingle();
+// 2. iMail Path (Paid - $1)
+chooseEmail.addEventListener('click', () => {
+    triggerHaptic();
+    showIsland("iMail Path costs $1.00. Payment system loading...", "warning");
+    
+    // Future: Integrate Stripe/PayPal here
+    // Abhi ke liye hum seedha aage bhej rahe hain testing ke liye
+    const email = document.getElementById('signup-email')?.value || "user@imail.com";
+    handleVerificationPath('EMAIL', email, 1.00);
+});
 
-        if (dbError) throw new Error("Database connection error");
+// 3. WhatsApp Path (Paid - $2)
+chooseWhatsapp.addEventListener('click', () => {
+    triggerHaptic();
+    showIsland("WhatsApp Premium costs $2.00. Loading...", "warning");
+    
+    // Future: Integrate Payment
+    const phone = document.getElementById('login-mobile').value || document.getElementById('signup-mobile').value;
+    handleVerificationPath('WHATSAPP', phone, 2.00);
+});
 
-        // 2. LOGIC GATE (Decision making)
-        if (type === 'login' && !userExists) {
-            // User login karna chahta hai par account nahi hai
-            showIsland("Account not found. Please sign up first.", "error");
-            activeBtn.innerHTML = originalText;
-            activeBtn.disabled = false;
-            return;
-        }
 
-        if (type === 'signup' && userExists) {
-            // User naya account banana chahta hai par email pehle se hai
-            showIsland("Email already registered. Please sign in.", "error");
-            activeBtn.innerHTML = originalText;
-            activeBtn.disabled = false;
-            return;
-        }
-
-        // 3. SEND OTP (Sirf tab jab upar ke rules pass honge)
-        const { error } = await _sb.auth.signInWithOtp({
-            email: email,
-            options: {
-                shouldCreateUser: type === 'signup' // Signup me true, Login me false
-            }
-        });
-
-        if (error) throw error;
-
-        // Success UI change
-        document.getElementById('display-email').textContent = email;
-        otpOverlay.style.display = 'flex';
-        showIsland("Verification code sent!", "success");
-        startOTPTimer();
-
-    } catch (error) {
-        console.error("Auth Error:", error.message);
-        showIsland(error.message || "Failed to send code", "error");
-    } finally {
-        activeBtn.innerHTML = originalText;
-        activeBtn.disabled = false;
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 4B : Path Routing Logic --- */
+/* --------------------------------------------------------------------- */
+/**
+ * handleVerificationPath: User ke chune huye raste ke hisab se action leta hai.
+ * @param {string} method - TELEGRAM, EMAIL, ya WHATSAPP
+ * @param {string} target - Phone number ya Email
+ * @param {number} price - Cost of verification
+ */
+async function handleVerificationPath(method, target, price) {
+    // 1. Target email/phone dikhao overlay par
+    document.getElementById('display-email').textContent = target;
+    
+    // 2. Access -R- Key bhejne ki taiyari (Placeholder call)
+    if(method === 'TELEGRAM') {
+        // Asli Telegram Bot API call yahan aayegi (Phase 2)
+        showIsland("Key sent to your Telegram!", "success");
+    } else {
+        // Email/WhatsApp Logic
+        showIsland(`Key sent via ${method}!`, "success");
     }
+
+    // 3. Smooth transition to OTP (Access -R- Key) Overlay
+    showAccessKeyOverlay();
 }
 
-// Button Listeners
-loginBtn.addEventListener('click', () => {
-    const email = document.getElementById('login-email').value;
-    if (!email) return showIsland("Please enter email", "error");
-    sendOTP(email, 'login');
-});
 
-signupNextBtn.addEventListener('click', () => {
-    const email = document.getElementById('signup-email').value;
-    if (!email) return showIsland("Please enter email", "error");
-    sendOTP(email, 'signup');
-});
-
-// Timer & Navigation
-let timer;
-function startOTPTimer() {
-    let timeLeft = 120;
-    const timerDisplay = document.getElementById('otp-timer');
-    resendBtn.disabled = true;
-    clearInterval(timer);
-    timer = setInterval(() => {
-        const mins = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
-        timerDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            resendBtn.disabled = false;
-        }
-        timeLeft--;
-    }, 1000);
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 4C : Access -R- Key Overlay Controller --- */
+/* --------------------------------------------------------------------- */
+/**
+ * showAccessKeyOverlay: 6-digit boxes wali screen dikhata hai.
+ */
+function showAccessKeyOverlay() {
+    otpOverlay.style.display = 'flex';
+    otpOverlay.style.opacity = '0';
+    
+    // Reflow and Animate
+    void otpOverlay.offsetWidth;
+    otpOverlay.style.transition = 'opacity 0.4s var(--ios-ease)';
+    otpOverlay.style.opacity = '1';
+    
+    // Timer shuru karo
+    startAccessKeyTimer();
+    
+    // Pehle box par focus karo
+    setTimeout(() => {
+        otpBoxes[0].focus();
+    }, 500);
 }
 
+// Back button on Overlay
 backBtn.addEventListener('click', () => {
-    otpOverlay.style.display = 'none';
-    clearInterval(timer);
+    otpOverlay.style.opacity = '0';
+    setTimeout(() => {
+        otpOverlay.style.display = 'none';
+    }, 400);
 });
+
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 4 file : 1-login/login.js <<=== */
 /* ===================================================================== */
@@ -251,60 +269,55 @@ backBtn.addEventListener('click', () => {
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 5: Verification & Database Finalization (403 FIX) <<=== */
+/* ===>> BLOCK JS 5: Verification Execution & Final Identity Setup <<=== */
 /* ===================================================================== */
 
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 5A : Verify Access -R- Key --- */
+/* --------------------------------------------------------------------- */
+/**
+ * verifyBtn Listener: 6-digit boxes se code uthakar verify karta hai.
+ */
 verifyBtn.addEventListener('click', async () => {
     triggerHaptic();
     
+    // 1. Ikhatha karo saara code
     let token = "";
     otpBoxes.forEach(box => token += box.value);
-    if (token.length < 6) return showIsland("Enter 6-digit code", "error");
 
-    const email = document.getElementById('display-email').textContent;
+    if (token.length < 6) return showIsland("Enter full 6-digit key", "error");
+
+    const targetIdentity = document.getElementById('display-email').textContent;
     const originalText = verifyBtn.innerHTML;
+    
+    // UI Loading
     verifyBtn.innerHTML = `<div class="btn-loader"></div>`;
     verifyBtn.disabled = true;
 
     try {
-        // --- 403 FIX Logic ---
-        // Hum pehle 'magiclink' type try karenge kyunki Supabase OTP ko isi me count karta hai
-        let { data, error } = await _sb.auth.verifyOtp({
-            email,
-            token,
+        // 2. Supabase Verification Call
+        // Note: Supabase OTP flow me 'magiclink' ya 'signup' type use hota hai
+        const { data, error } = await _sb.auth.verifyOtp({
+            email: targetIdentity, // Agar email hai
+            token: token,
             type: 'magiclink' 
         });
 
-        // Agar magiclink fail ho, to 'signup' try karo (naye users ke liye)
-        if (error) {
-            console.log("Magiclink verify failed, trying signup type...");
-            const secondaryTry = await _sb.auth.verifyOtp({
-                email,
-                token,
-                type: 'signup'
-            });
-            data = secondaryTry.data;
-            error = secondaryTry.error;
-        }
-
         if (error) throw error;
 
-        showIsland("Identity Verified!", "success");
-        
-        const isSignup = signupForm.style.display === 'block';
-        if (isSignup) {
-            await finalizeSignup(data.user.id, email);
+        showIsland("Identity Confirmed!", "success");
+
+        // 3. Logic Gate: Signup vs Login
+        if (lastForm === signupForm) {
+            await finalizeSignup(data.user.id, targetIdentity);
         } else {
-            handleLoginSuccess(data.user.id, email);
+            // Purana user: Device Guard trigger karo
+            handleLoginSuccess(data.user.id, targetIdentity);
         }
 
     } catch (error) {
         console.error("Verification Error:", error.message);
-        if (error.status === 403) {
-            showIsland("Too many attempts. Wait 15 mins.", "error");
-        } else {
-            showIsland("Invalid code. Try again.", "error");
-        }
+        showIsland("Invalid Key. Please try again.", "error");
         otpBoxes.forEach(box => box.value = "");
         otpBoxes[0].focus();
     } finally {
@@ -313,32 +326,81 @@ verifyBtn.addEventListener('click', async () => {
     }
 });
 
-async function finalizeSignup(uid, email) {
-    showIsland("Saving identity...", "info");
-    const genderValue = document.querySelector('#gender-select .option.selected')?.getAttribute('data-value') || "not_specified";
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 5B : Finalize Signup (Identity Database Entry) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * finalizeSignup: User ke real data ko 'users' table me permanent save karta hai.
+ */
+async function finalizeSignup(uid, identity) {
+    showIsland("Securing your Digital Identity...", "info");
 
     const userData = {
         id: uid,
-        email: email,
+        email: document.getElementById('signup-email')?.value || identity,
         full_name: document.getElementById('signup-name').value,
         dob: document.getElementById('signup-birthday').value,
         phone: document.getElementById('signup-mobile').value,
         pincode: document.getElementById('signup-pincode').value,
         language: document.getElementById('signup-language').value,
-        gender: genderValue,
+        gender: selectedGender || "not_specified", // Block 2 se variable
         device_fingerprint: localStorage.getItem('RP_DeviceID'),
         created_at: new Date()
     };
 
     try {
-        const { error } = await _sb.from('users').insert([userData]);
+        // Database Insert
+        const { error } = await _sb
+            .from('users')
+            .insert([userData]);
+
         if (error) throw error;
-        showIsland("Signup Complete!", "success");
-        setTimeout(() => { window.location.href = '../dashboard/dashboard.html'; }, 1500);
+
+        // Success: Redirect to Dashboard
+        showIsland("Registration Elite! Welcome aboard.", "success");
+        setTimeout(() => { 
+            window.location.href = '../dashboard/dashboard.html'; 
+        }, 1500);
+
     } catch (error) {
-        showIsland("DB Error: Check if table exists", "error");
+        console.error("Database Insert Error:", error);
+        showIsland("Data Sync Failed. Contact Security.", "error");
     }
 }
+
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 5C : Access Key Timer & Resend Logic --- */
+/* --------------------------------------------------------------------- */
+let keyTimer;
+function startAccessKeyTimer() {
+    let timeLeft = 120;
+    const timerDisplay = document.getElementById('otp-timer');
+    resendBtn.disabled = true;
+    
+    clearInterval(keyTimer);
+    keyTimer = setInterval(() => {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(keyTimer);
+            resendBtn.disabled = false;
+        }
+        timeLeft--;
+    }, 1000);
+}
+
+// Resend Trigger
+resendBtn.addEventListener('click', () => {
+    const target = document.getElementById('display-email').textContent;
+    showIsland("Requesting new Access -R- Key...", "info");
+    // Path logic dobara trigger karo
+    handleVerificationPath('TELEGRAM', target, 0); 
+});
+
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 5 file : 1-login/login.js <<=== */
 /* ===================================================================== */
@@ -347,21 +409,20 @@ async function finalizeSignup(uid, email) {
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 6: Device Security & Guard Engine (FIXED) <<=== */
+/* ===>> BLOCK JS 6: Device Guard & Anti-Theft Engine (UPDATED) <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 6A : handleLoginSuccess (Device Logic) --- */
+/* --- Sub-Block 6A : handleLoginSuccess (The Gatekeeper) --- */
 /* --------------------------------------------------------------------- */
 /**
- * handleLoginSuccess: Ye tay karta hai ki user seedha andar jayega ya 
- * use permission leni padegi.
+ * handleLoginSuccess: Login ke baad ye tay karta hai ki entry seedha hogi ya verification se.
  */
-async function handleLoginSuccess(uid, email) {
+async function handleLoginSuccess(uid, identity) {
     const currentDID = localStorage.getItem('RP_DeviceID');
     
     try {
-        // FIX: '_sb' use kiya hai user data check karne ke liye
+        // 1. Database se user ka active device fingerprint fetch karo
         const { data: user, error } = await _sb
             .from('users')
             .select('device_fingerprint, is_blocked')
@@ -370,41 +431,48 @@ async function handleLoginSuccess(uid, email) {
 
         if (error) throw error;
 
-        // 1. Check if user is blocked
+        // 2. Security Check: Kya account blocked hai?
         if (user.is_blocked) {
-            return showHighAlert("This account is permanently suspended.");
+            return showHighAlert("This Identity is permanently suspended for security reasons.");
         }
 
-        // 2. Device Comparison
+        // 3. Comparison: Kya ye wahi purana device hai?
         if (user.device_fingerprint === currentDID) {
-            showIsland("Device Verified. Welcome!", "success");
-            setTimeout(() => { window.location.href = '../dashboard/dashboard.html'; }, 1500);
+            showIsland("Device Verified. Welcome back!", "success");
+            setTimeout(() => { 
+                window.location.href = '../dashboard/dashboard.html'; 
+            }, 1500);
         } 
-        // 3. New Device Detected
+        // 4. New Device Alert: Shift System trigger karo
         else {
             triggerDeviceShiftSystem(uid, user.device_fingerprint, currentDID);
         }
 
     } catch (err) {
-        showIsland("Security verification failed.", "error");
+        console.error("Security Engine Error:", err);
+        showIsland("Security verification failed. Try manual entry.", "error");
     }
 }
 
+
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 6B : Device Shift UI & Timer --- */
+/* --- Sub-Block 6B : Device Shift UI & Timer Logic --- */
 /* --------------------------------------------------------------------- */
 const shiftPopup = document.getElementById('shift-popup');
 const shiftTimerText = document.getElementById('shift-timer-text');
 let shiftCountdown;
 
+/**
+ * triggerDeviceShiftSystem: Naye device par 3-min timer aur popup dikhata hai.
+ */
 function triggerDeviceShiftSystem(uid, oldDID, newDID) {
-    showIsland("New Device! Waiting for approval...", "warning");
+    showIsland("New Device Detected! Authorization required.", "warning");
     
-    // Switch UI
+    // UI Transition: OTP Overlay hatao aur Shift popup dikhao
     otpOverlay.style.display = 'none';
     shiftPopup.style.display = 'block';
     
-    let timeLeft = 180; // 3 Minutes
+    let timeLeft = 180; // 3 Minutes (Apple Security Standard)
     
     clearInterval(shiftCountdown);
     shiftCountdown = setInterval(() => {
@@ -414,40 +482,57 @@ function triggerDeviceShiftSystem(uid, oldDID, newDID) {
         
         if (timeLeft <= 0) {
             clearInterval(shiftCountdown);
-            showHighAlert("Request Expired. Please try again.");
-            shiftPopup.style.display = 'none';
+            handleShiftTimeout();
         }
         timeLeft--;
     }, 1000);
 
-    // Waiting for signal (Block 7 me detail logic aayega)
+    // Real-time Approval ka wait karo (Block 7 me detail me aayega)
     listenForShiftApproval(uid, newDID);
 }
 
+
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 6C : High Alert Logic --- */
+/* --- Sub-Block 6C : High Alert & Device Blocking --- */
 /* --------------------------------------------------------------------- */
+/**
+ * showHighAlert: Suspicious device ko poori tarah block kar deta hai.
+ */
 function showHighAlert(reason) {
     const blockScreen = document.getElementById('block-screen');
+    const appContainer = document.getElementById('app-container');
+    
     blockScreen.querySelector('p').textContent = reason;
     blockScreen.style.display = 'flex';
-    appContainer.style.display = 'none';
+    appContainer.style.display = 'none'; // Lock the app UI
     
-    markDeviceBlocked(reason);
+    logSecurityEvent('DEVICE_BLOCKED', reason);
 }
 
-async function markDeviceBlocked(reason) {
+/**
+ * logSecurityEvent: Har suspicious activity ko security_logs table me dalta hai.
+ */
+async function logSecurityEvent(type, details) {
     const deviceID = localStorage.getItem('RP_DeviceID');
-    // FIX: '_sb' use kiya hai logs ke liye
     await _sb.from('security_logs').insert([{
-        event_type: 'BLOCK_TRIGGERED',
+        event_type: type,
         device_fingerprint: deviceID,
-        details: reason
+        details: details
     }]);
 }
 
+function handleShiftTimeout() {
+    shiftPopup.style.display = 'none';
+    showIsland("Shift request expired. Try again.", "error");
+}
+
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 6D : Approval Listener Placeholder --- */
+/* --------------------------------------------------------------------- */
 function listenForShiftApproval(uid, newDID) {
-    console.log("Waiting for signal from old device...");
+    // Ye function agle block me Supabase Real-time se connect hoga
+    console.log("Listening for authorization signal from primary device...");
 }
 
 /* ===================================================================== */
@@ -457,85 +542,50 @@ function listenForShiftApproval(uid, newDID) {
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 7: Real-time Sync & Final Authorization (FIXED) <<=== */
+/* ===>> BLOCK JS 7: Real-time Sync & Portal Initialization (FINAL) <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 7A : Listen For Shift Approval (Real-time) --- */
+/* --- Sub-Block 7A : Listen For Authorization Signal (Real-time) --- */
 /* --------------------------------------------------------------------- */
 /**
- * listenForShiftApproval: Supabase Real-time channel se signal sunta hai.
+ * listenForShiftApproval: Supabase Real-time channel ka use karke primary 
+ * device ke signal ka wait karta hai.
  */
 function listenForShiftApproval(uid, newDID) {
-    // FIX: Variable '_sb' use kiya hai taaki library se takrao na ho
-    const channel = _sb.channel(`device-shift-${uid}`);
+    // Naya channel banao user ki unique ID se
+    const channel = _sb.channel(`identity-auth-${uid}`);
 
     channel
         .on('broadcast', { event: 'shift-action' }, async ({ payload }) => {
             const { action, targetDevice } = payload;
 
-            // Check karo ki ye signal isi naye device ke liye hai
+            // Sirf is specific device ke liye signal pakdo
             if (targetDevice === newDID) {
                 if (action === 'APPROVED') {
                     clearInterval(shiftCountdown);
-                    showIsland("Identity Authorized! Entering Dashboard...", "success");
-                    await completeDeviceShift(uid, newDID);
+                    showIsland("Authorization Granted! Syncing Identity...", "success");
+                    
+                    // Final Step: Database update karo aur andar bhejo
+                    await finalizeDeviceShift(uid, newDID);
                 } 
                 else if (action === 'REJECTED') {
                     clearInterval(shiftCountdown);
-                    showHighAlert("Access Rejected by the account owner.");
+                    showHighAlert("Authorization REJECTED by primary device.");
                 }
             }
         })
         .subscribe();
 }
 
+
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 7B : Approve/Reject Signals (Old Device side) --- */
+/* --- Sub-Block 7B : Finalize Device Shift (Database Write) --- */
 /* --------------------------------------------------------------------- */
 /**
- * broadcastShiftAction: Purane device se naye device ko signal bhejta hai.
+ * finalizeDeviceShift: Naye device ki fingerprint ko 'users' table me update karta hai.
  */
-async function broadcastShiftAction(uid, action, targetDID) {
-    const channel = _sb.channel(`device-shift-${uid}`);
-    
-    await channel.send({
-        type: 'broadcast',
-        event: 'shift-action',
-        payload: { action: action, targetDevice: targetDID }
-    });
-
-    if (action === 'APPROVED') {
-        showIsland("Device Authorized. Sign-out in progress.", "info");
-        setTimeout(async () => {
-            await _sb.auth.signOut();
-            window.location.reload();
-        }, 2000);
-    } else {
-        showIsland("Device Blocked Successfully.", "error");
-        shiftPopup.style.display = 'none';
-    }
-}
-
-// Event Listeners for Shift Buttons (Approving from another device)
-document.getElementById('approve-shift-btn').addEventListener('click', async () => {
-    triggerHaptic();
-    const { data: { session } } = await _sb.auth.getSession();
-    if(session) {
-        // uid aur targetID Notification system se aayenge (Phase 2)
-        console.log("Device Approval Clicked");
-    }
-});
-
-document.getElementById('reject-shift-btn').addEventListener('click', () => {
-    triggerHaptic();
-    console.log("Device Rejection Clicked");
-});
-
-/* --------------------------------------------------------------------- */
-/* --- Sub-Block 7C : Complete Device Shift (DB Update) --- */
-/* --------------------------------------------------------------------- */
-async function completeDeviceShift(uid, newDID) {
+async function finalizeDeviceShift(uid, newDID) {
     try {
         const { error } = await _sb
             .from('users')
@@ -544,44 +594,84 @@ async function completeDeviceShift(uid, newDID) {
 
         if (error) throw error;
 
-        showIsland("System Sync Complete.", "success");
+        showIsland("System Sync Complete. Welcome.", "success");
+        
+        // Final Transition to Dashboard
         setTimeout(() => {
             window.location.href = '../dashboard/dashboard.html';
         }, 1500);
 
     } catch (err) {
-        showIsland("Data sync failed. Try manual login.", "error");
+        showIsland("Database sync failed. Try manual entry.", "error");
     }
 }
 
+
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 7D : Session Management & Load Engine --- */
+/* --- Sub-Block 7C : Broadcast Logic (Old Device side) --- */
 /* --------------------------------------------------------------------- */
 /**
- * initApp: Page load hote hi session aur initial state check karta hai.
+ * sendAuthSignal: Jab purane device par notification aayegi, wahan se signal bhejega.
  */
-async function initApp() {
+async function sendAuthSignal(uid, action, targetDID) {
+    const channel = _sb.channel(`identity-auth-${uid}`);
+    
+    await channel.send({
+        type: 'broadcast',
+        event: 'shift-action',
+        payload: { action: action, targetDevice: targetDID }
+    });
+
+    if (action === 'APPROVED') {
+        showIsland("Identity Authorized. Logging out this device.", "info");
+        // Security Rule: Purane device ko logout kar do
+        setTimeout(async () => {
+            await _sb.auth.signOut();
+            window.location.reload();
+        }, 2000);
+    }
+}
+
+// Approval/Reject Button Listeners (Manual triggers for testing)
+document.getElementById('approve-shift-btn')?.addEventListener('click', () => {
+    triggerHaptic();
+    console.log("Remote Approval Triggered");
+});
+
+document.getElementById('reject-shift-btn')?.addEventListener('click', () => {
+    triggerHaptic();
+    console.log("Remote Rejection Triggered");
+});
+
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 7D : App Initialization Engine (On Load) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * initIdentityPortal: Page load hote hi session aur state check karta hai.
+ */
+async function initIdentityPortal() {
+    // 1. Check for active session
     const { data: { session } } = await _sb.auth.getSession();
     
     if (session) {
-        // Agar user login hai, to device verification shuru karo
+        // Agar user login hai, to uska device check karo
         handleLoginSuccess(session.user.id, session.user.email);
     } else {
+        // Naye user ke liye portal ready
         showIsland("Portal Secure & Ready", "success");
     }
-}
 
-// Page load hote hi shuru karo
-document.addEventListener('DOMContentLoaded', () => {
-    initApp();
-    
-    // Smooth initial fading for iPadOS feel
+    // 2. Initial UI Animation
     appContainer.style.opacity = '0';
     setTimeout(() => {
-        appContainer.style.transition = 'opacity 0.8s ease';
+        appContainer.style.transition = 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)';
         appContainer.style.opacity = '1';
-    }, 150);
-});
+    }, 100);
+}
+
+// Sabse pehle engine start karo
+document.addEventListener('DOMContentLoaded', initIdentityPortal);
 
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 7 file : 1-login/login.js <<=== */

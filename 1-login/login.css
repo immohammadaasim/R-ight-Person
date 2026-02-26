@@ -449,3 +449,112 @@ body.dark-mode .input-group input {
 /* ===================================================================== */
 /* ===>> END OF BLOCK CSS 9 file : 1-login/login.css <<=== */
 /* ===================================================================== */
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 14: Selection Portal & Verification Cards <<=== */
+/* ===================================================================== */
+
+/* --- Selection List Container --- */
+.selection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+/* --- Individual Selection Card (Spatial Glass Style) --- */
+.selection-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px; /* Super Squircle */
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.3s var(--ios-ease);
+    position: relative;
+    overflow: hidden;
+}
+
+/* --- Hover & Active States (Haptic Visuals) --- */
+.selection-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.selection-card:active {
+    transform: scale(0.97); /* Haptic Feedback Rule */
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* --- Selection Icons --- */
+.selection-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.telegram-bg { background: linear-gradient(135deg, #2AABEE, #229ED9); }
+.email-bg { background: linear-gradient(135deg, #5AC8FA, #007AFF); }
+.whatsapp-bg { background: linear-gradient(135deg, #25D366, #128C7E); }
+
+/* --- Text Info inside Card --- */
+.selection-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.path-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--primary-text);
+}
+
+.path-status {
+    font-size: 13px;
+    color: var(--secondary-text);
+}
+
+/* --- Price Badge --- */
+.path-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ios-blue);
+    background: rgba(0, 122, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 10px;
+}
+
+/* --- Secondary Button (Back Button) --- */
+.ios-secondary-btn {
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    color: var(--ios-blue);
+    border: 1.5px solid var(--ios-blue);
+    border-radius: var(--button-radius);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s var(--ios-ease);
+}
+
+.ios-secondary-btn:active {
+    background: rgba(0, 122, 255, 0.05);
+    transform: scale(0.98);
+}
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 14 file : 1-login/login.css <<=== */
+/* ===================================================================== */
