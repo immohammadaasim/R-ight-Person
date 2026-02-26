@@ -1,226 +1,130 @@
 <!-- ===================================================================== -->
-<!-- ===>> DOCUMENTATION BLOCK : Project Architecture & Rules <<=== -->
+<!-- ===>> BLOCK HTML 0: Documentation & Modular Architecture Rules <<=== -->
 <!-- ===================================================================== -->
 <!-- 
     FILE NAME: 1-login/login.html
     PROJECT: R-ight Person (Digital Identity System)
+    ARCHITECTURE: Modular Architecture (Each phase has its own module)
     
-    1. CONNECTED FILES:
-       - login.css : Saara iPadOS 18 (Spatial Glass) design aur transitions.
-       - login.js  : Saara logic (Supabase connection, OTP handling, Security).
+    SYSTEM FLOW:
+    1. Entry Portal (login.html): Unified screen for Mobile & Gmail entry.
+    2. Selection Gateway (gateway.html): Access -R- Key selection & Verification.
+    3. Identity World (dashboard.html): Post-login setup and 7-Digit ID.
 
-    2. DATA & CODE SOURCE:
-       - Code Location: GitHub Repository (R-ight-Person-App).
-       - Database: Supabase (PostgreSQL).
-       - URL: https://xtzdlepgpqvllwzjfrsh.supabase.co
+    DESIGN STANDARD:
+    - iPadOS 18 / visionOS (Spatial Glass Design).
+    - Heavy Backdrop Blur (40px) & Super Squircles (24px-30px).
+    - Floating elements with deep shadows.
 
-    3. SIGNUP FLOW:
-       - User form bharta hai (Name, DOB, Gender, Email, Mobile, Pincode, Language).
-       - Email OTP verify hota hai via Supabase Auth.
-       - Successful verification par "users" table me account create hota hai.
-
-    4. LOGIN FLOW:
-       - Email Only (No Password).
-       - OTP Verification.
-       - Device Check: Naye device par "Device Shift" logic trigger hoga.
-
-    5. DESIGN STANDARD:
-       - iPadOS 18 / visionOS (Spatial Glass).
-       - Super Squircles (20px-30px corners).
-       - SF Symbols vibe (Inline SVGs only - No FontAwesome).
+    SECURITY PROTOCOL:
+    - Device Fingerprinting active on entry.
+    - Zero-Jerk Transitions mandatory.
+    - Real Identity Enforcement (Fake account rules apply).
 -->
-<!-- ===================================================================== -->
-<!-- ===>> END OF DOCUMENTATION BLOCK <<=== -->
-<!-- ===================================================================== -->
-
-
-<!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 0: Head & Essential Links <<=== -->
-<!-- ===================================================================== -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>R-ight Person | Portal</title>
-    <!-- Apple-like Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- Main CSS Link -->
-    <link rel="stylesheet" href="login.css">
-</head>
-<body>
 <!-- ===================================================================== -->
 <!-- ===>> END OF BLOCK HTML 0 file : 1-login/login.html <<=== -->
 <!-- ===================================================================== -->
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 1: Dynamic Island Notification (Universal UI) <<=== -->
+<!-- ===>> BLOCK HTML 1: Head & Essential System Links <<=== -->
 <!-- ===================================================================== -->
-<div id="dynamic-island-container">
-    <div id="showIsland" class="dynamic-island">
-        <div class="island-content">
-            <!-- Inline SVG Icon (SF Symbols Style) -->
-            <div id="island-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
-            </div>
-            <p id="island-message">System Ready</p>
-        </div>
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>R-ight Person | Portal</title>
+    
+    <!-- Apple-like Typography (Inter Font for iPadOS feel) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Core CSS Link (Modular Architecture) -->
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
 <!-- ===================================================================== -->
 <!-- ===>> END OF BLOCK HTML 1 file : 1-login/login.html <<=== -->
 <!-- ===================================================================== -->
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 2: Main Access Portal (Spatial Glass Card) <<=== -->
+<!-- ===>> BLOCK HTML 2: Universal Entry Portal (Spatial Glass Card) <<=== -->
 <!-- ===================================================================== -->
-<!-- 
-    RULES & FLOW:
-    - Step 1: User fills identity info (Login or Signup).
-    - Step 2: Clicks "Continue" or "Next" -> Selection Portal appears.
-    - Step 3: User chooses a path (Telegram/Email/WhatsApp) to get Access -R- Key.
-    - Transition: All steps happen inside this card with smooth sliding.
--->
 <div id="app-container">
+    <!-- Main Floating Card - Designed for iPadOS 18 -->
     <div class="spatial-glass-card">
         
-        <!-- --- STEP 1A: Login Form --- -->
-        <div id="login-form" class="form-container active">
-            <h1 class="portal-title">Sign In</h1>
-            <p class="portal-subtitle">Enter your mobile number to get your Access -R- Key.</p>
+        <header class="portal-header">
+            <h1 class="portal-title">Access Identity</h1>
+            <p class="portal-subtitle">Enter your details to receive your Access -R- Key.</p>
+        </header>
+
+        <!-- Single Entry Form (Unified for Login & Signup) -->
+        <div id="entry-form" class="form-content">
             
-            <div class="input-group">
-                <input type="tel" id="login-mobile" placeholder="Mobile Number" required autocomplete="off">
+            <!-- Mobile Number Input with Country Picker -->
+            <div class="input-wrapper mobile-entry">
+                <div class="country-selector" id="country-trigger">
+                    <span class="flag-icon">🇮🇳</span>
+                    <span class="country-code">+91</span>
+                </div>
+                <input type="tel" id="user-mobile" placeholder="Mobile Number" required autocomplete="off">
             </div>
-            
-            <button id="login-continue-btn" class="ios-primary-btn haptic-feedback">
+
+            <!-- Gmail Input -->
+            <div class="input-wrapper email-entry">
+                <!-- SF Symbol Vibe Icon (Inline SVG) -->
+                <div class="input-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </div>
+                <input type="email" id="user-email" placeholder="Gmail Address" required autocomplete="off">
+            </div>
+
+            <!-- Action Button with Haptic Visual Rule -->
+            <button id="entry-continue-btn" class="ios-primary-btn haptic-feedback">
                 <span class="btn-text">Continue</span>
                 <div class="btn-loader" style="display:none;"></div>
             </button>
-            
-            <p class="switch-text">New here? <a href="javascript:void(0)" id="go-to-signup">Create Identity</a></p>
+
+            <footer class="portal-footer">
+                <p class="footer-note">By continuing, you agree to our <a href="#">Security Protocols</a>.</p>
+            </footer>
+
         </div>
-
-        <!-- --- STEP 1B: Signup Form (Identity Info) --- -->
-        <div id="signup-form" class="form-container" style="display:none;">
-            <h1 class="portal-title">New Identity</h1>
-            <p class="portal-subtitle">Fill in your real details to join the R-ight world.</p>
-            
-            <div class="form-scroll-area">
-                <div class="input-group">
-                    <input type="text" id="signup-name" placeholder="Full Name" required>
-                </div>
-                <div class="input-group">
-                    <input type="date" id="signup-birthday" required>
-                    <label class="input-hint">Birthday (Real Identity)</label>
-                </div>
-                <div class="custom-select" id="gender-select">
-                    <div class="select-trigger">Select Gender</div>
-                    <div class="select-options-glass">
-                        <div class="option" data-value="male">Male</div>
-                        <div class="option" data-value="female">Female</div>
-                        <div class="option" data-value="other">Other</div>
-                    </div>
-                </div>
-                <div class="mobile-wrapper">
-                    <div class="country-btn" id="country-btn">
-                        <span id="flag">🇮🇳</span> <span id="code">+91</span>
-                    </div>
-                    <input type="tel" id="signup-mobile" placeholder="Mobile Number" required>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="signup-pincode" placeholder="Pincode / Postcode" required>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="signup-language" placeholder="Preferred Language" required>
-                </div>
-            </div>
-
-            <button id="signup-next-btn" class="ios-primary-btn haptic-feedback">Next Step</button>
-            <p class="switch-text">Already a member? <a href="javascript:void(0)" id="go-to-login">Sign In</a></p>
-        </div>
-
-        <!-- --- STEP 2: Selection Portal (Verification Gateway) --- -->
-        <div id="selection-portal" class="form-container" style="display:none;">
-            <h1 class="portal-title">Access -R- Key</h1>
-            <p class="portal-subtitle">Select your path to receive the secure key.</p>
-            
-            <div class="selection-list">
-                <!-- Telegram Path (Free) -->
-                <div class="selection-card haptic-feedback" id="choose-telegram">
-                    <div class="selection-icon telegram-bg">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.76-1.63 6.27-2.71 7.53-3.23 3.58-1.48 4.32-1.74 4.81-1.75.11 0 .35.03.5.16.13.11.17.26.18.37 0 .04.01.12 0 .19z"/></svg>
-                    </div>
-                    <div class="selection-info">
-                        <span class="path-name">Telegram</span>
-                        <span class="path-status">Instant & Free</span>
-                    </div>
-                    <span class="path-price">FREE</span>
-                </div>
-
-                <!-- iMail Path ($1) -->
-                <div class="selection-card haptic-feedback" id="choose-email">
-                    <div class="selection-icon email-bg">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                    </div>
-                    <div class="selection-info">
-                        <span class="path-name">iMail (Email)</span>
-                        <span class="path-status">Official Backup</span>
-                    </div>
-                    <span class="path-price">$1.00</span>
-                </div>
-
-                <!-- WhatsApp Path ($2) -->
-                <div class="selection-card haptic-feedback" id="choose-whatsapp">
-                    <div class="selection-icon whatsapp-bg">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12.011 2c-5.517 0-9.992 4.475-9.992 9.991 0 1.764.462 3.426 1.265 4.871l-1.344 4.903 5.018-1.315c1.404.759 3.002 1.196 4.697 1.196 5.517 0 9.992-4.475 9.992-9.991s-4.475-9.991-9.992-9.991zm0 1.75c4.549 0 8.241 3.693 8.241 8.241s-3.693 8.241-8.241 8.241c-1.579 0-3.053-.448-4.307-1.222l-.309-.19-2.99.784.798-2.91-.208-.33c-.851-1.354-1.3-2.923-1.3-4.543 0-4.548 3.693-8.241 8.241-8.241z"/></svg>
-                    </div>
-                    <div class="selection-info">
-                        <span class="path-name">WhatsApp</span>
-                        <span class="path-status">Premium Priority</span>
-                    </div>
-                    <span class="path-price">$2.00</span>
-                </div>
-            </div>
-
-            <button id="selection-back-btn" class="ios-secondary-btn">Back to Details</button>
-        </div>
-
     </div>
 </div>
 <!-- ===================================================================== -->
 <!-- ===>> END OF BLOCK HTML 2 file : 1-login/login.html <<=== -->
 <!-- ===================================================================== -->
-
+ 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 3: OTP Verification Overlay <<=== -->
+<!-- ===>> BLOCK HTML 3: Dynamic Island Notification (Universal UI) <<=== -->
 <!-- ===================================================================== -->
-<div id="otp-overlay" class="glass-overlay" style="display:none;">
-    <div class="otp-card floating-animation">
-        <button class="ios-back-btn" id="otp-back">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        </button>
-        <h2>Security Check</h2>
-        <p>Enter code sent to <br><strong id="display-email"></strong></p>
-        
-        <div class="otp-input-wrapper">
-            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
-            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
-            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
-            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
-            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
-            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+<!-- 
+    RULE: Universal Notification & UI Feedback Protocol
+    - Is system ka use har user-facing alert ke liye hoga.
+    - Design: Floating Pill (Dynamic Island) at the top center.
+    - Icon: SF Symbols vibe (Thin Inline SVG).
+-->
+<div id="dynamic-island-container">
+    <div id="showIsland" class="dynamic-island">
+        <div class="island-content">
+            
+            <!-- Dynamic Icon Slot (Thin SVG for Apple Vibe) -->
+            <div id="island-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+            </div>
+
+            <!-- Dynamic Message Slot -->
+            <p id="island-message">System Initializing...</p>
+            
         </div>
-        
-        <div class="otp-footer">
-            <span id="otp-timer">02:00</span>
-            <button id="resend-otp-link" disabled>Resend Code</button>
-        </div>
-        
-        <button id="verify-otp-btn" class="ios-primary-btn haptic-feedback">Verify & Enter</button>
     </div>
 </div>
 <!-- ===================================================================== -->
@@ -229,46 +133,22 @@
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 4: Security System Overlays (Shift/Alert) <<=== -->
+<!-- ===>> BLOCK HTML 4: Backend & System Scripting Initialization <<=== -->
 <!-- ===================================================================== -->
-<div id="security-system">
-    <!-- Device Shift Logic -->
-    <div id="shift-popup" class="glass-alert-card" style="display:none;">
-        <div class="alert-header">Device Shift Request</div>
-        <p>A new device is trying to access your identity.</p>
-        <div class="progress-ring-container">
-            <div id="shift-timer-text">3:00</div>
-        </div>
-        <div class="alert-actions">
-            <button id="reject-shift-btn" class="ios-danger-btn">Reject</button>
-            <button id="approve-shift-btn" class="ios-success-btn">Approve</button>
-        </div>
-    </div>
+<!-- 
+    MODULAR ARCHITECTURE NOTE:
+    - Supabase SDK (v2): Handles real-time identity and auth.
+    - login.js: Logic engine for device fingerprinting and entry routing.
+-->
 
-    <!-- High Alert (Block) Screen -->
-    <div id="block-screen" class="glass-overlay-dark" style="display:none;">
-        <div class="block-content">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ff3b30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            <h1>Access Denied</h1>
-            <p>This device has been permanently flagged for suspicious activity.</p>
-            <button id="support-btn" class="ios-secondary-btn">Contact Security</button>
-        </div>
-    </div>
-</div>
-<!-- ===================================================================== -->
-<!-- ===>> END OF BLOCK HTML 4 file : 1-login/login.html <<=== -->
-<!-- ===================================================================== -->
-
-
-<!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 5: Backend & Script Initialization <<=== -->
-<!-- ===================================================================== -->
-<!-- Supabase SDK v2 -->
+<!-- Supabase Global Engine Link -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Logic File -->
+
+<!-- Portal Logic Engine -->
 <script src="login.js"></script>
+
 </body>
 </html>
 <!-- ===================================================================== -->
-<!-- ===>> END OF BLOCK HTML 5 file : 1-login/login.html <<=== -->
+<!-- ===>> END OF BLOCK HTML 4 file : 1-login/login.html <<=== -->
 <!-- ===================================================================== -->
