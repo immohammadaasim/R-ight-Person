@@ -1,0 +1,545 @@
+/* ===================================================================== */
+/* ===>> BLOCK CSS 0: Documentation & Verification Design Vision <<=== */
+/* ===================================================================== */
+/* 
+    FILE NAME: 2-verification/Verification.css
+    PROJECT: R-ight Person (Digital Identity System)
+    ARCHITECTURE: Modular Architecture (Verification Specific)
+    
+    DESIGN RULES (iPadOS 18 Standard):
+    1. PATH CARDS: Visual emphasis on Telegram (Free) vs Paid paths.
+    2. KEY INPUTS: Large, accessible boxes for Access -R- Key.
+    3. SECURITY GUARD: Professional security visuals with timer ring.
+    4. GLASSMORPHISM: 40px backdrop blur mandatory for all cards.
+    5. HAPTIC VISUALS: Scale down effect (0.97) on all clickable paths.
+*/
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 0 file : 2-verification/Verification.css <<=== */
+/* ===================================================================== */
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 1: Global Setup & Verification Variables <<=== */
+/* ===================================================================== */
+
+:root {
+    /* --- System Base --- */
+    --system-bg: #F2F2F7;
+    --glass-card: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    
+    /* --- Verification Accents --- */
+    --telegram-blue: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%);
+    --whatsapp-green: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    --email-blue: linear-gradient(135deg, #5AC8FA 0%, #007AFF 100%);
+    
+    /* --- Physics & Depth --- */
+    --blur-intensity: blur(45px) saturate(190%);
+    --shadow-spatial: 0 25px 60px rgba(0, 0, 0, 0.12);
+    
+    /* --- Transition Curves --- */
+    --ios-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --spring-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Dark Mode Overrides */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --system-bg: #000000;
+        --glass-card: rgba(28, 28, 30, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --shadow-spatial: 0 25px 60px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* --- Universal Layout --- */
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--system-bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    overflow-x: hidden;
+    /* Subtle Spatial Backdrop */
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(0, 122, 255, 0.08) 0, transparent 50%), 
+        radial-gradient(at 100% 100%, rgba(52, 199, 89, 0.05) 0, transparent 50%);
+}
+
+#app-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+    perspective: 1000px;
+}
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 1 file : 2-verification/Verification.css <<=== */
+/* ===================================================================== */
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 2: Path Selection Cards & Gateway Design <<=== */
+/* ===================================================================== */
+
+/* --- Main Card Physics --- */
+.spatial-glass-card {
+    background: var(--glass-card);
+    backdrop-filter: var(--blur-intensity);
+    -webkit-backdrop-filter: var(--blur-intensity);
+    border-radius: 30px;
+    border: 1px solid var(--glass-border);
+    padding: 40px 30px;
+    box-shadow: var(--shadow-spatial);
+    transform-style: preserve-3d;
+    transition: transform 0.5s var(--spring-bounce);
+}
+
+/* --- View Typography --- */
+.view-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.view-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+}
+
+.view-subtitle {
+    font-size: 15px;
+    color: var(--secondary-text);
+    line-height: 1.4;
+}
+
+/* --- Selection List Layout --- */
+.selection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+/* --- The Selection Card (Apple Vision Pro Style) --- */
+.selection-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.3s var(--ios-ease);
+}
+
+/* RULE: Haptic Visuals on click */
+.selection-card:active {
+    transform: scale(0.97);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Path Icons & Gradients */
+.path-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.telegram-bg { background: var(--telegram-blue); }
+.email-bg { background: var(--email-blue); }
+.whatsapp-bg { background: var(--whatsapp-green); }
+
+/* Path Info Labels */
+.path-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.path-name {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.path-meta {
+    font-size: 13px;
+    color: var(--ios-blue);
+    font-weight: 500;
+}
+
+/* Price & Status Badges */
+.path-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ios-blue);
+    background: rgba(0, 122, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 10px;
+}
+
+.path-status-badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px 8px;
+    border-radius: 6px;
+    color: var(--secondary-text);
+}
+
+/* RULE: Disabled paths (Coming Soon) visuals */
+.disabled-path {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+}
+
+.disabled-path:active {
+    transform: none; /* No haptic for disabled */
+}
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 2 file : 2-verification/Verification.css <<=== */
+/* ===================================================================== */
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 3: Access -R- Key Inputs & Verification Buttons <<=== */
+/* ===================================================================== */
+
+/* --- Key Input Grid (6 Boxes) --- */
+.key-input-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.key-box {
+    width: 48px;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1.5px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--primary-text);
+    outline: none;
+    transition: all 0.2s var(--ios-ease);
+}
+
+/* Dark mode adjustment for boxes */
+@media (prefers-color-scheme: dark) {
+    .key-box {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* RULE: Apple standard focus state */
+.key-box:focus {
+    background: transparent;
+    border-color: var(--ios-blue);
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
+}
+
+/* --- Resend & Timer Footer --- */
+.key-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    font-size: 14px;
+    color: var(--secondary-text);
+}
+
+.ios-link-btn {
+    background: none;
+    border: none;
+    color: var(--ios-blue);
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.ios-link-btn:disabled {
+    color: var(--secondary-text);
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* --- Primary Verification Button --- */
+.ios-primary-btn {
+    width: 100%;
+    height: 56px;
+    background: linear-gradient(180deg, #007AFF 0%, #0063CC 100%);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--button-radius);
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0, 122, 255, 0.25);
+}
+
+/* --- Secondary / Back Button --- */
+.ios-secondary-btn {
+    width: 100%;
+    height: 54px;
+    background: transparent;
+    border: 1.5px solid var(--ios-blue);
+    border-radius: var(--button-radius);
+    color: var(--ios-blue);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Loader Animation */
+.btn-loader {
+    width: 20px;
+    height: 20px;
+    border: 2.5px solid rgba(255, 255, 255, 0.3);
+    border-top: 2.5px solid #FFFFFF;
+    border-radius: 50%;
+    animation: spinBtn 0.8s linear infinite;
+}
+
+@keyframes spinBtn { to { transform: rotate(360deg); } }
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 3 file : 2-verification/Verification.css <<=== */
+/* ===================================================================== */
+
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 4: Device Guard & Circular Timer Design <<=== */
+/* ===================================================================== */
+
+.guard-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* --- Guard Icon with Pulse Effect --- */
+.guard-icon-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 24px;
+}
+
+.guard-icon {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    background: var(--ios-blue);
+    color: white;
+    border-radius: 22px; /* Super Squircle Vibe */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0, 122, 255, 0.3);
+}
+
+.guard-pulse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--ios-blue);
+    border-radius: 22px;
+    z-index: 1;
+    opacity: 0.5;
+    animation: guardRipple 2s infinite;
+}
+
+@keyframes guardRipple {
+    0% { transform: scale(1); opacity: 0.5; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* --- Circular Timer Styling --- */
+.shift-timer-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 30px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-ring {
+    transform: rotate(-90deg); /* Start from top */
+}
+
+.timer-ring-bg {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.05);
+    stroke-width: 6;
+}
+
+.timer-ring-active {
+    fill: none;
+    stroke: var(--ios-blue);
+    stroke-width: 6;
+    stroke-linecap: round;
+    /* Circumference = 2 * PI * R (2 * 3.14 * 54 = 339) */
+    stroke-dasharray: 339;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear;
+}
+
+.timer-text {
+    position: absolute;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-text);
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Guard Warning & Links --- */
+.guard-footer {
+    margin-top: 20px;
+}
+
+.warning-text {
+    font-size: 13px;
+    color: var(--secondary-text);
+    line-height: 1.5;
+}
+
+.warning-text a {
+    color: var(--ios-blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 4 file : 2-verification/Verification.css <<=== */
+/* ===================================================================== */
+
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 5: Dynamic Island & High Alert Overlay <<=== */
+/* ===================================================================== */
+
+/* --- Dynamic Island Notification System --- */
+#dynamic-island-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    pointer-events: none;
+}
+
+.dynamic-island {
+    background: #000000;
+    backdrop-filter: blur(25px) saturate(200%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50px;
+    padding: 10px 22px;
+    color: white;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    
+    /* Animation Physics */
+    opacity: 0;
+    transform: scale(0.8) translateY(-40px);
+    transition: all 0.6s var(--spring-bounce);
+}
+
+.dynamic-island.active {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.island-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#island-message {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+}
+
+/* --- High Alert (Blocked Device) Screen --- */
+.glass-overlay-dark {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(40px) saturate(150%);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.alert-content {
+    text-align: center;
+    max-width: 320px;
+}
+
+.alert-content h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #FF3B30; /* Apple Critical Red */
+    margin: 20px 0 10px;
+}
+
+.alert-content p {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+    margin-bottom: 30px;
+}
+
+/* --- Global View State Controller --- */
+.gateway-view {
+    display: none; /* Controlled by JS */
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.5s var(--ios-ease), transform 0.5s var(--ios-ease);
+}
+
+.gateway-view.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 5 file : 2-verification/Verification.css <<=== */
+/* ===================================================================== */

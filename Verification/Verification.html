@@ -1,0 +1,230 @@
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 0: Documentation & Modular Verification Rules <<=== -->
+<!-- ===================================================================== -->
+<!-- 
+    FILE NAME: 2-verification/Verification.html
+    PROJECT: R-ight Person (Digital Identity System)
+    ARCHITECTURE: Modular Architecture (Verification Module)
+    
+    MODULE ROLE:
+    1. PATH SELECTION: User chooses between Telegram, iMail, or WhatsApp.
+    2. ACCESS -R- KEY: Displays 6-digit input boxes for identity verification.
+    3. DEVICE GUARD: Handles "Device Shift" requests for old users.
+
+    DESIGN STANDARD:
+    - iPadOS 18 (Spatial Glass Design).
+    - Floating Selection Cards with Haptic Feedback.
+    - Zero-Jerk Transition between Selection and Input screens.
+
+    SECURITY PROTOCOL:
+    - Only accessible if temporary session data exists.
+    - Real-time sync with primary device for authorization.
+-->
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 0 file : 2-verification/Verification.html <<=== -->
+<!-- ===================================================================== -->
+
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 1: Head & Verification System Links <<=== -->
+<!-- ===================================================================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>R-ight Person | Verification Gateway</title>
+    
+    <!-- Apple-like Typography (Inter for iPadOS Standard) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Module Specific CSS (Modular Architecture) -->
+    <link rel="stylesheet" href="Verification.css">
+</head>
+<body>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 1 file : 2-verification/Verification.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 2: Main Verification Gateway (Spatial Glass Card) <<=== -->
+<!-- ===================================================================== -->
+<div id="app-container">
+    <div class="spatial-glass-card">
+        
+        <!-- --- VIEW 1: PATH SELECTION (Chunav ka Portal) --- -->
+        <div id="selection-view" class="gateway-view active">
+            <header class="view-header">
+                <h1 class="view-title">Access -R- Key</h1>
+                <p class="view-subtitle">Select your preferred path for verification.</p>
+            </header>
+
+            <div class="selection-list">
+                <!-- Telegram Path (Free) -->
+                <div class="selection-card haptic-feedback" id="path-telegram">
+                    <div class="path-icon telegram-bg">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.76-1.63 6.27-2.71 7.53-3.23 3.58-1.48 4.32-1.74 4.81-1.75.11 0 .35.03.5.16.13.11.17.26.18.37 0 .04.01.12 0 .19z"/></svg>
+                    </div>
+                    <div class="path-info">
+                        <span class="path-name">Telegram Bot</span>
+                        <span class="path-meta">Instant & Free</span>
+                    </div>
+                    <span class="path-price">FREE</span>
+                </div>
+
+                <!-- iMail Path ($1.00) -->
+                <div class="selection-card haptic-feedback disabled-path" id="path-email">
+                    <div class="path-icon email-bg">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </div>
+                    <div class="path-info">
+                        <span class="path-name">iMail (Official)</span>
+                        <span class="path-status-badge">Coming Soon</span>
+                    </div>
+                    <span class="path-price">$1.00</span>
+                </div>
+
+                <!-- WhatsApp Path ($2.00) -->
+                <div class="selection-card haptic-feedback disabled-path" id="path-whatsapp">
+                    <div class="path-icon whatsapp-bg">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12.011 2c-5.517 0-9.992 4.475-9.992 9.991 0 1.764.462 3.426 1.265 4.871l-1.344 4.903 5.018-1.315c1.404.759 3.002 1.196 4.697 1.196 5.517 0 9.992-4.475 9.992-9.991s-4.475-9.991-9.992-9.991zm0 1.75c4.549 0 8.241 3.693 8.241 8.241s-3.693 8.241-8.241 8.241c-1.579 0-3.053-.448-4.307-1.222l-.309-.19-2.99.784.798-2.91-.208-.33c-.851-1.354-1.3-2.923-1.3-4.543 0-4.548 3.693-8.241 8.241-8.241z"/></svg>
+                    </div>
+                    <div class="path-info">
+                        <span class="path-name">WhatsApp Premium</span>
+                        <span class="path-status-badge">Coming Soon</span>
+                    </div>
+                    <span class="path-price">$2.00</span>
+                </div>
+            </div>
+
+            <button id="go-back-entry" class="ios-secondary-btn haptic-feedback">Edit Mobile / Gmail</button>
+        </div>
+
+        <!-- --- VIEW 2: KEY INPUT (Access -R- Key Verification) --- -->
+        <div id="key-input-view" class="gateway-view" style="display:none;">
+            <header class="view-header">
+                <h1 class="view-title">Verify Key</h1>
+                <p class="view-subtitle">Enter the 6-digit Access -R- Key sent to your <span id="target-identity">Telegram</span>.</p>
+            </header>
+
+            <div class="key-input-wrapper">
+                <input type="text" maxlength="1" class="key-box" inputmode="numeric">
+                <input type="text" maxlength="1" class="key-box" inputmode="numeric">
+                <input type="text" maxlength="1" class="key-box" inputmode="numeric">
+                <input type="text" maxlength="1" class="key-box" inputmode="numeric">
+                <input type="text" maxlength="1" class="key-box" inputmode="numeric">
+                <input type="text" maxlength="1" class="key-box" inputmode="numeric">
+            </div>
+
+            <div class="key-footer">
+                <span id="resend-timer">02:00</span>
+                <button id="resend-key-btn" class="ios-link-btn" disabled>Resend Code</button>
+            </div>
+
+            <button id="verify-key-btn" class="ios-primary-btn haptic-feedback">
+                <span class="btn-text">Verify Identity</span>
+                <div class="btn-loader" style="display:none;"></div>
+            </button>
+
+            <button id="back-to-selection" class="ios-secondary-btn haptic-feedback">Change Path</button>
+        </div>
+
+    </div>
+</div>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 2 file : 2-verification/Verification.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 3: Device Shift Overlay (Post-Verification Guard) <<=== -->
+<!-- ===================================================================== -->
+<!-- 
+    RULES:
+    - This view triggers ONLY for OLD users on a NEW device.
+    - Timer: 180 seconds (3 Minutes).
+    - If timer expires or rejected, device is flagged High Alert.
+-->
+<div id="shift-guard-view" class="gateway-view" style="display:none;">
+    <div class="guard-content">
+        
+        <!-- Animated Security Icon -->
+        <div class="guard-icon-container">
+            <div class="guard-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="11" width="14" height="10" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </div>
+            <div class="guard-pulse"></div>
+        </div>
+
+        <h1 class="view-title">Authorization Required</h1>
+        <p class="view-subtitle">We sent a request to your primary device. Please approve to continue.</p>
+
+        <!-- Dynamic Timer Progress -->
+        <div class="shift-timer-container">
+            <svg class="timer-ring" width="120" height="120">
+                <circle class="timer-ring-bg" cx="60" cy="60" r="54"></circle>
+                <circle id="timer-progress-ring" class="timer-ring-active" cx="60" cy="60" r="54"></circle>
+            </svg>
+            <div id="shift-timer-text" class="timer-text">3:00</div>
+        </div>
+
+        <div class="guard-footer">
+            <p class="warning-text">Don't have your old device? <a href="#" id="shift-via-email">Verify via Email</a> after 3 minutes.</p>
+        </div>
+
+    </div>
+</div>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 3 file : 2-verification/Verification.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 4: Notification UI & Verification Scripts <<=== -->
+<!-- ===================================================================== -->
+<!-- 
+    MODULAR ARCHITECTURE NOTE:
+    - Dynamic Island: Universal UI for real-time feedback.
+    - Supabase SDK: Handles OTP verification and Device Shift broadcasting.
+    - Verification.js: Logic engine for selection, timer, and auth sync.
+-->
+
+<!-- Universal Notification System (Dynamic Island) -->
+<div id="dynamic-island-container">
+    <div id="showIsland" class="dynamic-island">
+        <div class="island-content">
+            <div id="island-icon">
+                <!-- SF Symbol vibe Icon -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            </div>
+            <p id="island-message">Waiting for Selection...</p>
+        </div>
+    </div>
+</div>
+
+<!-- High Alert Block Screen (Hidden by default) -->
+<div id="high-alert-screen" class="glass-overlay-dark" style="display:none;">
+    <div class="alert-content">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <h1>Device Flagged</h1>
+        <p id="block-reason">Unauthorized attempt detected.</p>
+        <button class="ios-secondary-btn" onclick="window.location.reload()">Contact Security</button>
+    </div>
+</div>
+
+<!-- Supabase Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Module Specific Logic -->
+<script src="Verification.js"></script>
+
+</body>
+</html>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 4 file : 2-verification/Verification.html <<=== -->
+<!-- ===================================================================== -->
