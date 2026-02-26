@@ -231,7 +231,7 @@ continueBtn.addEventListener('click', async () => {
 
         if (error) throw error;
 
-        // 4. Temporary storage (taaki Verification.html ko pata chale ki kaun aaya hai)
+        // 4. Temporary storage
         sessionStorage.setItem('RP_Temp_Email', email);
         sessionStorage.setItem('RP_Temp_Phone', phone);
 
@@ -252,9 +252,9 @@ continueBtn.addEventListener('click', async () => {
             showIsland("New Identity detected. Welcome!", "success");
         }
 
-        // 6. Final Transition: Bhejo Verification.html par (PATH FIXED)
+        // 6. Final Transition (PATH FIXED - Capital V)
         setTimeout(() => {
-            window.location.href = '../2-verification/Verification.html';
+            window.location.href = '../2-Verification/Verification.html';
         }, 1200);
 
     } catch (err) {
