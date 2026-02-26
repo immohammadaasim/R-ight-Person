@@ -364,7 +364,7 @@ continueBtn.addEventListener('click', async () => {
 
         // 5. Gateway par redirect
         setTimeout(() => {
-            window.location.href = '2-verification/Verification.html';
+            window.location.href = './2-verification/Verification.html';
         }, 1200);
 
     } catch (err) {
