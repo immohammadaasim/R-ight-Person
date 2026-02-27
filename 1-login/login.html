@@ -49,64 +49,86 @@
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 2: Main Entry Portal Structure (Theme Integrated) <<=== -->
+<!-- ===>> BLOCK HTML 2: Main Entry Portal & Global Identity Structure <<=== -->
 <!-- ===================================================================== -->
 <div id="app-container">
     
-    <!-- 1. Spatial Theme Toggle (Floating Control) -->
+    <!-- 1. Floating Theme Control (iPadOS style) -->
     <div class="theme-utility-bar">
-        <button id="theme-toggle-btn" class="haptic-touch" aria-label="Toggle Appearance">
+        <button id="theme-toggle-btn" class="haptic-touch">
             <i id="theme-icon" class="fas fa-moon"></i>
         </button>
     </div>
 
+    <!-- 2. Main Spatial Glass Card -->
     <main class="spatial-glass-card">
-        <!-- Header Section -->
         <header class="card-header">
-            <div class="brand-badge blue-accent">R-IGHT PERSON</div>
+            <div class="brand-badge">R-IGHT PERSON</div>
             <h1 class="main-title">Digital Identity</h1>
             <p class="secondary-label">Secure entrance to your ecosystem</p>
         </header>
 
-        <!-- Entry Form Section -->
         <div class="entry-form-container">
             
-            <!-- Mobile Entry Field -->
+            <!-- Global Mobile Entry (With Searchable Picker) -->
             <div class="input-group">
-                <label class="field-label blue-accent">REGISTERED MOBILE</label>
-                <div class="input-wrapper spatial-depth">
-                    <div id="country-trigger" class="country-selector haptic-touch">
-                        <span class="country-flag">🇮🇳</span>
-                        <span class="country-code">+91</span>
+                <label class="field-label">REGISTERED MOBILE</label>
+                <div class="input-wrapper">
+                    <!-- Searchable Trigger -->
+                    <div id="country-dropdown-trigger" class="country-selector haptic-touch">
+                        <span id="selected-flag">🇮🇳</span>
+                        <span id="selected-code">+91</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
                     </div>
-                    <input type="tel" id="user-mobile" placeholder="87288 00000" maxlength="10">
+                    <input type="tel" id="user-mobile" placeholder="000-000-0000" maxlength="15">
                 </div>
             </div>
 
-            <!-- Email Entry Field -->
+            <!-- Gmail Entry (With Identity Lookup Engine) -->
             <div class="input-group">
-                <label class="field-label blue-accent">PERSONAL GMAIL</label>
-                <div class="input-wrapper spatial-depth">
-                    <i class="fas fa-envelope input-icon blue-accent"></i>
-                    <input type="email" id="user-email" placeholder="name@gmail.com">
+                <label class="field-label">PERSONAL GMAIL</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="user-email" placeholder="name@gmail.com" autocomplete="off">
+                </div>
+                
+                <!-- [ SLOT : Identity Discovery Chip ] -->
+                <div id="identity-preview-portal" class="identity-chip-slot">
+                    <!-- Name or Verified Badge will slide in here via JS -->
                 </div>
             </div>
 
-            <!-- Action Button -->
             <div class="action-container">
                 <button id="entry-continue-btn" class="main-cta-btn haptic-touch">
                     <span class="btn-text">Continue</span>
                     <div class="btn-loader"></div>
                 </button>
             </div>
-
         </div>
 
-        <!-- Footer Info -->
         <footer class="card-footer">
-            <p class="legal-text">By continuing, you agree to our <span class="blue-accent">Security Protocols</span></p>
+            <p class="legal-text">Secured by <span class="blue-link">R-ight Protocol</span></p>
         </footer>
     </main>
+
+    <!-- 3. Global Country Picker Overlay (iOS Style Searchable Modal) -->
+    <div id="country-picker-overlay" class="spatial-modal-overlay">
+        <div class="spatial-modal-container">
+            <div class="modal-header">
+                <span class="modal-title">Select Country</span>
+                <button id="close-picker-btn" class="modal-close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <!-- Search Box inside Dropdown -->
+            <div class="modal-search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="country-search-input" placeholder="Search country or code...">
+            </div>
+            <!-- Dynamic Country List -->
+            <div id="country-list-scroll" class="modal-list-container">
+                <!-- List will be injected by JS -->
+            </div>
+        </div>
+    </div>
 
 </div>
 <!-- ===================================================================== -->

@@ -404,3 +404,236 @@ async function triggerGlobalEntry() {
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 4 file : 1-login/login.js <<=== */
 /* ===================================================================== */
+
+
+
+
+/* ===================================================================== */
+/* ===>> BLOCK JS 5: Global Identity & Formatting Engine <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 5A : Global Country Picker & Search Engine --- */
+/* --------------------------------------------------------------------- */
+
+// 1. Global Country Data (Digital Identity Hub)
+const countries = [
+    { name: "India", code: "+91", flag: "🇮🇳" },
+    { name: "United States", code: "+1", flag: "🇺🇸" },
+    { name: "United Kingdom", code: "+44", flag: "🇬🇧" },
+    { name: "United Arab Emirates", code: "+971", flag: "🇦🇪" },
+    { name: "Canada", code: "+1", flag: "🇨🇦" },
+    { name: "Australia", code: "+61", flag: "🇦🇺" },
+    { name: "Germany", code: "+49", flag: "🇩🇪" },
+    { name: "France", code: "+33", flag: "🇫🇷" },
+    { name: "Singapore", code: "+65", flag: "🇸🇬" },
+    { name: "Japan", code: "+81", flag: "🇯🇵" }
+    // Add more as needed
+];
+
+// 2. DOM Elements Selection
+const pickerTrigger = document.getElementById('country-dropdown-trigger');
+const pickerOverlay = document.getElementById('country-picker-overlay');
+const closePickerBtn = document.getElementById('close-picker-btn');
+const searchInput   = document.getElementById('country-search-input');
+const countryList   = document.getElementById('country-list-scroll');
+
+const selectedFlag  = document.getElementById('selected-flag');
+const selectedCode  = document.getElementById('selected-code');
+
+/**
+ * renderCountries: List ko screen par dikhane wala function.
+ */
+function renderCountries(filter = "") {
+    countryList.innerHTML = "";
+    
+    const filtered = countries.filter(c => 
+        c.name.toLowerCase().includes(filter.toLowerCase()) || 
+        c.code.includes(filter)
+    );
+
+    filtered.forEach(country => {
+        const item = document.createElement('div');
+        item.className = "country-item haptic-touch";
+        item.innerHTML = `
+            <span class="flag">${country.flag}</span>
+            <span class="name">${country.name}</span>
+            <span class="code">${country.code}</span>
+        `;
+        
+        item.onclick = () => {
+            selectCountry(country);
+        };
+        
+        countryList.appendChild(item);
+    });
+}
+
+/**
+ * selectCountry: Country chunne par UI update karne wala logic.
+ */
+function selectCountry(country) {
+    window.triggerHapticFeedback(); // Block 1 helper
+    selectedFlag.textContent = country.flag;
+    selectedCode.textContent = country.code;
+    
+    // Session storage mein update karo taaki Verification page ko pata rahe
+    sessionStorage.setItem('RP_Country_Code', country.code);
+    
+    closePicker();
+}
+
+// Event Listeners for Modal
+pickerTrigger.onclick = () => {
+    window.triggerHapticFeedback();
+    pickerOverlay.classList.add('active');
+    renderCountries(); // Initial load
+    setTimeout(() => searchInput.focus(), 100);
+};
+
+function closePicker() {
+    pickerOverlay.classList.remove('active');
+    searchInput.value = "";
+}
+
+closePickerBtn.onclick = closePicker;
+
+// Real-time Search Logic
+searchInput.oninput = (e) => {
+    renderCountries(e.target.value);
+};
+
+// Initial Setup
+renderCountries();
+
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 5A file : 1-login/login.js --- */ 
+/* --------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 5B : Smart Phone Formatting Engine (Auto-Pattern) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * mobileInput: 888-888-8888 pattern engine.
+ * Sirf digits allow karega aur sahi jagah par dashes (-) lagayega.
+ */
+const mobileField = document.getElementById('user-mobile');
+
+if (mobileField) {
+    mobileField.addEventListener('input', (e) => {
+        // 1. Sirf numbers ko rakho, baaki sab hata do
+        let value = e.target.value.replace(/\D/g, '');
+        
+        // 2. Maximum 10 digits tak hi limit rakho (Standard Pattern)
+        if (value.length > 10) value = value.slice(0, 10);
+
+        // 3. Pattern Matching Logic (888-888-8888)
+        let formattedValue = "";
+        if (value.length > 0) {
+            if (value.length <= 3) {
+                formattedValue = value;
+            } else if (value.length <= 6) {
+                formattedValue = `${value.slice(0, 3)}-${value.slice(3)}`;
+            } else {
+                formattedValue = `${value.slice(0, 3)}-${value.slice(3, 6)}-${value.slice(6)}`;
+            }
+        }
+
+        // 4. Update Input Value
+        e.target.value = formattedValue;
+    });
+
+    // Special Guard: Alphabet blocking
+    mobileField.addEventListener('keypress', (e) => {
+        if (!/[0-9]/.test(e.key)) {
+            e.preventDefault();
+            window.showIsland("Only numbers allowed", "error");
+        }
+    });
+}
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 5B file : 1-login/login.js --- */ 
+/* --------------------------------------------------------------------- */
+
+
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 5C : Identity Discovery Engine (Gmail Lookup) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * identityLookup: Gmail likhte hi piche se identity scan karta hai.
+ * Rule: Reject identities that are too short or invalid (e.g., im@gmail.com).
+ */
+const emailField = document.getElementById('user-email');
+const previewPortal = document.getElementById('identity-preview-portal');
+let lookupTimer;
+
+if (emailField) {
+    emailField.addEventListener('input', (e) => {
+        const email = e.target.value.trim().toLowerCase();
+        
+        // Clear previous results immediately
+        previewPortal.innerHTML = "";
+        clearTimeout(lookupTimer);
+
+        // Sirf tab scan karo jab user @ tak pahunch jaye aur format thoda bada ho
+        if (email.includes('@') && email.length > 5) {
+            lookupTimer = setTimeout(() => {
+                performIdentityDiscovery(email);
+            }, 600); // 600ms Debounce taaki API par load na bade
+        }
+    });
+}
+
+/**
+ * performIdentityDiscovery: Asli search logic.
+ */
+async function performIdentityDiscovery(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    // 1. Strict Validation: Choti emails (jaise im@gmail.com) ko reject karo
+    const usernamePart = email.split('@')[0];
+    if (usernamePart.length < 3 || !emailRegex.test(email)) {
+        previewPortal.innerHTML = `
+            <div class="spatial-identity-chip" style="background:rgba(255,59,48,0.1); border-color:rgba(255,59,48,0.2);">
+                <span class="chip-icon"><i class="fas fa-exclamation-circle" style="color:var(--error-red);"></i></span>
+                <span class="chip-text" style="color:var(--error-red);">Invalid Identity Signature</span>
+            </div>
+        `;
+        return;
+    }
+
+    try {
+        // 2. Database Lookup: Kya ye user pehle se hai?
+        const { data: user, error } = await _sb
+            .from('users')
+            .select('personal_email') // Dashboard logic se pehle sirf confirmation chahiye
+            .eq('personal_email', email)
+            .maybeSingle();
+
+        if (user) {
+            // CASE: User pehchana gaya
+            const displayName = user.personal_email.split('@')[0];
+            previewPortal.innerHTML = `
+                <div class="spatial-identity-chip">
+                    <span class="chip-icon"><i class="fas fa-user-check"></i></span>
+                    <span class="chip-text">Welcome back, ${displayName.charAt(0).toUpperCase() + displayName.slice(1)}</span>
+                </div>
+            `;
+        } else {
+            // CASE: Naya User (High-Security Fallback)
+            previewPortal.innerHTML = `
+                <div class="spatial-identity-chip" style="background:rgba(52,199,89,0.1); border-color:rgba(52,199,89,0.2);">
+                    <span class="chip-icon"><i class="fas fa-certificate" style="color:var(--success-green);"></i></span>
+                    <span class="chip-text" style="color:var(--success-green);">✨ Verified Global Identity</span>
+                </div>
+            `;
+        }
+    } catch (err) {
+        console.error("Identity Engine Error:", err);
+    }
+}
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 5C file : 1-login/login.js --- */ 
+/* --------------------------------------------------------------------- */
