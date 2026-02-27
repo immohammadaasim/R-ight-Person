@@ -180,7 +180,7 @@ function initiateTelegramFlow() {
     }
 
     // Full number banao (country code + number)
-    const fullPhone = encodeURIComponent(countryCode + phone);
+const fullPhone = (countryCode + phone).replace(/\+/g, '%2B').replace(/\s/g, '');
 
     // Telegram Deep Link banao
     const deepLink = `https://t.me/Rightpersonverification_bot?start=${fullPhone}`;
