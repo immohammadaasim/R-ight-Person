@@ -502,11 +502,11 @@ resendKeyBtn.addEventListener('click', () => {
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4A : handleIdentitySuccess (Database Sync) --- */
+/* --- Sub-Block 4A : handleIdentitySuccess (Database Registration) --- */
 /* --------------------------------------------------------------------- */
 /**
- * handleIdentitySuccess: Verification ke baad user ki pehchan aur device check karta hai.
- * UPDATED: Saving user's Gmail in 'personal_email' to keep 'rmail' free for future.
+ * handleIdentitySuccess: Identity verify hone ke baad user ko register ya login karwata hai.
+ * Future-Proof: Handles column mapping for personal_email and mobile.
  */
 async function handleIdentitySuccess() {
     const currentDID = localStorage.getItem('RP_DeviceID');
@@ -514,33 +514,44 @@ async function handleIdentitySuccess() {
     const tempEmail = sessionStorage.getItem('RP_Temp_Email');
     const tempPhone = sessionStorage.getItem('RP_Temp_Phone');
 
-    // 1. Agar User bilkul naya hai (First Time Registration)
+    // UI state ko 'Processing' dikhane ke liye
+    verifyKeyBtn.disabled = true;
+    verifyKeyBtn.querySelector('.btn-text').style.opacity = '0';
+    verifyKeyBtn.querySelector('.btn-loader').style.display = 'block';
+
+    // SCENARIO 1: Agar User bilkul naya hai (First Time Registration)
     if (userType === 'NEW') {
         try {
-            // Naye user ko database me save karo
-            const { error } = await _sb
+            const { data, error } = await _sb
                 .from('users')
                 .insert({
-                    personal_email: tempEmail,      // User ki Gmail personal_email me
-                    mobile: tempPhone,              // User ka phone mobile me
+                    personal_email: tempEmail,      // User ki asli Gmail
+                    mobile: tempPhone,              // User ka asli Mobile
                     device_fingerprint: currentDID,
                     is_blocked: false,
                     created_at: new Date().toISOString(),
-                    security_level: 'Standard'      // Default level set kiya hai
+                    security_level: 'Standard'      // Default security level
                 });
 
-            if (error) throw error;
+            if (error) {
+                // Agar Supabase error de, to use detail mein catch karo
+                console.error("Supabase Save Error:", error);
+                throw new Error(error.message || "Database connection rejected.");
+            }
 
-            showIsland("New Identity Confirmed. Welcome!", "success");
+            showIsland("New Identity Created Successfully!", "success");
+            
+            // Smooth transition to dashboard
             setTimeout(() => { 
                 window.location.href = '../3-dashboard/dashboard.html'; 
-            }, 1500);
+            }, 2000);
 
         } catch (err) {
-            console.error("New User Save Error:", err);
-            showIsland(`Database Error: ${err.message}`, "error");
+            console.error("New User Registration Failed:", err);
+            // Asli wajah user ko Island par dikhao (e.g., Duplicate key)
+            showIsland(`Registration Failed: ${err.message}`, "error");
             
-            // UI Reset
+            // Button wapis theek karo taaki user dobara try kr sake
             verifyKeyBtn.disabled = false;
             verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
             verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
@@ -548,7 +559,7 @@ async function handleIdentitySuccess() {
         return;
     }
 
-    // 2. Agar User purana hai, pehle personal_email se check karo
+    // SCENARIO 2: Agar User purana hai (Login Flow)
     try {
         const { data: user, error } = await _sb
             .from('users')
@@ -556,60 +567,51 @@ async function handleIdentitySuccess() {
             .eq('personal_email', tempEmail)
             .single();
 
-        if (error) throw error;
+        if (error) throw new Error("Account not found. Please register first.");
 
-        // Blocked account check
         if (user.is_blocked) {
             return showHighAlert("This Identity is permanently suspended.");
         }
 
-        // 3. Device Comparison (Old User)
+        // Device Guard: Kya user wahi device use kar raha hai?
         if (user.device_fingerprint === currentDID) {
             showIsland("Device Verified. Welcome back!", "success");
             setTimeout(() => { 
                 window.location.href = '../3-dashboard/dashboard.html'; 
             }, 1500);
         } else {
-            // Naya device detect hua — Shift Protocol trigger karo
+            // Naya device detect hua — Shift Protocol (3-min timer) trigger karo
             triggerDeviceShiftProtocol(user.id, currentDID);
         }
 
     } catch (err) {
-        console.error("Device Guard Error:", err);
-        showIsland("Security check failed. Account not found.", "error");
+        console.error("Login Error:", err);
+        showIsland(err.message, "error");
         
         verifyKeyBtn.disabled = false;
         verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
         verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
     }
 }
-/* --------------------------------------------------------------------- */
-/* —-- End Block 4A file : 2-Verification/Verification.js —-- */
-/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4B : Trigger Device Shift (3-Minute Timer) --- */
+/* --- Sub-Block 4B : Trigger Device Shift (Anti-Theft Protocol) --- */
 /* --------------------------------------------------------------------- */
 const shiftTimerText = document.getElementById('shift-timer-text');
 const timerRing = document.getElementById('timer-progress-ring');
 let shiftCountdown;
 
 function triggerDeviceShiftProtocol(uid, newDID) {
-    showIsland("New Device detected! Authorization required.", "error");
+    showIsland("New Device detected! Verification required.", "error");
 
-    // Guard view dikhao
-    const cardContainer = document.querySelector('.spatial-glass-card');
-    
-    // Purani views hatao
+    // Views switch karo (Zero-Jerk transition)
     selectionView.style.display = 'none';
     keyInputView.style.display = 'none';
-    
-    // Guard view dikhao
     shiftGuardView.style.display = 'block';
-    void shiftGuardView.offsetWidth;
+    void shiftGuardView.offsetWidth; // Force Reflow
     shiftGuardView.classList.add('active');
 
-    let timeLeft = 180;
+    let timeLeft = 180; // 3 Minutes
     const totalTime = 180;
     const ringCircumference = 339;
 
@@ -619,9 +621,8 @@ function triggerDeviceShiftProtocol(uid, newDID) {
         let secs = timeLeft % 60;
         shiftTimerText.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 
-        // Ring update
         const offset = ringCircumference - (timeLeft / totalTime) * ringCircumference;
-        timerRing.style.strokeDashoffset = offset;
+        if(timerRing) timerRing.style.strokeDashoffset = offset;
 
         if (timeLeft <= 0) {
             clearInterval(shiftCountdown);
@@ -630,24 +631,28 @@ function triggerDeviceShiftProtocol(uid, newDID) {
         timeLeft--;
     }, 1000);
 
-    // Real-time listener
-    startShiftSyncListener(uid, newDID);
+    // Real-time listener start karo (Identity Sync)
+    if (typeof startShiftSyncListener === 'function') {
+        startShiftSyncListener(uid, newDID);
+    }
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4C : High Alert & Block Screen --- */
+/* --- Sub-Block 4C : High Alert Logic (Access Blocked) --- */
 /* --------------------------------------------------------------------- */
 function showHighAlert(reason) {
     const blockScreen = document.getElementById('high-alert-screen');
-    document.getElementById('block-reason').textContent = reason;
-    blockScreen.style.display = 'flex';
+    const blockReasonText = document.getElementById('block-reason');
+    if (blockReasonText) blockReasonText.textContent = reason;
+    if (blockScreen) blockScreen.style.display = 'flex';
     
-    // Poore portal ko lock karo
-    document.getElementById('app-container').style.display = 'none';
+    // Portal lock karo
+    const container = document.getElementById('app-container');
+    if (container) container.style.display = 'none';
 }
 
 function handleShiftExpiry() {
-    showIsland("Shift request expired. Please try again.", "error");
+    showIsland("Verification time expired. Please re-login.", "error");
     setTimeout(() => { 
         window.location.href = '../1-login/login.html'; 
     }, 2000);
