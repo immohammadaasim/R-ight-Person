@@ -502,28 +502,31 @@ resendKeyBtn.addEventListener('click', () => {
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4A : handleIdentitySuccess (Routing Engine) --- */
+/* --- Sub-Block 4A : handleIdentitySuccess (Database Sync) --- */
 /* --------------------------------------------------------------------- */
 /**
  * handleIdentitySuccess: Verification ke baad user ki pehchan aur device check karta hai.
+ * UPDATED: Saving user's Gmail in 'personal_email' to keep 'rmail' free for future.
  */
 async function handleIdentitySuccess() {
     const currentDID = localStorage.getItem('RP_DeviceID');
     const userType = sessionStorage.getItem('RP_User_Type');
-    const email = sessionStorage.getItem('RP_Temp_Email');
+    const tempEmail = sessionStorage.getItem('RP_Temp_Email');
+    const tempPhone = sessionStorage.getItem('RP_Temp_Phone');
 
-    // 1. Agar User bilkul naya hai
+    // 1. Agar User bilkul naya hai (First Time Registration)
     if (userType === 'NEW') {
         try {
             // Naye user ko database me save karo
             const { error } = await _sb
                 .from('users')
                 .insert({
-                    email: email,
-                    phone: sessionStorage.getItem('RP_Temp_Phone'),
+                    personal_email: tempEmail,      // User ki Gmail personal_email me
+                    mobile: tempPhone,              // User ka phone mobile me
                     device_fingerprint: currentDID,
                     is_blocked: false,
-                    created_at: new Date().toISOString()
+                    created_at: new Date().toISOString(),
+                    security_level: 'Standard'      // Default level set kiya hai
                 });
 
             if (error) throw error;
@@ -535,9 +538,9 @@ async function handleIdentitySuccess() {
 
         } catch (err) {
             console.error("New User Save Error:", err);
-            showIsland("Failed to save identity. Try again.", "error");
+            showIsland(`Database Error: ${err.message}`, "error");
             
-            // Button reset
+            // UI Reset
             verifyKeyBtn.disabled = false;
             verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
             verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
@@ -545,12 +548,12 @@ async function handleIdentitySuccess() {
         return;
     }
 
-    // 2. Agar User purana hai, device check karo
+    // 2. Agar User purana hai, pehle personal_email se check karo
     try {
         const { data: user, error } = await _sb
             .from('users')
             .select('id, device_fingerprint, is_blocked')
-            .eq('email', email)
+            .eq('personal_email', tempEmail)
             .single();
 
         if (error) throw error;
@@ -560,28 +563,29 @@ async function handleIdentitySuccess() {
             return showHighAlert("This Identity is permanently suspended.");
         }
 
-        // 3. Device Comparison
+        // 3. Device Comparison (Old User)
         if (user.device_fingerprint === currentDID) {
-            // Wahi purana device
             showIsland("Device Verified. Welcome back!", "success");
             setTimeout(() => { 
                 window.location.href = '../3-dashboard/dashboard.html'; 
             }, 1500);
         } else {
-            // Naya device — Shift Protocol
+            // Naya device detect hua — Shift Protocol trigger karo
             triggerDeviceShiftProtocol(user.id, currentDID);
         }
 
     } catch (err) {
         console.error("Device Guard Error:", err);
-        showIsland("Security check failed. Contact Support.", "error");
+        showIsland("Security check failed. Account not found.", "error");
         
-        // Button reset
         verifyKeyBtn.disabled = false;
         verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
         verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
     }
 }
+/* --------------------------------------------------------------------- */
+/* —-- End Block 4A file : 2-Verification/Verification.js —-- */
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 4B : Trigger Device Shift (3-Minute Timer) --- */
