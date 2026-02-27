@@ -406,3 +406,156 @@ window.navigate = (view) => {
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 3 file : dashboard.js <<=== */
 /* ===================================================================== */
+
+
+/* ===================================================================== */
+/* ===>> BLOCK JS 4: Sidebar Navigation & Full-Screen Controller <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 4A : Sidebar Navigation Engine --- */
+/* --------------------------------------------------------------------- */
+const navItems = document.querySelectorAll('.nav-item');
+const homeView = document.getElementById('home-dashboard-view');
+const pageTitle = document.getElementById('current-page-title');
+
+navItems.forEach((item, index) => {
+    item.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.triggerHaptic();
+
+        // 1. Pehle agar koi fullscreen view khuli hai to use band karo
+        if (document.getElementById('app-fullscreen-view').classList.contains('active')) {
+            closeApp();
+        }
+
+        // 2. Active Class Update
+        navItems.forEach(nav => nav.classList.remove('active'));
+        item.classList.add('active');
+
+        // 3. Navigation Logic
+        if (index === 0) { // Home
+            homeView.style.display = 'block';
+            requestAnimationFrame(() => homeView.classList.add('active'));
+            pageTitle.textContent = 'Home';
+            window.showIsland("Navigated to Home", "info");
+        } 
+        else if (index === 1) { // Identity Card (Opens Fullscreen)
+            openIdentityView();
+            pageTitle.textContent = 'Identity';
+        } 
+        else if (index === 2) { // Devices
+            window.showIsland("Devices Manager coming soon", "info");
+            // Wapis home par focus rakho
+            navItems[0].click();
+        }
+    });
+});
+
+/* --------------------------------------------------------------------- */
+/* --- Block 4B : Full-Screen View Controller (Zero-Jerk) --- */
+/* --------------------------------------------------------------------- */
+const appFullscreenView = document.getElementById('app-fullscreen-view');
+const appViewContent    = document.getElementById('app-view-content');
+const appViewTitle      = document.getElementById('app-view-title');
+const appBackBtn        = document.getElementById('app-back-btn');
+
+function openIdentityView() {
+    appViewTitle.textContent = 'Digital Identity';
+    
+    // Identity Card ka portal inject karo
+    appViewContent.innerHTML = `
+        <div id="smart-id-card-portal">
+            <div class="loader-content" style="padding: 100px; text-align: center;">
+                <i class="fa-light fa-spinner-third fa-spin" style="font-size: 40px; color: var(--blue-accent);"></i>
+                <p class="secondary-label" style="margin-top: 15px;">Building Identity Card...</p>
+            </div>
+        </div>
+    `;
+
+    showFullScreen();
+
+    // Agar card.js loaded hai, to uska module start karo
+    if (typeof initCardModule === 'function') {
+        initCardModule();
+    }
+}
+
+function showFullScreen() {
+    appFullscreenView.style.display = 'flex';
+    // Small delay for smooth entry animation
+    setTimeout(() => {
+        appFullscreenView.classList.add('active');
+    }, 10);
+}
+
+function closeApp() {
+    appFullscreenView.classList.remove('active');
+    setTimeout(() => {
+        appFullscreenView.style.display = 'none';
+        appViewContent.innerHTML = '';
+    }, 400); // Wait for transition to finish
+}
+
+if (appBackBtn) {
+    appBackBtn.onclick = () => {
+        window.triggerHaptic();
+        closeApp();
+        navItems[0].click(); // Return to Home Nav
+    };
+}
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 4B file : dashboard.js --- */
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK JS 4 file : dashboard.js <<=== */
+/* ===================================================================== */
+
+
+
+/* ===================================================================== */
+/* ===>> BLOCK JS 5: Module Bridge & Entrance Logic <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 5A : Module Initialization Bridge --- */
+/* --------------------------------------------------------------------- */
+/**
+ * initDashboardModules: Baaki components (Identity/Card) ko dashboard ke 
+ * context mein initialize karta hai.
+ */
+function initDashboardModules() {
+    console.log("Spatial Dashboard: Connecting Modules...");
+    
+    // Future Bridge: Identity Setup check logic yahan aayegi
+    // Agar user ka 'rmail' nahi hai, to Identity Setup Popup trigger hoga
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 5B : Entrance Animation (The Reveal) --- */
+/* --------------------------------------------------------------------- */
+function revealDashboard() {
+    // Body ko 'loaded' class do taaki CSS se fade-in animation trigger ho
+    document.body.classList.add('loaded');
+    
+    // Main content area ko entrance animation do
+    const mainContent = document.getElementById('contentArea');
+    if (mainContent) {
+        mainContent.classList.add('active');
+    }
+    
+    initDashboardModules();
+}
+
+// System entrance trigger
+window.addEventListener('load', revealDashboard);
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 5B file : dashboard.js --- */
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK JS 5 file : dashboard.js <<=== */
+/* ===================================================================== */
