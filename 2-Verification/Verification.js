@@ -162,7 +162,7 @@ pathWhatsapp.addEventListener('click', () => {
 });
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2B : Telegram Flow Initiator (Deep Link Engine) --- */
+/* --- Sub-Block 2B : Telegram Flow Initiator (Hex-Secure Engine) --- */
 /* --------------------------------------------------------------------- */
 function initiateTelegramFlow() {
     const phone = sessionStorage.getItem('RP_Temp_Phone');
@@ -174,17 +174,26 @@ function initiateTelegramFlow() {
         return;
     }
 
-    // Pehle number se sirf digits nikalenge
     const fullPhoneRaw = countryCode + phone;
     const cleanNumber = fullPhoneRaw.replace(/\D/g, ''); 
 
-    // Number ko Base64 mein encode karenge taaki Telegram error na de
-    // Hum padding (=) ko bhi hata rahe hain safety ke liye
-    const encodedData = btoa(cleanNumber).replace(/=/g, '');
+    /**
+     * God-Level Encoding: Hexadecimal 
+     * Isme koi symbols (+, /, =) nahi hote, isliye Telegram ise 100% accept karega.
+     */
+    const toHex = (str) => {
+        let result = '';
+        for (let i = 0; i < str.length; i++) {
+            result += str.charCodeAt(i).toString(16);
+        }
+        return result;
+    };
 
-    // Universal Link with Base64 param
+    const hexEncodedParam = toHex(cleanNumber);
+
+    // Final Deep Link (Bulletproof for Mobile & Web)
     const botUsername = "Rightpersonverification_bot";
-    const deepLink = `https://t.me/${botUsername}?start=${encodedData}`;
+    const deepLink = `https://t.me/${botUsername}?start=${hexEncodedParam}`;
 
     showTelegramOpenButton(deepLink, fullPhoneRaw);
 }
