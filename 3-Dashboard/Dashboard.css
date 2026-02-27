@@ -1,104 +1,121 @@
 /* ===================================================================== */
-/* ===>> BLOCK CSS 1: Theme Engine & Spatial Glass System <<=== */
+/* ===>> BLOCK CSS 1: Global Spatial Engine & Scaling Logic <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1A : iPadOS 18 Spatial Design Variables --- */
+/* --- Block 1A : Adaptive Spatial Variables --- */
 /* --------------------------------------------------------------------- */
 :root {
-    /* --- Spatial Glass Palette (Light Mode) --- */
-    --system-bg: #E5E5EA;
-    --glass-bg: rgba(255, 255, 255, 0.45);
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-    --glass-blur: blur(35px) saturate(190%);
+    /* --- Layout Dimensions (Sleek Scaling) --- */
+    --sidebar-w: 68px;
+    --navbar-h: 58px;
+    --gap-main: 1.2rem;
     
-    /* --- Typography & Accents --- */
-    --primary-text: #1C1C1E;
-    --secondary-label: rgba(60, 60, 67, 0.65);
-    --blue-accent: #007AFF; /* Apple Official Blue */
-    --destructive-text: #FF3B30;
+    /* --- True Spatial Glass (visionOS 2.0 Style) --- */
+    --glass-bg: rgba(255, 255, 255, 0.28);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-blur: blur(40px) saturate(210%);
+    --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), inset 0 0 0 0.5px rgba(255, 255, 255, 0.3);
+    
+    /* --- Modern Typography & Accents --- */
+    --primary-text: #1D1D1F;
+    --secondary-label: rgba(60, 60, 67, 0.6);
+    --blue-accent: #007AFF;
+    --destructive-red: #FF3B30;
     --success-green: #34C759;
     
-    /* --- Super Squircles Rule (No Flat Design) --- */
-    --radius-squircle: 28px; /* Deep rounded corners */
+    /* --- Super Squircles (The iPadOS 18 Rule) --- */
+    --radius-squircle: 22px; /* Sleeker, not too bulky */
     --radius-pill: 100px;
     
-    /* --- Spatial Flow Animations --- */
+    /* --- Animation Physics --- */
     --spring-ease: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --ios-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --smooth-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-/* --- Dark Mode Overrides (Spatial Darkness) --- */
+/* --- Dark Mode : Midnight Glass --- */
 body.dark-mode {
     --system-bg: #000000;
-    --glass-bg: rgba(28, 28, 30, 0.55);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    --glass-bg: rgba(28, 28, 30, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 0.5px rgba(255, 255, 255, 0.15);
     --primary-text: #FFFFFF;
-    --secondary-label: rgba(235, 235, 245, 0.6);
+    --secondary-label: rgba(235, 235, 245, 0.55);
     --blue-accent: #0A84FF;
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1B : Global Spatial Reset & Haptics --- */
+/* --- Block 1B : Base Reset & Haptic Visuals --- */
 /* --------------------------------------------------------------------- */
 * {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
-    outline: none;
+    font-smoothing: antialiased;
+    -webkit-font-smoothing: antialiased;
 }
 
 html, body {
-    margin: 0;
-    padding: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
-    background-color: var(--system-bg);
+    background-color: #D1D1D6; /* Base under glass */
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
     color: var(--primary-text);
-    transition: background-color 0.8s var(--ios-ease);
+    transition: background-color 0.6s var(--smooth-ease);
 }
 
-/* Active Touch Reality (Rule: Physical Reaction) */
+/* Rule: Active Touch Reality (Haptic simulation) */
 .haptic-touch {
-    transition: transform 0.2s var(--spring-ease), opacity 0.2s ease;
+    transition: transform 0.25s var(--spring-ease), opacity 0.2s ease;
     cursor: pointer;
+    user-select: none;
 }
 
 .haptic-touch:active {
-    transform: scale(0.92) !important;
-    opacity: 0.8;
+    transform: scale(0.94) !important; /* Slight physical press */
+    opacity: 0.75;
 }
 
-/* Common Text Utilities (Blue Rule) */
+/* Rule: Zero-Jerk Global Entrance */
+body {
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+}
+body.loaded {
+    opacity: 1;
+}
+
+/* Utility Helpers (Blue Rule) */
 .blue-accent { color: var(--blue-accent); }
-.secondary-label { color: var(--secondary-label); }
-.destructive-text { color: var(--destructive-text); }
+.secondary-label { color: var(--secondary-label); font-size: 0.9rem; font-weight: 500; }
+.spatial-depth { box-shadow: var(--glass-shadow); }
 
 /* --------------------------------------------------------------------- */
-/* --- End Block 1B file : dashboard.css --- */
+/* --- End Block 1B file : Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 1 file : dashboard.css <<=== */
+/* ===>> END OF BLOCK CSS 1 file : Dashboard.css <<=== */
 /* ===================================================================== */
 
 
+
+
 /* ===================================================================== */
-/* ===>> BLOCK CSS 2: Sidebar & Top Navigation (Spatial Floating System) <<=== */
+/* ===>> BLOCK CSS 2: Sidebar & Top Navigation (Slim Spatial Floating) <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Spatial Side Magic Strip (Floating Sidebar) --- */
+/* --- Block 2A : Spatial Side Strip (Sleek Sidebar) --- */
 /* --------------------------------------------------------------------- */
 .sidebar {
     position: fixed;
-    top: 20px;
-    left: 20px;
-    width: 72px;
-    height: calc(100vh - 40px);
+    top: 1rem;
+    left: 1rem;
+    bottom: 1rem;
+    width: var(--sidebar-w);
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
@@ -109,64 +126,79 @@ html, body {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 24px 0;
+    padding: 1.5rem 0;
     z-index: 1000;
-    transition: all 0.5s var(--ios-ease);
+    transition: all 0.5s var(--smooth-ease);
 }
 
-/* Profile Pill (Super Squircle Rule) */
+/* Profile Pill (Super Squircle 14-30px Rule) */
 .profile-pill {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
     background: linear-gradient(135deg, var(--blue-accent), #5856D6);
-    border-radius: 16px; /* Squircle */
+    border-radius: 14px; /* Squircle */
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
-    color: white;
+    color: #FFF;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 0.9rem;
+    border: 1.5px solid rgba(255,255,255,0.4);
+    box-shadow: 0 5px 15px rgba(0, 122, 255, 0.2);
 }
 
-/* Nav Items & Active States */
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 1.8rem;
     flex: 1;
-    margin-top: 40px;
+    margin-top: 3rem;
 }
 
+/* Navigation Items (Thin Icon Rule) */
 .nav-item {
-    width: 46px;
-    height: 46px;
+    width: 42px;
+    height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 14px;
+    border-radius: 12px;
     color: var(--secondary-label);
-    font-size: 22px;
+    font-size: 1.3rem;
     background: transparent;
     border: none;
-    transition: all 0.4s var(--ios-ease);
+    transition: all 0.3s var(--smooth-ease);
+}
+
+.nav-item:hover {
+    color: var(--blue-accent);
+    background: rgba(0, 122, 255, 0.08);
 }
 
 .nav-item.active {
-    background: var(--glass-bg);
-    color: var(--blue-accent);
-    box-shadow: inset 0 0 0 1px var(--glass-border), 0 4px 12px rgba(0,0,0,0.1);
+    background: var(--blue-accent);
+    color: #FFFFFF;
+    box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+}
+
+.logout-trigger {
+    color: var(--destructive-red);
+    opacity: 0.8;
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2B : Floating Top Navbar (iOS Status System) --- */
+/* --- Block 2B : Floating Top Navbar (iOS Status Pill) --- */
 /* --------------------------------------------------------------------- */
 .top-navbar {
     position: fixed;
-    top: 20px;
-    left: 112px;
-    width: calc(100% - 132px);
-    height: 64px;
+    top: 1rem;
+    left: calc(var(--sidebar-w) + 2rem);
+    right: 1rem;
+    height: var(--navbar-h);
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
@@ -176,78 +208,93 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 28px;
+    padding: 0 1.5rem;
     z-index: 999;
+    transition: all 0.5s var(--smooth-ease);
 }
 
 .nav-left { display: flex; flex-direction: column; }
-.app-brand { font-size: 12px; font-weight: 700; opacity: 0.5; text-transform: uppercase; letter-spacing: 1.2px; }
-.page-indicator { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+.app-brand { font-size: 0.7rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; letter-spacing: 1px; }
+.page-indicator { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; }
 
-/* Status Pill (Time & Battery) */
+/* Status Pill - Compact iPadOS Look */
 .ios-status-pill {
     display: flex;
     align-items: center;
-    gap: 15px;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 8px 18px;
+    gap: 0.8rem;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 0.4rem 1rem;
     border-radius: var(--radius-pill);
-    border: 1px solid var(--glass-border);
+    border: 0.5px solid var(--glass-border);
 }
 
-.status-time { font-size: 15px; font-weight: 700; }
-.status-divider { width: 1px; height: 14px; background: var(--glass-border); }
+.status-time { font-size: 0.85rem; font-weight: 700; color: var(--primary-text); }
+.status-divider { width: 1px; height: 10px; background: var(--glass-border); }
+
+.status-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.8rem;
+}
 
 .ios-battery-pill {
-    width: 24px;
-    height: 12px;
-    border: 1.5px solid var(--primary-text);
-    border-radius: 4px;
+    width: 20px;
+    height: 10px;
+    border: 1px solid var(--primary-text);
+    border-radius: 3px;
     position: relative;
 }
 
 .ios-battery-pill::after {
     content: '';
     position: absolute;
-    top: 2px; left: 2px; bottom: 2px;
-    width: 65%; background: var(--success-green);
+    top: 1px; left: 1px; bottom: 1px;
+    width: 60%; background: var(--success-green);
     border-radius: 1px;
 }
 
-/* --------------------------------------------------------------------- */
-/* --- End Block 2B file : dashboard.css --- */
-/* --------------------------------------------------------------------- */
-
-/* ===================================================================== */
-/* ===>> END OF BLOCK CSS 2 file : dashboard.css <<=== */
-/* ===================================================================== */
-
-
-/* ===================================================================== */
-/* ===>> BLOCK CSS 3: Content Area & Spatial Widget Styling <<=== */
-/* ===================================================================== */
+/* Mobile Responsiveness for Sidebar/Navbar */
+@media (max-width: 768px) {
+    .sidebar { left: -100px; } /* Hide sidebar on mobile */
+    .top-navbar { left: 1rem; }
+}
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3A : Content Wrapper & Spatial View System --- */
+/* --- End Block 2B file : Dashboard.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 2 file : Dashboard.css <<=== */
+/* ===================================================================== */
+
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 3: Content Area & Adaptive Widgets (Spatial Glass) <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 3A : Spatial Content Wrapper (Adaptive Layout) --- */
 /* --------------------------------------------------------------------- */
 .content-wrapper {
-    margin-left: 112px; /* Sidebar (72) + Gap (20) + Safe space */
-    padding-top: 104px; /* Navbar (64) + Gap (20) + Safe space */
-    width: calc(100% - 132px);
+    margin-left: calc(var(--sidebar-w) + 2.5rem);
+    padding-top: calc(var(--navbar-h) + 2.5rem);
+    padding-right: 1.5rem;
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
-    background: transparent;
+    scroll-behavior: smooth;
     box-sizing: border-box;
     -webkit-overflow-scrolling: touch;
 }
 
-/* Zero-Jerk View Transition Logic */
+/* Zero-Jerk View Transition Logic (The Flow Rule) */
 .dashboard-view {
     display: none;
     opacity: 0;
-    transform: scale(0.96) translateY(20px);
-    transition: opacity 0.6s var(--ios-ease), transform 0.6s var(--spring-ease);
+    transform: scale(0.98) translateY(15px);
+    transition: opacity 0.5s var(--smooth-ease), transform 0.6s var(--spring-ease);
 }
 
 .dashboard-view.active {
@@ -256,13 +303,16 @@ html, body {
     transform: scale(1) translateY(0);
 }
 
+/* Hide scrollbar but keep functionality */
+.content-wrapper::-webkit-scrollbar { width: 0; background: transparent; }
+
 /* --------------------------------------------------------------------- */
-/* --- Block 3B : Spatial Widget Cards (Deep Glassmorphism) --- */
+/* --- Block 3B : Adaptive Widget Cards (Sleek Spatial) --- */
 /* --------------------------------------------------------------------- */
 .home-header-row {
     display: flex;
-    gap: 24px;
-    margin-bottom: 40px;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
     flex-wrap: wrap;
 }
 
@@ -270,53 +320,52 @@ html, body {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: var(--radius-squircle); /* 28px Rule */
+    border-radius: var(--radius-squircle); /* iPadOS 18 Squircle */
     border: 1px solid var(--glass-border);
-    padding: 35px;
+    padding: 2rem;
     flex: 1;
-    min-width: 320px;
+    min-width: 290px;
     box-shadow: var(--glass-shadow);
     display: flex;
     flex-direction: column;
     justify-content: center;
     position: relative;
     overflow: hidden;
+    transition: transform 0.3s var(--spring-ease), box-shadow 0.3s ease;
 }
 
-/* Glass Reflection Layer */
-.home-widget-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 50%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-    pointer-events: none;
+.home-widget-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
 }
 
-/* Typography Rules */
+/* Typography Rules (Premium SF Style) */
 .greeting-text {
-    font-size: 32px;
+    font-size: 1.5rem;
     font-weight: 500;
+    color: var(--secondary-label);
     margin: 0;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.3px;
 }
 
 .greeting-name {
-    font-size: 48px;
+    font-size: 2.5rem;
     font-weight: 800;
-    margin: 4px 0 12px 0;
-    letter-spacing: -1.5px;
+    margin: 0.2rem 0 0.8rem 0;
+    letter-spacing: -1px;
+    line-height: 1.1;
 }
 
 .date-text {
-    font-size: 14px;
+    font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    opacity: 0.8;
+    color: var(--blue-accent);
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3C : Weather Widget Specifics (Spatial) --- */
+/* --- Block 3C : Weather Intelligence (Floating Logic) --- */
 /* --------------------------------------------------------------------- */
 .weather-row {
     display: flex;
@@ -324,114 +373,138 @@ html, body {
     justify-content: space-between;
 }
 
-.weather-info h2 { font-size: 26px; font-weight: 700; margin: 0; }
-.weather-info p { font-size: 44px; font-weight: 800; margin: 8px 0; }
+.weather-info h2 { font-size: 1.4rem; font-weight: 700; margin: 0; }
+.weather-info p { font-size: 2.2rem; font-weight: 800; margin: 0.3rem 0; color: var(--blue-accent); }
 
 .weather-icon-box {
-    font-size: 64px;
+    font-size: 3.5rem;
     color: var(--blue-accent);
-    filter: drop-shadow(0 0 15px rgba(0, 122, 255, 0.4));
-    animation: spatialFloat 5s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 10px rgba(0, 122, 255, 0.3));
+    animation: spatialFloat 6s ease-in-out infinite alternate;
 }
 
 @keyframes spatialFloat {
-    from { transform: translateY(0) rotate(0); }
-    to { transform: translateY(-15px) rotate(5deg); }
+    0% { transform: translateY(0) rotate(0); }
+    100% { transform: translateY(-12px) rotate(4deg); }
+}
+
+/* Mobile Responsiveness for Content */
+@media (max-width: 768px) {
+    .content-wrapper { margin-left: 0; padding: 5.5rem 1.2rem 2rem 1.2rem; }
+    .home-header-row { flex-direction: column; gap: 1.2rem; }
+    .greeting-name { font-size: 2.2rem; }
 }
 
 /* --------------------------------------------------------------------- */
-/* --- End Block 3C file : dashboard.css --- */
+/* --- End Block 3C file : Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 3 file : dashboard.css <<=== */
+/* ===>> END OF BLOCK CSS 3 file : Dashboard.css <<=== */
 /* ===================================================================== */
 
 
 
+
 /* ===================================================================== */
-/* ===>> BLOCK CSS 4: App Library & Premium Icon System (Squircles) <<=== */
+/* ===>> BLOCK CSS 4: Adaptive App Library & Icon System (Squircles) <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 4A : Spatial App Grid Layout --- */
+/* --- Block 4A : Spatial Grid Architecture (Responsive) --- */
 /* --------------------------------------------------------------------- */
 .app-library-section {
-    margin-top: 20px;
+    margin-top: 1rem;
     width: 100%;
+    animation: spatialEntry 0.8s var(--smooth-ease);
 }
 
 .section-label {
-    font-size: 15px;
+    font-size: 0.85rem;
     font-weight: 700;
     color: var(--secondary-label);
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    margin-bottom: 30px;
+    margin-bottom: 1.8rem;
+    padding-left: 0.5rem;
 }
 
 .home-app-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 1.8rem;
     justify-items: center;
 }
 
+/* Tablet & Mobile Grid Refinement */
+@media (max-width: 768px) {
+    .home-app-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-app-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 /* --------------------------------------------------------------------- */
-/* --- Block 4B : Premium Squircle Icons & Haptics --- */
+/* --- Block 4B : High-Fidelity Squircle Icons --- */
 /* --------------------------------------------------------------------- */
 .app-grid-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    width: 100px;
+    gap: 0.8rem;
+    width: 100%;
 }
 
 .app-icon-box {
-    width: 76px;
-    height: 76px;
-    border-radius: 24px; /* iOS 18 Squircle Rule */
+    width: 64px; /* Reduced for elegance */
+    height: 64px;
+    border-radius: 19px; /* iPadOS 18 Perfect Squircle */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 34px;
+    font-size: 1.8rem;
     color: #FFFFFF;
     position: relative;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-    transition: all 0.4s var(--spring-ease);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     overflow: hidden;
 }
 
-/* Glass Reflection Layer on Icon */
+/* Refined Glass Gloss Effect */
 .app-icon-box::after {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 100%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 60%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, transparent 55%);
     pointer-events: none;
 }
 
 .app-name {
-    font-size: 14px;
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--primary-text);
-    letter-spacing: -0.2px;
-    opacity: 0.9;
+    letter-spacing: -0.1px;
+    opacity: 0.85;
+    text-align: center;
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 4C : Icon Gradient Presets (Premium Palette) --- */
+/* --- Block 4C : Premium Gradient Presets (SF Palette) --- */
 /* --------------------------------------------------------------------- */
-.icon-blue   { background: linear-gradient(145deg, #00C6FF, #007AFF); box-shadow: 0 10px 25px rgba(0, 122, 255, 0.3); }
-.icon-green  { background: linear-gradient(145deg, #30D158, #34C759); box-shadow: 0 10px 25px rgba(52, 199, 89, 0.3); }
-.icon-red    { background: linear-gradient(145deg, #FF3B30, #FF2D55); box-shadow: 0 10px 25px rgba(255, 59, 48, 0.3); }
-.icon-orange { background: linear-gradient(145deg, #FF9500, #FFCC00); box-shadow: 0 10px 25px rgba(255, 149, 0, 0.3); }
-.icon-indigo { background: linear-gradient(145deg, #5E5CE6, #5856D6); box-shadow: 0 10px 25px rgba(94, 92, 230, 0.3); }
-.icon-gray   { background: linear-gradient(145deg, #8E8E93, #636366); box-shadow: 0 10px 25px rgba(142, 142, 147, 0.3); }
+.icon-blue   { background: linear-gradient(145deg, #00C6FF, #007AFF); }
+.icon-green  { background: linear-gradient(145deg, #30D158, #34C759); }
+.icon-red    { background: linear-gradient(145deg, #FF3B30, #FF2D55); }
+.icon-orange { background: linear-gradient(145deg, #FF9500, #FFCC00); }
+.icon-indigo { background: linear-gradient(145deg, #5E5CE6, #5856D6); }
+.icon-gray   { background: linear-gradient(145deg, #8E8E93, #636366); }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 4D : Spatial Overlay Transition (Apps) --- */
+/* --- Block 4D : Full-Screen App Reveal (Zero-Jerk) --- */
 /* --------------------------------------------------------------------- */
 .spatial-overlay {
     position: fixed;
@@ -440,8 +513,8 @@ html, body {
     z-index: 9999;
     display: none;
     opacity: 0;
-    transform: scale(1.1);
-    transition: all 0.5s var(--ios-ease);
+    transform: scale(1.08); /* Arriving effect */
+    transition: all 0.5s var(--smooth-ease);
 }
 
 .spatial-overlay.active {
@@ -451,24 +524,32 @@ html, body {
 }
 
 .app-view-topbar {
-    padding: 20px 30px;
+    padding: 1.2rem 2rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border-bottom: 0.5px solid var(--glass-border);
+}
+
+@keyframes spatialEntry {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* --------------------------------------------------------------------- */
-/* --- End Block 4D file : dashboard.css --- */
+/* --- End Block 4D file : Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 4 file : dashboard.css <<=== */
+/* ===>> END OF BLOCK CSS 4 file : Dashboard.css <<=== */
 /* ===================================================================== */
 
 
 
+
 /* ===================================================================== */
-/* ===>> BLOCK CSS 5: System Overlays (Island, Action Sheet, AT) <<=== */
+/* ===>> BLOCK CSS 5: System Overlays (Island, Action Sheet, AT & Loader) <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
@@ -476,32 +557,31 @@ html, body {
 /* --------------------------------------------------------------------- */
 .dynamic-island-container {
     position: fixed;
-    top: 15px;
+    top: 1.5rem; /* Floating from top */
     left: 50%;
-    transform: translateX(-50%) translateY(-150%);
+    transform: translateX(-50%) translateY(-150%) scale(0.8);
     z-index: 10001;
-    transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring Physics */
 }
 
 .dynamic-island-container.active {
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0) scale(1);
 }
 
 .dynamic-island-pill {
     background: #000000;
     color: #FFFFFF;
-    min-width: 200px;
-    padding: 14px 24px;
+    min-width: 220px;
+    padding: 10px 22px;
     border-radius: var(--radius-pill);
     display: flex;
     align-items: center;
-    gap: 16px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.1);
+    gap: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 0 0 0.5px rgba(255,255,255,0.2);
 }
 
 .island-icon-box {
-    font-size: 18px;
-    color: var(--success-green);
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -509,42 +589,39 @@ html, body {
 
 .island-msg-text {
     margin: 0;
-    font-size: 15px;
+    font-size: 0.9rem;
     font-weight: 600;
     white-space: nowrap;
     letter-spacing: -0.2px;
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 5B : Spatial Action Sheet (Bottom Slider) --- */
+/* --- Block 5B : Spatial Action Sheet (Bottom Identity Sheet) --- */
 /* --------------------------------------------------------------------- */
 .action-sheet-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
     z-index: 11000;
-    display: flex;
+    display: none; /* Controlled by JS active class */
     align-items: flex-end;
     justify-content: center;
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s var(--ios-ease);
+    transition: opacity 0.4s var(--smooth-ease);
 }
 
 .action-sheet-overlay.active {
+    display: flex;
     opacity: 1;
-    pointer-events: auto;
 }
 
 .action-sheet-container {
     width: 100%;
-    max-width: 440px;
-    margin: 20px;
-    padding-bottom: 20px;
-    transform: translateY(100%);
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-width: 420px;
+    margin: 1.5rem;
+    transform: translateY(110%);
+    transition: transform 0.5s var(--spring-ease);
 }
 
 .action-sheet-overlay.active .action-sheet-container {
@@ -553,7 +630,8 @@ html, body {
 
 .action-sheet-header {
     background: var(--glass-bg);
-    padding: 20px;
+    backdrop-filter: var(--glass-blur);
+    padding: 1.2rem;
     text-align: center;
     border-radius: var(--radius-squircle) var(--radius-squircle) 0 0;
     border: 1px solid var(--glass-border);
@@ -562,106 +640,155 @@ html, body {
 
 .action-sheet-group {
     background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
     border-radius: 0 0 var(--radius-squircle) var(--radius-squircle);
     overflow: hidden;
     border: 1px solid var(--glass-border);
 }
 
 .cancel-group {
-    margin-top: 15px;
+    margin-top: 1rem;
     border-radius: var(--radius-squircle);
 }
 
 .action-sheet-btn {
     width: 100%;
-    padding: 18px;
+    padding: 1.1rem;
     background: transparent;
     border: none;
-    font-size: 19px;
+    font-size: 1.1rem;
     font-weight: 600;
-    border-top: 1px solid var(--glass-border);
+    color: var(--blue-accent);
+    border-top: 0.5px solid var(--glass-border);
 }
 
+.action-sheet-btn.destructive-text { color: var(--destructive-red); }
+
 /* --------------------------------------------------------------------- */
-/* --- Block 5C : Assistive Touch (Master Controller) --- */
+/* --- Block 5C : Assistive Touch (Spatial Menu) --- */
 /* --------------------------------------------------------------------- */
 .at-container {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 2rem;
+    right: 2.5rem;
     z-index: 12000;
 }
 
 .at-trigger {
-    width: 60px;
-    height: 60px;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
-    border-radius: 18px; /* Squircle icon */
+    width: 54px;
+    height: 54px;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    border-radius: 16px; /* Squircle rule */
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.2), 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1);
     opacity: 0.7;
 }
 
 .at-inner-circle {
-    width: 40px;
-    height: 40px;
+    width: 34px;
+    height: 34px;
     background: rgba(255, 255, 255, 0.2);
-    border: 3px solid rgba(255, 255, 255, 0.7);
+    border: 2.5px solid rgba(255, 255, 255, 0.6);
     border-radius: 50%;
 }
 
 .at-menu-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(20px);
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(25px);
     display: none;
     align-items: center;
     justify-content: center;
     z-index: 12001;
+    opacity: 0;
+    transition: opacity 0.4s var(--smooth-ease);
 }
 
-.at-menu-overlay.active { display: flex; }
+.at-menu-overlay.active { display: flex; opacity: 1; }
 
 .at-menu-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 35px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 40px;
-    border-radius: 40px;
+    gap: 2rem;
+    background: var(--glass-bg);
+    padding: 2.5rem;
+    border-radius: 35px;
     border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    transform: scale(0.9);
+    transition: transform 0.4s var(--spring-ease);
 }
+
+.at-menu-overlay.active .at-menu-grid { transform: scale(1); }
 
 .at-menu-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    color: #FFFFFF;
-    font-size: 14px;
-    font-weight: 600;
+    gap: 0.8rem;
+    color: var(--primary-text);
+    font-size: 0.8rem;
+    font-weight: 700;
 }
 
 .at-icon-box {
-    width: 66px;
-    height: 66px;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 20px;
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #FFF;
+    border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    font-size: 1.4rem;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
 }
 
 /* --------------------------------------------------------------------- */
-/* --- End Block 5C file : dashboard.css --- */
+/* --- Block 5D : Full Screen Loader (visionOS Vibe) --- */
+/* --------------------------------------------------------------------- */
+.fullscreen-loader {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--system-bg);
+    z-index: 20000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s var(--smooth-ease);
+}
+
+.fullscreen-loader.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* Spinner is handled by FontAwesome/Library in HTML, 
+   styling common text here */
+#loader-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 5D file : Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 5 file : dashboard.css <<=== */
+/* ===>> END OF BLOCK CSS 5 file : Dashboard.css <<=== */
 /* ===================================================================== */
