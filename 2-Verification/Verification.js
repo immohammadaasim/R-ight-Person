@@ -183,7 +183,10 @@ function initiateTelegramFlow() {
 const fullPhone = (countryCode + phone).replace(/\+/g, '%2B').replace(/\s/g, '');
 
     // Telegram Deep Link banao
-    const deepLink = `https://t.me/Rightpersonverification_bot?start=${fullPhone}`;
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+const deepLink = isMobile 
+    ? `tg://resolve?domain=Rightpersonverification_bot&start=${fullPhone}`
+    : `https://t.me/Rightpersonverification_bot?start=${fullPhone}`;
 
     // UI me "Open Telegram" button dikhao
     showTelegramOpenButton(deepLink, countryCode + phone);
