@@ -207,6 +207,7 @@ function validateEntry(email, phone) {
 /* --------------------------------------------------------------------- */
 /**
  * handleEntry: "Continue" button dabane par asli logic trigger karta hai.
+ * UPDATED: Now uses 'personal_email' to match Supabase schema.
  */
 continueBtn.addEventListener('click', async () => {
     const email = emailInput.value.trim().toLowerCase();
@@ -222,24 +223,27 @@ continueBtn.addEventListener('click', async () => {
     continueBtn.querySelector('.btn-loader').style.display = 'block';
 
     try {
-        // 3. Database Check: Kya ye user pehle se registered hai?
+        // 3. Database Check: Search using 'personal_email' column
         const { data: user, error } = await _sb
             .from('users')
-            .select('id, email, device_fingerprint, is_blocked')
-            .eq('email', email)
+            .select('id, personal_email, device_fingerprint, is_blocked')
+            .eq('personal_email', email)
             .maybeSingle();
 
-        if (error) throw error;
+        if (error) {
+            console.error("Database Lookup Error:", error);
+            throw error;
+        }
 
-        // 4. Temporary storage
+        // 4. Temporary storage (For next module)
         sessionStorage.setItem('RP_Temp_Email', email);
         sessionStorage.setItem('RP_Temp_Phone', phone);
 
-        // 5. Country Code save karo (Telegram Deep Link ke liye)
+        // 5. Country Code save (For Telegram Deep Link)
         const countryCode = document.querySelector('.country-code')?.textContent?.trim() || '+91';
         sessionStorage.setItem('RP_Country_Code', countryCode);
 
-        // 6. Routing Logic
+        // 6. Routing Logic (Old User vs New User)
         if (user) {
             // CASE: OLD USER
             if (user.is_blocked) {
@@ -256,14 +260,14 @@ continueBtn.addEventListener('click', async () => {
             showIsland("New Identity detected. Welcome!", "success");
         }
 
-        // 7. Final Transition (PATH FIXED - Capital V)
+        // 7. Final Transition (Zero-Jerk Transition Flow)
         setTimeout(() => {
             window.location.href = '../2-Verification/Verification.html';
         }, 1200);
 
     } catch (err) {
-        console.error("Entry Logic Error:", err);
-        showIsland("Connection failed. Try again.", "error");
+        console.error("Entry Logic Error Details:", err);
+        showIsland(`System Error: ${err.message || 'Connection failed'}`, "error");
         resetBtnState();
     }
 });
