@@ -1,0 +1,315 @@
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 1: Head Section (Spatial OS & Supabase Setup) <<=== -->
+<!-- ===================================================================== -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>R-ight Person - Spatial Dashboard</title>
+    
+    <!-- iPadOS 18 Core Glass System -->
+    <link rel="stylesheet" href="dashboard.css?v=1.2">
+    
+    <!-- [ COMPONENT STYLES ] -->
+    <link rel="stylesheet" href="identity.css?v=1.2">
+    <link rel="stylesheet" href="card.css?v=1.2"> 
+
+    <!-- [ ICONS & SF SYMBOLS STYLE ] -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <!-- [ CORE LIBRARIES ] -->
+    <!-- Supabase JS Library (Replaces Firebase) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- QR & Visualization Tools -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Block 1A: Spatial Entrance Pre-load */
+        body { opacity: 0; transition: opacity 0.8s ease-in-out; }
+        body.loaded { opacity: 1; }
+    </style>
+</head>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 1 file : dashboard.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 2: Dashboard Core Structure (Sidebar & Top Navbar) <<=== -->
+<!-- ===================================================================== -->
+<body class="super-fullscreen">
+
+    <!-- --- Side Spatial Strip (Floating Glass Sidebar) --- -->
+    <aside class="sidebar spatial-glass" id="sidebar">
+        <div class="sidebar-top">
+            <!-- Profile Pill (Super Squircle) -->
+            <div class="profile-pill haptic-touch" onclick="openProfileModal()">
+                <div class="profile-avatar" id="user-avatar-initial">U</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active haptic-touch" title="Home">
+                <i class="fa-light fa-grid-2"></i> <!-- SF Symbols vibe icon -->
+            </a>
+            <a href="#" class="nav-item haptic-touch" title="Identity Card">
+                <i class="fa-light fa-id-card"></i>
+            </a>
+            <a href="#" class="nav-item haptic-touch" title="Devices">
+                <i class="fa-light fa-display-code"></i>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <button class="nav-item logout-trigger haptic-touch" id="logout-btn-trigger" title="Sign Out">
+                <i class="fa-light fa-power-off"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- --- Top Navbar (Floating Glass) --- -->
+    <nav class="top-navbar spatial-glass" id="top-navbar">
+        <div class="nav-left">
+            <span class="app-brand">Identity Portal</span>
+            <span class="page-indicator blue-accent" id="current-page-title">Home</span>
+        </div>
+        
+        <div class="nav-right">
+            <button class="nav-util-btn haptic-touch" id="dash-theme-toggle">
+                <i class="fa-light fa-moon"></i>
+            </button>
+            
+            <!-- iOS Style Status Indicator -->
+            <div class="ios-status-pill">
+                <div class="status-time" id="dash-clock">--:--</div>
+                <div class="status-divider"></div>
+                <div class="status-icons">
+                    <i class="fa-solid fa-wifi"></i>
+                    <div class="ios-battery-pill"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- --- Main Content Wrapper (The Fluid Container) --- -->
+    <main class="content-wrapper" id="main-content">
+        <div id="contentArea" class="spatial-entry-animation">
+            <!-- Content will be injected here -->
+        </div>
+
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 2 file : dashboard.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 3: Dashboard Content (Spatial Views & App Library) <<=== -->
+<!-- ===================================================================== -->
+
+            <!-- --- HOME DASHBOARD VIEW (Spatial Glass Layout) --- -->
+            <div id="home-dashboard-view" class="dashboard-view active">
+
+                <!-- Top Row: Spatial Widgets -->
+                <div class="home-header-row">
+
+                    <!-- Greeting Widget (Floating Glass) -->
+                    <div class="home-widget-card spatial-glass haptic-touch" id="greeting-widget">
+                        <div class="greeting-content">
+                            <h1 class="greeting-text">Good <span id="greeting-time" class="blue-accent">Day</span>,</h1>
+                            <h2 class="greeting-name" id="user-display-name">Guest</h2>
+                            <p class="date-text secondary-label" id="current-full-date">LOADING DATE...</p>
+                        </div>
+                    </div>
+
+                    <!-- Weather Widget (Floating Glass) -->
+                    <div class="home-widget-card spatial-glass haptic-touch" id="weather-widget">
+                        <div class="weather-row">
+                            <div class="weather-info">
+                                <h2 id="weather-city" class="primary-text">Location</h2>
+                                <p id="weather-temp" class="blue-accent">--°</p>
+                                <span id="weather-desc" class="secondary-label">Updating...</span>
+                            </div>
+                            <div class="weather-icon-box">
+                                <i class="fa-light fa-cloud-sun-bright" id="main-weather-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- App Library Section -->
+                <div class="app-library-section">
+                    <h3 class="section-label">Your Secure Ecosystem</h3>
+                    <div class="home-app-grid" id="main-app-grid">
+                        <!-- Dynamic Icons will be injected here via JS -->
+                    </div>
+                </div>
+
+            </div>
+            <!-- END: home-dashboard-view -->
+
+        </div>
+        <!-- END: contentArea -->
+
+<!-- --------------------------------------------------------------- -->
+<!-- [ START : BLOCK HTML 3B - Universal App View (Slide-in Logic) ] -->
+<!-- --------------------------------------------------------------- -->
+        <div id="app-fullscreen-view" class="spatial-overlay">
+            <div class="app-view-topbar spatial-glass">
+                <button class="app-view-back-btn haptic-touch" id="app-back-btn">
+                    <i class="fa-light fa-chevron-left"></i>
+                    <span>Library</span>
+                </button>
+                <span class="app-view-title primary-text" id="app-view-title">Application</span>
+            </div>
+            <div class="app-view-content" id="app-view-content">
+                <!-- App logic injected here -->
+            </div>
+        </div>
+<!-- --------------------------------------------------------------- -->
+<!-- [ END : BLOCK HTML 3B - file : dashboard.html ] -->
+<!-- --------------------------------------------------------------- -->
+
+    </main>
+    <!-- END: main.content-wrapper -->
+
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 3 file: dashboard.html <<=== -->
+<!-- ===================================================================== -->
+
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 4: System Overlays (Island, Action Sheet, Assistive Touch) <<=== -->
+<!-- ===================================================================== -->
+
+<!-- --- 1. Universal Dynamic Island (iOS Notification System) --- -->
+<div id="showIsland" class="dynamic-island-container">
+    <div class="dynamic-island-pill spatial-glass">
+        <div id="island-icon" class="island-icon-box"></div>
+        <p id="island-message" class="island-msg-text"></p>
+    </div>
+</div>
+
+<!-- --- 2. Spatial Action Sheet (Logout Confirmation) --- -->
+<div id="logout-action-sheet" class="action-sheet-overlay">
+    <div class="action-sheet-container spatial-glass">
+        <div class="action-sheet-header">
+            <p class="secondary-label">Are you sure you want to sign out from <strong class="primary-text">Identity Portal</strong>?</p>
+        </div>
+        <div class="action-sheet-group">
+            <button class="action-sheet-btn destructive-text haptic-touch" id="confirm-logout-btn">Sign Out</button>
+        </div>
+        <div class="action-sheet-group cancel-group">
+            <button class="action-sheet-btn blue-accent haptic-touch" id="cancel-logout-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- --- 3. Assistive Touch (Master Floating Controller) --- -->
+<div id="assistive-touch-container" class="at-container">
+    <div id="at-trigger" class="at-trigger haptic-touch">
+        <div class="at-inner-circle"></div>
+    </div>
+
+    <!-- AT Menu Overlay -->
+    <div id="at-menu-overlay" class="at-menu-overlay">
+        <div class="at-menu-grid spatial-glass">
+            <div class="at-menu-item haptic-touch" onclick="navigate('home')">
+                <div class="at-icon-box"><i class="fa-light fa-house"></i></div>
+                <span>Home</span>
+            </div>
+            <div class="at-menu-item haptic-touch" onclick="toggleTheme()">
+                <div class="at-icon-box"><i class="fa-light fa-circle-half-stroke"></i></div>
+                <span>Theme</span>
+            </div>
+            <div class="at-menu-item haptic-touch" onclick="refreshApp()">
+                <div class="at-icon-box"><i class="fa-light fa-rotate"></i></div>
+                <span>Refresh</span>
+            </div>
+            <div class="at-menu-item destructive-text haptic-touch" id="at-logout">
+                <div class="at-icon-box"><i class="fa-light fa-power-off"></i></div>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- --- 4. Spatial Page Loader (Entrance System) --- -->
+<div id="fullscreen-loader" class="fullscreen-loader spatial-glass">
+    <div class="loader-content">
+        <div class="apple-spinner-large">
+            <div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div>
+        </div>
+        <p id="loader-text" class="secondary-label">Securing Environment...</p>
+    </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 4 file: dashboard.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 5: Universal Identity Portals & UI Overlays <<=== -->
+<!-- ===================================================================== -->
+
+<!-- Universal Module Portal: Isme hum popups aur dynamic identity components inject karenge -->
+<div id="universal-module-portal"></div>
+
+<!-- Custom Page Styles for Entrance -->
+<style>
+    /* Prevent flash of unstyled content in Spatial Design */
+    body:not(.loaded) {
+        background-color: #000;
+    }
+</style>
+
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 5 file: dashboard.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 6: Supabase Engine & Logic Integration <<=== -->
+<!-- ===================================================================== -->
+<script>
+    /* --------------------------------------------------------------------- */
+    /* --- Block 6A : Supabase System Initialization --- */
+    /* --------------------------------------------------------------------- */
+    const SB_URL = "https://xtzdlepgpqvllwzjfrsh.supabase.co";
+    const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emRsZXBncHF2bGx3empmcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5OTI2MzcsImV4cCI6MjA4NzU2ODYzN30.NxX8BPCK_HNQYmn0-7YkdPv12gO8wKgOS5oP2R0OYZc";
+
+    // Global Supabase Instance
+    const _sb = supabase.createClient(SB_URL, SB_KEY);
+
+    /* --------------------------------------------------------------------- */
+    /* --- Block 6B : Entrance Control --- */
+    /* --------------------------------------------------------------------- */
+    window.addEventListener('load', () => {
+        document.body.classList.add('loaded');
+        console.log("Spatial Dashboard: Engine Loaded.");
+    });
+</script>
+
+<!-- --- 1. CORE DASHBOARD LOGIC (Supabase Logic) --- -->
+<script src="dashboard.js?v=1.2" defer></script>
+
+<!-- --- 2. FEATURE MODULES --- -->
+<!-- Identity Setup Module (Logic) -->
+<script src="identity.js?v=1.2" defer></script>
+
+<!-- Smart ID Card Module (Logic) -->
+<script src="card.js?v=1.2" defer></script>
+
+</body>
+</html>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 6 file: dashboard.html <<=== -->
+<!-- ===================================================================== -->
+
+
