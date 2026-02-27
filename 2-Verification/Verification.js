@@ -501,55 +501,65 @@ resendKeyBtn.addEventListener('click', () => {
 /* ===>> BLOCK JS 4: Device Guard & Anti-Theft Logic (Shift System) <<=== */
 /* ===================================================================== */
 
+/* ===================================================================== */
+/* ===>> BLOCK JS 4: Device Guard & Anti-Theft Logic (Shift System) <<=== */
+/* ===================================================================== */
+
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4A : handleIdentitySuccess (Database Registration) --- */
+/* --- Sub-Block 4A : handleIdentitySuccess (The Final Bridge) --- */
 /* --------------------------------------------------------------------- */
+/**
+ * handleIdentitySuccess: Identity verify hone ke baad user ko register ya login karwata hai.
+ * Path Fix: Updated to match exact GitHub folder naming (Case-Sensitive).
+ */
 async function handleIdentitySuccess() {
     const currentDID = localStorage.getItem('RP_DeviceID');
     const userType = sessionStorage.getItem('RP_User_Type');
     const tempEmail = sessionStorage.getItem('RP_Temp_Email');
     const tempPhone = sessionStorage.getItem('RP_Temp_Phone');
 
+    // Button state update (Processing)
     verifyKeyBtn.disabled = true;
     verifyKeyBtn.querySelector('.btn-text').style.opacity = '0';
     verifyKeyBtn.querySelector('.btn-loader').style.display = 'block';
 
+    // SCENARIO 1: Agar User bilkul naya hai (First Time Registration)
     if (userType === 'NEW') {
         try {
             const { data, error } = await _sb
                 .from('users')
                 .insert({
-                    personal_email: tempEmail,
-                    mobile: tempPhone,
+                    personal_email: tempEmail,      
+                    mobile: tempPhone,              
                     device_fingerprint: currentDID,
                     is_blocked: false,
                     created_at: new Date().toISOString(),
-                    security_level: 'Standard' // Ab ye error nahi dega SQL chalane ke baad
+                    security_level: 'Standard'      
                 });
 
             if (error) {
                 console.error("Supabase Save Error:", error);
-                throw new Error(error.message);
+                throw new Error(error.message || "Database connection rejected.");
             }
 
             showIsland("New Identity Created Successfully!", "success");
             
+            // Redirect to Dashboard (Ensure exact path match)
             setTimeout(() => { 
-                window.location.href = '../3-dashboard/dashboard.html'; 
+                window.location.href = '../3-Dashboard/Dashboard.html'; 
             }, 2000);
 
         } catch (err) {
             console.error("New User Registration Failed:", err);
             showIsland(`Registration Failed: ${err.message}`, "error");
             
+            // Reset Button
             verifyKeyBtn.disabled = false;
             verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
             verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
         }
         return;
     }
-
-
 
     // SCENARIO 2: Agar User purana hai (Login Flow)
     try {
@@ -565,14 +575,14 @@ async function handleIdentitySuccess() {
             return showHighAlert("This Identity is permanently suspended.");
         }
 
-        // Device Guard: Kya user wahi device use kar raha hai?
+        // Device Guard Logic
         if (user.device_fingerprint === currentDID) {
             showIsland("Device Verified. Welcome back!", "success");
             setTimeout(() => { 
-                window.location.href = '../3-dashboard/dashboard.html'; 
+                window.location.href = '../3-Dashboard/Dashboard.html'; 
             }, 1500);
         } else {
-            // Naya device detect hua — Shift Protocol (3-min timer) trigger karo
+            // New device detected — trigger Shift Protocol (Sub-Block 4B)
             triggerDeviceShiftProtocol(user.id, currentDID);
         }
 
@@ -585,18 +595,22 @@ async function handleIdentitySuccess() {
         verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
     }
 }
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 4A file : 2-Verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 4B : Trigger Device Shift (Anti-Theft Protocol) --- */
 /* --------------------------------------------------------------------- */
-const shiftTimerText = document.getElementById('shift-timer-text');
-const timerRing = document.getElementById('timer-progress-ring');
 let shiftCountdown;
 
 function triggerDeviceShiftProtocol(uid, newDID) {
+    const shiftTimerText = document.getElementById('shift-timer-text');
+    const timerRing = document.getElementById('timer-progress-ring');
+    
     showIsland("New Device detected! Verification required.", "error");
 
-    // Views switch karo (Zero-Jerk transition)
+    // Smooth switch to Shift Guard view
     selectionView.style.display = 'none';
     keyInputView.style.display = 'none';
     shiftGuardView.style.display = 'block';
@@ -611,7 +625,7 @@ function triggerDeviceShiftProtocol(uid, newDID) {
     shiftCountdown = setInterval(() => {
         let mins = Math.floor(timeLeft / 60);
         let secs = timeLeft % 60;
-        shiftTimerText.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        if(shiftTimerText) shiftTimerText.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 
         const offset = ringCircumference - (timeLeft / totalTime) * ringCircumference;
         if(timerRing) timerRing.style.strokeDashoffset = offset;
@@ -623,11 +637,14 @@ function triggerDeviceShiftProtocol(uid, newDID) {
         timeLeft--;
     }, 1000);
 
-    // Real-time listener start karo (Identity Sync)
+    // Start Real-time sync listener (Module Bridge)
     if (typeof startShiftSyncListener === 'function') {
         startShiftSyncListener(uid, newDID);
     }
 }
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 4B file : 2-Verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 4C : High Alert Logic (Access Blocked) --- */
@@ -638,7 +655,6 @@ function showHighAlert(reason) {
     if (blockReasonText) blockReasonText.textContent = reason;
     if (blockScreen) blockScreen.style.display = 'flex';
     
-    // Portal lock karo
     const container = document.getElementById('app-container');
     if (container) container.style.display = 'none';
 }
@@ -649,6 +665,9 @@ function handleShiftExpiry() {
         window.location.href = '../1-login/login.html'; 
     }, 2000);
 }
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 4C file : 2-Verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 4 file : 2-Verification/Verification.js <<=== */
