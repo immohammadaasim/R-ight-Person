@@ -165,7 +165,6 @@ pathWhatsapp.addEventListener('click', () => {
 /* --- Sub-Block 2B : Telegram Flow Initiator (Deep Link Engine) --- */
 /* --------------------------------------------------------------------- */
 function initiateTelegramFlow() {
-    // Session se phone number aur country code lo
     const phone = sessionStorage.getItem('RP_Temp_Phone');
     const countryCode = sessionStorage.getItem('RP_Country_Code') || '+91';
 
@@ -175,15 +174,18 @@ function initiateTelegramFlow() {
         return;
     }
 
-    // Telegram deep link ke liye sirf saaf digits chahiye (No +, No spaces)
+    // Pehle number se sirf digits nikalenge
     const fullPhoneRaw = countryCode + phone;
-    const cleanPhoneForLink = fullPhoneRaw.replace(/\D/g, ''); 
+    const cleanNumber = fullPhoneRaw.replace(/\D/g, ''); 
 
-    // Universal Telegram Link jo Mobile aur Desktop dono par work karega
+    // Number ko Base64 mein encode karenge taaki Telegram error na de
+    // Hum padding (=) ko bhi hata rahe hain safety ke liye
+    const encodedData = btoa(cleanNumber).replace(/=/g, '');
+
+    // Universal Link with Base64 param
     const botUsername = "Rightpersonverification_bot";
-    const deepLink = `https://t.me/${botUsername}?start=${cleanPhoneForLink}`;
+    const deepLink = `https://t.me/${botUsername}?start=${encodedData}`;
 
-    // UI me "Open Telegram" button dikhao
     showTelegramOpenButton(deepLink, fullPhoneRaw);
 }
 /* --------------------------------------------------------------------- */
