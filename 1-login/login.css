@@ -1,68 +1,89 @@
 /* ===================================================================== */
-/* ===>> BLOCK CSS 0: Documentation & Design Vision (Modular Architecture) <<=== */
-/* ===================================================================== */
-/* 
-    FILE NAME: 1-login/login.css
-    PROJECT: R-ight Person (Digital Identity System)
-    ARCHITECTURE: Modular Architecture (Specific to Entry Portal)
-    
-    DESIGN RULES (iPadOS 18 / visionOS Standard):
-    1. SPATIAL GLASS: No solid backgrounds. Minimum 40px blur + 180% saturation.
-    2. SUPER SQUIRCLES: Corner radius must be between 14px and 30px.
-    3. FLOATING DEPTH: Elements must use multi-layered shadows to look "in the air".
-    4. SF SYMBOLS VIBE: Thin, clean icons and typography (Inter/SF Pro).
-    5. HAPTIC VISUALS: Every clickable element must react to touch (Scale down).
-    6. ZERO-JERK TRANSITION: All state changes must be smooth (Slide/Fade).
-*/
-/* ===================================================================== */
-/* ===>> END OF BLOCK CSS 0 file : 1-login/login.css <<=== */
+/* ===>> BLOCK CSS 1: Global Theme Engine (The Blue Rule) <<=== */
 /* ===================================================================== */
 
-
-/* ===================================================================== */
-/* ===>> BLOCK CSS 1: Global System Engine & Root Variables <<=== */
-/* ===================================================================== */
-
+/* --------------------------------------------------------------------- */
+/* --- Block 1A : iPadOS 18 Spatial Variables --- */
+/* --------------------------------------------------------------------- */
 :root {
-    /* --- Apple iOS 18 Light Palette --- */
-    --system-bg: #F2F2F7;
-    --card-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.4);
-    --primary-text: #000000;
-    --secondary-text: #8E8E93;
+    /* --- Pure Light Mode (White & Blue) --- */
+    --system-bg: #FFFFFF;
+    --card-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(0, 122, 255, 0.15);
+    --glass-shadow: 0 10px 40px rgba(0, 122, 255, 0.08);
     
-    /* --- System Accents --- */
-    --ios-blue: #007AFF;
-    --ios-red: #FF3B30;
-    --ios-green: #34C759;
+    /* --- Unified Blue Rule (Text & Accents) --- */
+    --p-text: #007AFF; /* Primary Blue Text */
+    --s-text: rgba(0, 122, 255, 0.65); /* Subtle Blue Text */
+    --blue-accent: #007AFF;
     
-    /* --- Spatial Glass Physics --- */
-    --glass-blur: blur(40px) saturate(180%);
-    --shadow-spatial: 0 20px 50px rgba(0, 0, 0, 0.1);
-    --shadow-inner: inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    /* --- Spatial Squircles --- */
+    --radius-squircle: 28px;
+    --glass-blur: blur(25px) saturate(180%);
     
-    /* --- Super Squircles (Rounded Corners) --- */
-    --card-radius: 30px;
-    --input-radius: 16px;
-    --button-radius: 16px;
-    
-    /* --- Animation Timing --- */
-    --ios-ease: cubic-bezier(0.4, 0, 0.2, 1);
-    --spring-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* --- Transitions --- */
+    --spring-ease: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --smooth-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-/* --- Dark Mode Auto-Switch (iPadOS Core Feature) --- */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --system-bg: #000000;
-        --card-bg: rgba(28, 28, 30, 0.7);
-        --glass-border: rgba(255, 255, 255, 0.1);
-        --primary-text: #FFFFFF;
-        --secondary-text: #AEAEB2;
-        --shadow-spatial: 0 20px 50px rgba(0, 0, 0, 0.5);
-        --shadow-inner: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-    }
+/* --- Pure Dark Mode (Black & Blue) --- */
+body.dark-mode {
+    --system-bg: #000000;
+    --card-bg: rgba(0, 0, 0, 0.65);
+    --glass-border: rgba(10, 132, 255, 0.3);
+    --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    
+    --p-text: #0A84FF; /* Vibrant Dark Mode Blue */
+    --s-text: rgba(10, 132, 255, 0.65);
 }
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1B : Base Reset & Scaling Architecture --- */
+/* --------------------------------------------------------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background-color: var(--system-bg);
+    color: var(--p-text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    transition: background-color 0.6s var(--smooth-ease), color 0.5s ease;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Rule: Active Touch (Physical Scale) */
+.haptic-touch {
+    transition: transform 0.2s var(--spring-ease), opacity 0.2s ease;
+    cursor: pointer;
+}
+
+.haptic-touch:active {
+    transform: scale(0.94) !important;
+    opacity: 0.8;
+}
+
+/* Device Adaptation (Responsive Scale) */
+@media (max-width: 480px) {
+    :root { --radius-squircle: 22px; }
+    body { font-size: 14px; }
+}
+
+@media (min-width: 1024px) {
+    :root { --radius-squircle: 32px; }
+}
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 1B file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
 /* ===>> END OF BLOCK CSS 1 file : 1-login/login.css <<=== */
@@ -70,50 +91,107 @@
 
 
 /* ===================================================================== */
-/* ===>> BLOCK CSS 2: Global Reset & Background Architecture <<=== */
+/* ===>> BLOCK CSS 2: Spatial Card & Theme Toggle System <<=== */
 /* ===================================================================== */
 
-/* --- Universal Reset (Clean Slate) --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    /* Disable default blue tap highlight for Haptic Visuals */
-    -webkit-tap-highlight-color: transparent;
+/* --------------------------------------------------------------------- */
+/* --- Block 2A : Floating Theme Control (Utility Bar) --- */
+/* --------------------------------------------------------------------- */
+.theme-utility-bar {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 100;
 }
 
-body {
-    font-family: 'Inter', -apple-system, system-ui, sans-serif;
-    background-color: var(--system-bg);
-    color: var(--primary-text);
-    min-height: 100vh;
+#theme-toggle-btn {
+    width: 48px;
+    height: 48px;
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px; /* Super Squircle */
+    color: var(--blue-accent);
+    font-size: 1.2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow-x: hidden;
-    
-    /* --- iPadOS 18 Wallpaper Vibe (Animated Blobs) --- */
-    background: 
-        radial-gradient(circle at 20% 20%, rgba(0, 122, 255, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(52, 199, 89, 0.08) 0%, transparent 40%),
-        var(--system-bg);
-    
-    /* Smooth theme transition */
-    transition: background-color 0.5s var(--ios-ease);
+    box-shadow: var(--shadow-spatial);
 }
 
-/* --- Main Layout Container --- */
-#app-container {
-    width: 100%;
-    max-width: 420px; /* Optimal iPad Widget Width */
-    padding: 20px;
-    z-index: 10;
+/* --------------------------------------------------------------------- */
+/* --- Block 2B : Main Spatial Glass Card --- */
+/* --------------------------------------------------------------------- */
+.spatial-glass-card {
+    width: 90%;
+    max-width: 420px;
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-squircle);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-spatial);
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 2rem;
+    position: relative;
+    overflow: hidden;
+    animation: spatialEntry 0.8s var(--spring-ease);
 }
+
+/* Glass Reflection Layer */
+.spatial-glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 2C : Typography & Brand Styling --- */
+/* --------------------------------------------------------------------- */
+.card-header { text-align: center; }
+
+.brand-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.main-title {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--p-text);
+    margin-bottom: 0.3rem;
+}
+
+.secondary-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--s-text);
+}
+
+/* Entrance Animation */
+@keyframes spatialEntry {
+    from { opacity: 0; transform: scale(0.95) translateY(30px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Mobile Tweak */
+@media (max-width: 480px) {
+    .spatial-glass-card { padding: 1.8rem; }
+    .theme-utility-bar { top: 1rem; right: 1.2rem; }
+}
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 2C file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
 /* ===>> END OF BLOCK CSS 2 file : 1-login/login.css <<=== */
@@ -122,313 +200,244 @@ body {
 
 
 /* ===================================================================== */
-/* ===>> BLOCK CSS 3: Spatial Glass Card Design (Core Container) <<=== */
+/* ===>> BLOCK CSS 3: Spatial Inputs & Premium Primary Button <<=== */
 /* ===================================================================== */
 
-.spatial-glass-card {
-    width: 100%;
-    background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: var(--card-radius);
+/* --------------------------------------------------------------------- */
+/* --- Block 3A : Input Group & Label Hierarchy --- */
+/* --------------------------------------------------------------------- */
+.entry-form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.field-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-left: 0.5rem;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 3B : Glass Input Wrappers (Sleek Depth) --- */
+/* --------------------------------------------------------------------- */
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 122, 255, 0.05); /* Subtle Blue Tinted Glass */
     border: 1px solid var(--glass-border);
-    padding: 44px 36px;
-    box-shadow: var(--shadow-spatial), var(--shadow-inner);
-    position: relative;
-    overflow: hidden;
-    
-    /* --- Floating Depth Animation --- */
-    animation: spatialFloat 8s ease-in-out infinite alternate;
+    border-radius: 18px; /* High Squircle */
+    padding: 0 1rem;
+    height: 56px;
+    transition: all 0.3s var(--smooth-ease);
 }
 
-@keyframes spatialFloat {
-    0% { transform: translateY(0px); }
-    100% { transform: translateY(-12px); }
+.input-wrapper:focus-within {
+    background: rgba(0, 122, 255, 0.1);
+    border-color: var(--blue-accent);
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
 }
 
-/* --- Portal Header Typography --- */
-.portal-header {
-    text-align: center;
-    margin-bottom: 32px;
-}
-
-.portal-title {
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: -1px;
+.input-wrapper input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    height: 100%;
+    font-size: 1.05rem;
+    font-weight: 600;
     color: var(--primary-text);
-    margin-bottom: 8px;
+    padding-left: 0.8rem;
 }
 
-.portal-subtitle {
-    font-size: 16px;
-    font-weight: 400;
-    color: var(--secondary-text);
+.input-wrapper input::placeholder {
+    color: var(--s-text);
+    font-weight: 500;
+}
+
+.input-icon {
+    font-size: 1.1rem;
+    width: 24px;
+    text-align: center;
+}
+
+/* Country Selector (Mobile Specific) */
+.country-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-right: 0.8rem;
+    border-right: 1px solid var(--glass-border);
+    height: 60%;
+}
+
+.country-code {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 3C : Main CTA Button & Loader (Spatial Blue) --- */
+/* --------------------------------------------------------------------- */
+.action-container {
+    margin-top: 1rem;
+}
+
+.main-cta-btn {
+    width: 100%;
+    height: 60px;
+    background: var(--blue-accent);
+    border: none;
+    border-radius: 20px; /* Super Squircle */
+    color: #FFFFFF;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 122, 255, 0.3);
+    overflow: hidden;
+}
+
+/* Button Physical Gloss Reflection */
+.main-cta-btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+.btn-loader {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: #FFFFFF;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Footer Section */
+.card-footer {
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.legal-text {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--s-text);
     line-height: 1.4;
 }
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 3C file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
 /* ===>> END OF BLOCK CSS 3 file : 1-login/login.css <<=== */
 /* ===================================================================== */
 
 
+
 /* ===================================================================== */
-/* ===>> BLOCK CSS 4: Input Systems & Apple-Style Form Controls <<=== */
+/* ===>> BLOCK CSS 4: Dynamic Island & Universal Notification System <<=== */
 /* ===================================================================== */
 
-/* --- Input Wrapper (Group Container) --- */
-.input-wrapper {
-    width: 100%;
-    margin-bottom: 18px;
+/* --------------------------------------------------------------------- */
+/* --- Block 4A : Spatial Island Container (The Notch) --- */
+/* --------------------------------------------------------------------- */
+.dynamic-island {
+    position: fixed;
+    top: 1.5rem; /* Floating from top edge */
+    left: 50%;
+    transform: translateX(-50%) translateY(-150%) scale(0.8);
+    z-index: 1000;
+    min-width: 200px;
+    padding: 10px 20px;
+    background: #000000; /* Apple's true black notch */
+    color: #FFFFFF;
+    border-radius: var(--radius-pill);
     display: flex;
     align-items: center;
-    background: rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: var(--input-radius);
-    transition: all 0.3s var(--ios-ease);
-    position: relative;
-    overflow: hidden;
+    gap: 12px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring physics */
+    pointer-events: none;
+    opacity: 0;
 }
 
-/* Dark mode adjustment for inputs */
-@media (prefers-color-scheme: dark) {
-    .input-wrapper {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.1);
-    }
+/* Island Activation State */
+.dynamic-island.active {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
 }
 
-/* --- Mobile Country Selector Part --- */
-.country-selector {
-    padding: 0 14px;
+.island-icon {
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
-    gap: 6px;
-    border-right: 1px solid rgba(0, 0, 0, 0.08);
-    height: 54px;
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.02);
+    justify-content: center;
 }
 
-.country-code {
-    font-size: 16px;
+#island-message {
+    font-size: 0.9rem;
     font-weight: 600;
-    color: var(--primary-text);
+    white-space: nowrap;
+    letter-spacing: -0.2px;
 }
 
-/* --- Input Field Base Styling --- */
-.input-wrapper input {
-    width: 100%;
-    height: 54px;
-    padding: 0 16px;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-size: 17px;
-    font-family: inherit;
-    color: var(--primary-text);
+/* --------------------------------------------------------------------- */
+/* --- Block 4B : Theme & Status Adaptation (The Blue Rule) --- */
+/* --------------------------------------------------------------------- */
+/* Success State */
+.dynamic-island.success #island-message { color: #FFFFFF; }
+.dynamic-island.success .island-icon svg { stroke: var(--success-green); }
+
+/* Error State */
+.dynamic-island.error #island-message { color: #FFFFFF; }
+.dynamic-island.error .island-icon svg { stroke: var(--destructive-red); }
+
+/* Info State (The Blue Rule Champion) */
+.dynamic-island.info #island-message { color: #FFFFFF; }
+.dynamic-island.info .island-icon svg { stroke: var(--blue-accent); }
+
+/* Theme Overrides for Light Mode Background */
+body:not(.dark-mode) .dynamic-island {
+    background: rgba(0, 0, 0, 0.9); /* Deep black on white background */
+    box-shadow: 0 10px 30px rgba(0, 122, 255, 0.2);
 }
 
-.input-wrapper input::placeholder {
-    color: var(--secondary-text);
-    opacity: 0.8;
+/* --------------------------------------------------------------------- */
+/* --- Block 4C : Responsive Adjustments --- */
+/* --------------------------------------------------------------------- */
+@media (max-width: 480px) {
+    .dynamic-island {
+        top: 1rem;
+        min-width: 180px;
+        padding: 8px 16px;
+    }
+    #island-message { font-size: 0.85rem; }
 }
 
-/* --- Focus State (Apple Blue Glow) --- */
-.input-wrapper:focus-within {
-    border-color: var(--ios-blue);
-    background: transparent;
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
-}
-
-/* --- Icon Slot for Email --- */
-.input-icon {
-    padding-left: 16px;
-    display: flex;
-    align-items: center;
-    color: var(--ios-blue);
-    opacity: 0.9;
-}
-
-/* --- Haptic Active State (Box Shrink) --- */
-.input-wrapper:active {
-    transform: scale(0.99);
-}
+/* --------------------------------------------------------------------- */
+/* --- End Block 4C file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
 /* ===>> END OF BLOCK CSS 4 file : 1-login/login.css <<=== */
 /* ===================================================================== */
-
-
-/* ===================================================================== */
-/* ===>> BLOCK CSS 5: iOS Primary Button & Haptic Visuals <<=== */
-/* ===================================================================== */
-
-.ios-primary-btn {
-    width: 100%;
-    height: 56px;
-    margin-top: 10px;
-    background: linear-gradient(180deg, #007AFF 0%, #0063CC 100%);
-    color: #FFFFFF;
-    border: none;
-    border-radius: var(--button-radius);
-    font-size: 17px;
-    font-weight: 600;
-    letter-spacing: -0.2px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    position: relative;
-    overflow: hidden;
-    
-    /* --- Depth & Shadow --- */
-    box-shadow: 
-        0 8px 20px rgba(0, 122, 255, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    
-    transition: all 0.3s var(--ios-ease);
-}
-
-/* --- Rule: Active Touch Reality (Haptic Feedback) --- */
-.haptic-feedback:active {
-    transform: scale(0.96); /* Button sinks on touch */
-    filter: brightness(0.9);
-    box-shadow: 0 4px 10px rgba(0, 122, 255, 0.2);
-}
-
-/* --- Button Loading Spinner --- */
-.btn-loader {
-    width: 20px;
-    height: 20px;
-    border: 2.5px solid rgba(255, 255, 255, 0.3);
-    border-top: 2.5px solid #FFFFFF;
-    border-radius: 50%;
-    animation: spinLoader 0.8s linear infinite;
-}
-
-@keyframes spinLoader {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* --- Portal Footer Styling --- */
-.portal-footer {
-    margin-top: 28px;
-    text-align: center;
-}
-
-.footer-note {
-    font-size: 13px;
-    color: var(--secondary-text);
-    line-height: 1.5;
-}
-
-.footer-note a {
-    color: var(--ios-blue);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.switch-text {
-    margin-top: 20px;
-    font-size: 15px;
-    color: var(--primary-text);
-    text-align: center;
-}
-
-.switch-text a {
-    color: var(--ios-blue);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-/* ===================================================================== */
-/* ===>> END OF BLOCK CSS 5 file : 1-login/login.css <<=== */
-/* ===================================================================== */
-
-
-/* ===================================================================== */
-/* ===>> BLOCK CSS 6: Dynamic Island Notification System <<=== */
-/* ===================================================================== */
-
-/* --- Container (Invisible logic) --- */
-#dynamic-island-container {
-    position: fixed;
-    top: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9999;
-    pointer-events: none; /* User clicks can pass through */
-    width: auto;
-    display: flex;
-    justify-content: center;
-}
-
-/* --- The Dynamic Island Pill --- */
-.dynamic-island {
-    background: #000000;
-    backdrop-filter: blur(25px) saturate(180%);
-    -webkit-backdrop-filter: blur(25px) saturate(180%);
-    color: #FFFFFF;
-    padding: 10px 20px;
-    border-radius: 50px; /* Perfect Pill Shape */
-    min-width: 180px;
-    max-width: 380px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    
-    /* --- Initial State (Hidden & Small) --- */
-    opacity: 0;
-    transform: scale(0.7) translateY(-30px);
-    transition: all 0.6s var(--spring-bounce);
-    
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* --- Active State (Animated Expansion) --- */
-.dynamic-island.active {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-}
-
-/* --- Inner Content Layout --- */
-.island-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    white-space: nowrap;
-}
-
-#island-message {
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: -0.2px;
-}
-
-/* --- SF Symbols Vibe Icons --- */
-#island-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Success Glow Effect */
-.dynamic-island.success {
-    box-shadow: 0 10px 30px rgba(52, 199, 89, 0.2);
-}
-
-/* Error Glow Effect */
-.dynamic-island.error {
-    box-shadow: 0 10px 30px rgba(255, 59, 48, 0.2);
-}
-
-/* ===================================================================== */
-/* ===>> END OF BLOCK CSS 6 file : 1-login/login.css <<=== */
-/* ===================================================================== */
-
-
-

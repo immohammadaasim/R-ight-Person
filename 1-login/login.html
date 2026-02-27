@@ -49,50 +49,65 @@
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 2: Universal Entry Portal (Spatial Glass Card) <<=== -->
+<!-- ===>> BLOCK HTML 2: Main Entry Portal Structure (Theme Integrated) <<=== -->
 <!-- ===================================================================== -->
 <div id="app-container">
-    <!-- Main Floating Card - Designed for iPadOS 18 -->
-    <div class="spatial-glass-card">
-        
-        <header class="portal-header">
-            <h1 class="portal-title">Access Identity</h1>
-            <p class="portal-subtitle">Enter your details to receive your Access -R- Key.</p>
+    
+    <!-- 1. Spatial Theme Toggle (Floating Control) -->
+    <div class="theme-utility-bar">
+        <button id="theme-toggle-btn" class="haptic-touch" aria-label="Toggle Appearance">
+            <i id="theme-icon" class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <main class="spatial-glass-card">
+        <!-- Header Section -->
+        <header class="card-header">
+            <div class="brand-badge blue-accent">R-IGHT PERSON</div>
+            <h1 class="main-title">Digital Identity</h1>
+            <p class="secondary-label">Secure entrance to your ecosystem</p>
         </header>
 
-        <!-- Single Entry Form (Unified for Login & Signup) -->
-        <div id="entry-form" class="form-content">
+        <!-- Entry Form Section -->
+        <div class="entry-form-container">
             
-            <!-- Mobile Number Input with Country Picker -->
-            <div class="input-wrapper mobile-entry">
-                <div class="country-selector" id="country-trigger">
-                    <span class="flag-icon">🇮🇳</span>
-                    <span class="country-code">+91</span>
+            <!-- Mobile Entry Field -->
+            <div class="input-group">
+                <label class="field-label blue-accent">REGISTERED MOBILE</label>
+                <div class="input-wrapper spatial-depth">
+                    <div id="country-trigger" class="country-selector haptic-touch">
+                        <span class="country-flag">🇮🇳</span>
+                        <span class="country-code">+91</span>
+                    </div>
+                    <input type="tel" id="user-mobile" placeholder="87288 00000" maxlength="10">
                 </div>
-                <input type="tel" id="user-mobile" placeholder="Mobile Number" required autocomplete="off">
             </div>
 
-            <!-- Gmail Input -->
-            <div class="input-wrapper email-entry">
-                <!-- SF Symbol Vibe Icon (Inline SVG) -->
-                <div class="input-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <!-- Email Entry Field -->
+            <div class="input-group">
+                <label class="field-label blue-accent">PERSONAL GMAIL</label>
+                <div class="input-wrapper spatial-depth">
+                    <i class="fas fa-envelope input-icon blue-accent"></i>
+                    <input type="email" id="user-email" placeholder="name@gmail.com">
                 </div>
-                <input type="email" id="user-email" placeholder="Gmail Address" required autocomplete="off">
             </div>
 
-            <!-- Action Button with Haptic Visual Rule -->
-            <button id="entry-continue-btn" class="ios-primary-btn haptic-feedback">
-                <span class="btn-text">Continue</span>
-                <div class="btn-loader" style="display:none;"></div>
-            </button>
-
-            <footer class="portal-footer">
-                <p class="footer-note">By continuing, you agree to our <a href="#">Security Protocols</a>.</p>
-            </footer>
+            <!-- Action Button -->
+            <div class="action-container">
+                <button id="entry-continue-btn" class="main-cta-btn haptic-touch">
+                    <span class="btn-text">Continue</span>
+                    <div class="btn-loader"></div>
+                </button>
+            </div>
 
         </div>
-    </div>
+
+        <!-- Footer Info -->
+        <footer class="card-footer">
+            <p class="legal-text">By continuing, you agree to our <span class="blue-accent">Security Protocols</span></p>
+        </footer>
+    </main>
+
 </div>
 <!-- ===================================================================== -->
 <!-- ===>> END OF BLOCK HTML 2 file : 1-login/login.html <<=== -->

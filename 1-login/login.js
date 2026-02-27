@@ -97,6 +97,75 @@ function triggerHapticFeedback() {
     console.log("System Status: Haptic feedback simulated.");
 }
 
+
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 1E : Theme Synchronization Engine --- */
+/* --------------------------------------------------------------------- */
+/**
+ * applySavedTheme: LocalStorage se saved theme nikalta hai aur
+ * use poore system (Body aur Icon) par apply karta hai.
+ */
+function applySavedTheme() {
+    const savedTheme = localStorage.getItem('RP_System_Theme') || 'light';
+    const themeIcon = document.getElementById('theme-icon');
+
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (themeIcon) themeIcon.className = 'fas fa-sun';
+    } else {
+        document.body.classList.remove('dark-mode');
+        if (themeIcon) themeIcon.className = 'fas fa-moon';
+    }
+    
+    console.log(`System Status: ${savedTheme.toUpperCase()} theme synchronized.`);
+}
+
+// Initial Run: Page load hote hi theme apply karo
+applySavedTheme();
+
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 1E file : 1-login/login.js --- */ 
+/* --------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 1F : Theme Toggle Listener --- */
+/* --------------------------------------------------------------------- */
+/**
+ * themeToggleBtn: User ki click par theme switch karta hai aur
+ * visual feedback (Haptic + Island) deta hai.
+ */
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
+
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+        // 1. Physical Reaction
+        triggerHapticFeedback();
+        
+        // 2. Class Toggle Logic
+        document.body.classList.toggle('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        
+        // 3. Icon & Storage Update
+        const themeIcon = document.getElementById('theme-icon');
+        if (isDarkMode) {
+            localStorage.setItem('RP_System_Theme', 'dark');
+            if (themeIcon) themeIcon.className = 'fas fa-sun';
+            showIsland("Dark Mode Active", "info");
+        } else {
+            localStorage.setItem('RP_System_Theme', 'light');
+            if (themeIcon) themeIcon.className = 'fas fa-moon';
+            showIsland("Light Mode Active", "info");
+        }
+    });
+}
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 1F file : 1-login/login.js --- */ 
+/* --------------------------------------------------------------------- */
+
+
+
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 1 file : 1-login/login.js <<=== */
 /* ===================================================================== */
