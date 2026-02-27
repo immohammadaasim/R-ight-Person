@@ -164,10 +164,6 @@ pathWhatsapp.addEventListener('click', () => {
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 2B : Telegram Flow Initiator (Deep Link Engine) --- */
 /* --------------------------------------------------------------------- */
-/**
- * initiateTelegramFlow: User ka phone number le kar deep link banata hai.
- * Bot link me phone number encode hoga — user START dabayega to OTP aayega.
- */
 function initiateTelegramFlow() {
     // Session se phone number aur country code lo
     const phone = sessionStorage.getItem('RP_Temp_Phone');
@@ -179,18 +175,20 @@ function initiateTelegramFlow() {
         return;
     }
 
-    // Full number banao (country code + number)
-const fullPhone = (countryCode + phone).replace(/\+/g, '%2B').replace(/\s/g, '');
+    // Telegram deep link ke liye sirf saaf digits chahiye (No +, No spaces)
+    const fullPhoneRaw = countryCode + phone;
+    const cleanPhoneForLink = fullPhoneRaw.replace(/\D/g, ''); 
 
-    // Telegram Deep Link banao
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-const deepLink = isMobile 
-    ? `tg://resolve?domain=Rightpersonverification_bot&start=${fullPhone}`
-    : `https://t.me/Rightpersonverification_bot?start=${fullPhone}`;
+    // Universal Telegram Link jo Mobile aur Desktop dono par work karega
+    const botUsername = "Rightpersonverification_bot";
+    const deepLink = `https://t.me/${botUsername}?start=${cleanPhoneForLink}`;
 
     // UI me "Open Telegram" button dikhao
-    showTelegramOpenButton(deepLink, countryCode + phone);
+    showTelegramOpenButton(deepLink, fullPhoneRaw);
 }
+/* --------------------------------------------------------------------- */
+/* --- End Block 2B file : 2-Verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 2C : Telegram Open Button UI --- */
