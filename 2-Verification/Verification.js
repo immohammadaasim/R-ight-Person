@@ -504,60 +504,52 @@ resendKeyBtn.addEventListener('click', () => {
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 4A : handleIdentitySuccess (Database Registration) --- */
 /* --------------------------------------------------------------------- */
-/**
- * handleIdentitySuccess: Identity verify hone ke baad user ko register ya login karwata hai.
- * Future-Proof: Handles column mapping for personal_email and mobile.
- */
 async function handleIdentitySuccess() {
     const currentDID = localStorage.getItem('RP_DeviceID');
     const userType = sessionStorage.getItem('RP_User_Type');
     const tempEmail = sessionStorage.getItem('RP_Temp_Email');
     const tempPhone = sessionStorage.getItem('RP_Temp_Phone');
 
-    // UI state ko 'Processing' dikhane ke liye
     verifyKeyBtn.disabled = true;
     verifyKeyBtn.querySelector('.btn-text').style.opacity = '0';
     verifyKeyBtn.querySelector('.btn-loader').style.display = 'block';
 
-    // SCENARIO 1: Agar User bilkul naya hai (First Time Registration)
     if (userType === 'NEW') {
         try {
             const { data, error } = await _sb
                 .from('users')
                 .insert({
-                    personal_email: tempEmail,      // User ki asli Gmail
-                    mobile: tempPhone,              // User ka asli Mobile
+                    personal_email: tempEmail,
+                    mobile: tempPhone,
                     device_fingerprint: currentDID,
                     is_blocked: false,
                     created_at: new Date().toISOString(),
-                    security_level: 'Standard'      // Default security level
+                    security_level: 'Standard' // Ab ye error nahi dega SQL chalane ke baad
                 });
 
             if (error) {
-                // Agar Supabase error de, to use detail mein catch karo
                 console.error("Supabase Save Error:", error);
-                throw new Error(error.message || "Database connection rejected.");
+                throw new Error(error.message);
             }
 
             showIsland("New Identity Created Successfully!", "success");
             
-            // Smooth transition to dashboard
             setTimeout(() => { 
                 window.location.href = '../3-dashboard/dashboard.html'; 
             }, 2000);
 
         } catch (err) {
             console.error("New User Registration Failed:", err);
-            // Asli wajah user ko Island par dikhao (e.g., Duplicate key)
             showIsland(`Registration Failed: ${err.message}`, "error");
             
-            // Button wapis theek karo taaki user dobara try kr sake
             verifyKeyBtn.disabled = false;
             verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
             verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
         }
         return;
     }
+
+}
 
     // SCENARIO 2: Agar User purana hai (Login Flow)
     try {
