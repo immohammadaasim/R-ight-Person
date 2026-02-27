@@ -375,7 +375,7 @@ verifyKeyBtn.addEventListener('click', async () => {
 
     const phone = sessionStorage.getItem('RP_Temp_Phone');
     const countryCode = sessionStorage.getItem('RP_Country_Code') || '+91';
-    const fullPhone = countryCode + phone;
+    const fullPhone = (countryCode + phone).replace(/\s/g, '');
 
     if (!phone) {
         showIsland("Session expired. Please login again.", "error");
