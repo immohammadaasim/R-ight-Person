@@ -1,175 +1,176 @@
 /* ===================================================================== */
-/* ===>> BLOCK JS 0: Documentation & Verification Logic Rules <<=== */
-/* ===================================================================== */
-/* 
-    FILE NAME: 2-verification/Verification.js
-    PROJECT: R-ight Person (Digital Identity System)
-    ARCHITECTURE: Modular Architecture (Verification Engine)
-    
-    SYSTEM FLOW:
-    1. READ IDENTITY: Get user info (Email/Phone) from sessionStorage.
-    2. PATH CHOICE: User selects Telegram (Free), iMail, or WhatsApp.
-    3. ACCESS -R- KEY: System sends 6-digit code via chosen path.
-    4. DEVICE GUARD (OLD USERS):
-       - If New Device: Trigger 3-minute Real-time Approval.
-       - If Same Device: Bypass to Dashboard.
-    5. IDENTITY SETUP: Redirect to dashboard for final registration.
-
-    RULES:
-    - User cannot stay on this page without temporary session data.
-    - All success/error messages MUST use showIsland().
-    - Haptic visuals (scale-down) simulated on every interaction.
-    - Zero-Jerk Transitions: Smooth fade/slide between views.
-*/
-/* ===================================================================== */
-/* ===>> END OF BLOCK JS 0 file : 2-verification/Verification.js <<=== */
-/* ===================================================================== */
-
-
-/* ===================================================================== */
 /* ===>> BLOCK JS 1: Initialization & Verification UI Engine <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 1A : Supabase Client & Connection Setup --- */
 /* --------------------------------------------------------------------- */
+/**
+ * Supabase Engine:
+ * Hamare database se link karne wala main bridge.
+ */
 const SB_URL = "https://xtzdlepgpqvllwzjfrsh.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emRsZXBncHF2bGx3empmcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5OTI2MzcsImV4cCI6MjA4NzU2ODYzN30.NxX8BPCK_HNQYmn0-7YkdPv12gO8wKgOS5oP2R0OYZc";
 
-// Initialize Supabase for this module
+// Initialize Supabase for this identity module
 const _sb = supabase.createClient(SB_URL, SB_KEY);
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 1A file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 1B : DOM Element Selection (Verification) --- */
 /* --------------------------------------------------------------------- */
-// Views
+// Gateway Views
 const selectionView = document.getElementById('selection-view');
 const keyInputView = document.getElementById('key-input-view');
 const shiftGuardView = document.getElementById('shift-guard-view');
 
-// Path Cards
+// Path Selection Cards
 const pathTelegram = document.getElementById('path-telegram');
 const pathEmail = document.getElementById('path-email');
 const pathWhatsapp = document.getElementById('path-whatsapp');
 
-// Action Elements
+// Interaction Elements
 const verifyKeyBtn = document.getElementById('verify-key-btn');
 const resendKeyBtn = document.getElementById('resend-key-btn');
 const goBackBtn = document.getElementById('go-back-entry');
 const changePathBtn = document.getElementById('back-to-selection');
 const keyBoxes = document.querySelectorAll('.key-box');
-
-// UI Feedback
-const dynamicIsland = document.getElementById('showIsland');
-const islandMsg = document.getElementById('island-message');
-const islandIcon = document.getElementById('island-icon');
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 1B file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 1C : Universal UI Helpers (The Island & Haptics) --- */
+/* --- Sub-Block 1C : UI Feedback Helpers (The Island Sync) --- */
 /* --------------------------------------------------------------------- */
 /**
- * showIsland: User ko har choti-badi baat batane wala universal function.
+ * triggerHaptic: 
+ * User ko physical feedback dene wala function. 
+ * Rule: 10ms vibration for touch reality.
  */
-function showIsland(msg, type = 'info') {
-    islandMsg.textContent = msg;
-    dynamicIsland.className = `dynamic-island active ${type}`;
-    
-    let iconSvg = '';
-    if(type === 'success') {
-        iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-    } else if(type === 'error') {
-        iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
-    } else {
-        iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
-    }
-    islandIcon.innerHTML = iconSvg;
-
-    setTimeout(() => { dynamicIsland.classList.remove('active'); }, 3500);
-}
-
 function triggerHaptic() {
     if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
-    console.log("Haptic Visual: Simulated");
+    console.log("System: Haptic visual triggered.");
 }
+
+/**
+ * NOTE: 'showIsland' function ab global Notification.js se liya jayega.
+ * Local function ko delete kar diya gaya hai modularity maintain karne ke liye.
+ */
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 1C file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 1D : View Controller (Zero-Jerk Transition) --- */
 /* --------------------------------------------------------------------- */
 /**
- * switchView: Ek view se dusre par jane ka makkhan jaisa smooth transition.
+ * switchView: 
+ * Ek portal se dusre portal par makkhan jaisa smooth arrival.
+ * Rule: 0.4s delay for opacity/transform sync.
  */
 function switchView(show, hide) {
+    if (!show || !hide) return;
+    
+    // Purane view ko fade-out karo
     hide.classList.remove('active');
+    
     setTimeout(() => {
         hide.style.display = 'none';
         show.style.display = 'block';
-        void show.offsetWidth; // Reflow for animation
-        show.classList.add('active');
+        
+        // Halka sa delay taaki browser transition ko register kare
+        setTimeout(() => {
+            show.classList.add('active');
+        }, 50);
     }, 400);
 }
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 1D file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 1E : Module Gatekeeper (Security Check) --- */
+/* --- Sub-Block 1E : Identity Gatekeeper (Security Sync) --- */
 /* --------------------------------------------------------------------- */
 /**
- * checkSession: Ensure karta hai ki user login.html se hi aaya hai.
+ * checkSessionIntegrity: 
+ * Ensure karta hai ki user login.html se hi verify karke aaya hai.
  */
-function checkSession() {
+function checkSessionIntegrity() {
     const tempEmail = sessionStorage.getItem('RP_Temp_Email');
     const tempPhone = sessionStorage.getItem('RP_Temp_Phone');
 
     if (!tempEmail || !tempPhone) {
-        // Bina data ke access denied
+        // Bina data ke entry blocked
         window.location.href = '../1-login/login.html';
     } else {
-        showIsland("Select your Identity Path", "info");
+        if (typeof showIsland === 'function') {
+            showIsland("Select your Identity Path", "info");
+        }
     }
 }
 
-// Start Security Check immediately
-document.addEventListener('DOMContentLoaded', checkSession);
+// System ko turant activate karo
+document.addEventListener('DOMContentLoaded', checkSessionIntegrity);
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 1E file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 1 file : 2-verification/Verification.js <<=== */
 /* ===================================================================== */
-
-
 
 /* ===================================================================== */
 /* ===>> BLOCK JS 2: Path Selection & Telegram Deep Link Logic <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2A : Path Selection Listeners --- */
+/* --- Sub-Block 2A : Path Selection Listeners (Identity Entry Points) --- */
 /* --------------------------------------------------------------------- */
+/**
+ * Path Listeners:
+ * User ko rasta chunne ki ijazat dete hain. 
+ * Filhal sirf Telegram active hai, baaki "Coming Soon" status par hain.
+ */
+if (pathTelegram) {
+    pathTelegram.addEventListener('click', () => {
+        triggerHaptic();
+        initiateTelegramFlow();
+    });
+}
 
-// 1. Telegram Path (Primary Free Path)
-pathTelegram.addEventListener('click', () => {
-    triggerHaptic();
-    initiateTelegramFlow();
-});
+if (pathEmail) {
+    pathEmail.addEventListener('click', () => {
+        triggerHaptic();
+        if (typeof showIsland === 'function') showIsland("iMail Path is coming soon ($1.00 fee).", "info");
+    });
+}
 
-// 2. iMail Path (Coming Soon - Paid $1.00)
-pathEmail.addEventListener('click', () => {
-    triggerHaptic();
-    showIsland("iMail Path is coming soon ($1.00 fee).", "info");
-});
-
-// 3. WhatsApp Path (Coming Soon - Paid $2.00)
-pathWhatsapp.addEventListener('click', () => {
-    triggerHaptic();
-    showIsland("WhatsApp Premium is coming soon ($2.00 fee).", "info");
-});
+if (pathWhatsapp) {
+    pathWhatsapp.addEventListener('click', () => {
+        triggerHaptic();
+        if (typeof showIsland === 'function') showIsland("WhatsApp Premium is coming soon ($2.00 fee).", "info");
+    });
+}
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 2A file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 2B : Telegram Flow Initiator (Hex-Secure Engine) --- */
 /* --------------------------------------------------------------------- */
+/**
+ * initiateTelegramFlow: 
+ * Phone number ko Hex mein badal kar secure deep link banata hai.
+ * Rule: 'tg://' protocol use hota hai browser blocking bypass karne ke liye.
+ */
 function initiateTelegramFlow() {
-    const phone = sessionStorage.getItem('RP_Temp_Phone');
+    const phone = sessionStorage.getItem('RP_Temp_Phone'); // Representing login_mobile
     const countryCode = sessionStorage.getItem('RP_Country_Code') || '+91';
 
     if (!phone) {
-        showIsland("Session expired. Please login again.", "error");
+        if (typeof showIsland === 'function') showIsland("Session expired. Please login again.", "error");
         setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
         return;
     }
@@ -177,10 +178,7 @@ function initiateTelegramFlow() {
     const fullPhoneRaw = countryCode + phone;
     const cleanNumber = fullPhoneRaw.replace(/\D/g, ''); 
 
-    /**
-     * God-Level Encoding: Hexadecimal 
-     * Isme koi symbols (+, /, =) nahi hote, isliye Telegram ise 100% accept karega.
-     */
+    // God-Level Hexadecimal Encoding
     const toHex = (str) => {
         let result = '';
         for (let i = 0; i < str.length; i++) {
@@ -191,141 +189,101 @@ function initiateTelegramFlow() {
 
     const hexEncodedParam = toHex(cleanNumber);
 
-    // Final Deep Link (Bulletproof for Mobile & Web)
+    // BYPASS FIX: Direct Telegram App Link
     const botUsername = "Rightpersonverification_bot";
-    const deepLink = `https://t.me/${botUsername}?start=${hexEncodedParam}`;
+    const deepLink = `tg://resolve?domain=${botUsername}&start=${hexEncodedParam}`;
+    const fallbackLink = `https://t.me/${botUsername}?start=${hexEncodedParam}`;
 
     showTelegramOpenButton(deepLink, fullPhoneRaw);
 }
 /* --------------------------------------------------------------------- */
-/* --- End Block 2B file : 2-Verification/Verification.js --- */ 
+/* --- End Sub-Block 2B file : 2-verification/Verification.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2C : Telegram Open Button UI --- */
+/* --- Sub-Block 2C : Telegram Open Button UI & Bridge Logic --- */
 /* --------------------------------------------------------------------- */
 /**
- * showTelegramOpenButton: Selection view me "Open Telegram" button inject karta hai.
+ * showTelegramOpenButton: 
+ * Selection list ke niche "Open Telegram" aur "Enter Key" buttons inject karta hai.
  */
 function showTelegramOpenButton(deepLink, displayPhone) {
-    // Agar pehle se hai to dobara mat banao
     if (document.getElementById('telegram-open-wrapper')) return;
 
     const selectionList = document.querySelector('.selection-list');
-
     const wrapper = document.createElement('div');
     wrapper.id = 'telegram-open-wrapper';
     wrapper.style.cssText = `
-        margin-top: 16px;
+        margin-top: 1.5rem;
         display: flex;
         flex-direction: column;
         gap: 12px;
-        animation: fadeSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        animation: spatialArrival 0.5s var(--spring-ease) forwards;
     `;
 
     wrapper.innerHTML = `
-        <style>
-            @keyframes fadeSlideIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-        </style>
-
-        <!-- Info Box -->
-        <div style="
-            background: rgba(0,122,255,0.08);
-            border: 1px solid rgba(0,122,255,0.2);
-            border-radius: 14px;
-            padding: 12px 14px;
-            font-size: 13px;
-            color: #007AFF;
-            line-height: 1.6;
-        ">
-            📱 Number: <b>${displayPhone}</b><br>
-            Tap below → Telegram opens → Press <b>START</b> → Key arrives instantly!
+        <div style="background:rgba(0,122,255,0.08); border:1px solid rgba(0,122,255,0.15); border-radius:18px; padding:1rem; font-size:0.85rem; color:var(--blue-accent); line-height:1.6;">
+            📱 Mobile: <b>${displayPhone}</b><br>
+            Tap below → Open Telegram → Press <b>START</b> → Key arrives instantly!
         </div>
 
-        <!-- Open Telegram Button -->
-        <a id="open-telegram-btn" href="${deepLink}" target="_blank" style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            height: 54px;
-            background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%);
-            color: white;
-            border-radius: 16px;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 600;
-            font-family: inherit;
-            box-shadow: 0 8px 20px rgba(42,171,238,0.3);
-            transition: all 0.2s ease;
-        ">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.76-1.63 6.27-2.71 7.53-3.23 3.58-1.48 4.32-1.74 4.81-1.75.11 0 .35.03.5.16.13.11.17.26.18.37 0 .04.01.12 0 .19z"/>
-            </svg>
-            Open Telegram to get Key
+        <a id="open-telegram-btn" href="${deepLink}" target="_blank" class="ios-primary-btn" style="text-decoration:none; background:var(--telegram-blue);">
+            <i class="fab fa-telegram-plane" style="margin-right:10px;"></i> Open Telegram
         </a>
 
-        <!-- Already got key button -->
-        <button id="already-got-key-btn" style="
-            width: 100%;
-            height: 48px;
-            background: transparent;
-            border: 1.5px solid rgba(0,122,255,0.3);
-            border-radius: 14px;
-            color: #007AFF;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.2s ease;
-        ">I have my Key → Enter it</button>
+        <button id="already-got-key-btn" class="ios-secondary-btn">I have my Key → Enter it</button>
     `;
 
     selectionList.after(wrapper);
 
-    // Haptic on open telegram button
+    // Interaction Listeners
     document.getElementById('open-telegram-btn').addEventListener('click', () => {
         triggerHaptic();
-        showIsland("Opening Telegram...", "info");
-        
-        // 3 second baad "Enter Key" view automatically suggest karo
-        setTimeout(() => {
-            showIsland("Got your key? Tap 'I have my Key'", "info");
-        }, 3000);
+        if (typeof showIsland === 'function') showIsland("Opening Telegram App...", "info");
     });
 
-    // "I have my Key" button
     document.getElementById('already-got-key-btn').addEventListener('click', () => {
         triggerHaptic();
-        document.getElementById('target-identity').textContent = 'Telegram';
+        const targetLabel = document.getElementById('target-identity');
+        if (targetLabel) targetLabel.textContent = 'Telegram';
         switchView(keyInputView, selectionView);
-        startOTPTimer();
+        
+        // Timer engine ko trigger karo (JS Block 3C)
+        if (typeof startOTPTimer === 'function') startOTPTimer();
+    });
+}
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 2C file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 2D : Navigation Helpers (Back Rules) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * Navigation Listeners:
+ * User ko wapas piche jaane aur path badalne ki suvidha dete hain.
+ */
+if (goBackBtn) {
+    goBackBtn.addEventListener('click', () => {
+        triggerHaptic();
+        window.location.href = '../1-login/login.html';
     });
 }
 
+if (changePathBtn) {
+    changePathBtn.addEventListener('click', () => {
+        triggerHaptic();
+        const wrapper = document.getElementById('telegram-open-wrapper');
+        if (wrapper) wrapper.remove();
+        switchView(selectionView, keyInputView);
+    });
+}
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2D : Navigation Helpers --- */
+/* --- End Sub-Block 2D file : 2-verification/Verification.js --- */ 
 /* --------------------------------------------------------------------- */
-
-// "Edit Mobile/Gmail" dabane par wapis login page par bhejo
-goBackBtn.addEventListener('click', () => {
-    triggerHaptic();
-    window.location.href = '../1-login/login.html';
-});
-
-// "Change Path" dabane par wapis selection cards dikhao
-changePathBtn.addEventListener('click', () => {
-    triggerHaptic();
-    const wrapper = document.getElementById('telegram-open-wrapper');
-    if (wrapper) wrapper.remove();
-    switchView(selectionView, keyInputView);
-});
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK JS 2 file : 2-Verification/Verification.js <<=== */
+/* ===>> END OF BLOCK JS 2 file : 2-verification/Verification.js <<=== */
 /* ===================================================================== */
 
 
@@ -334,43 +292,42 @@ changePathBtn.addEventListener('click', () => {
 /* ===>> BLOCK JS 3: Access -R- Key Passcode Logic & Verification <<=== */
 /* ===================================================================== */
 
-/* ===================================================================== */
-/* ===>> BLOCK JS 3: Access -R- Key Passcode Logic & Verification <<=== */
-/* ===================================================================== */
-
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 3A : Auto-Focus Input Behavior --- */
+/* --- Sub-Block 3A : Auto-Focus Input Behavior (Passcode Rule) --- */
 /* --------------------------------------------------------------------- */
 /**
- * keyBoxes: 6-digit boxes ka smart behavior handle karta hai.
+ * keyBoxes: 
+ * 6-digit boxes ka smart behavior handle karta hai.
+ * Rule: Auto-advance on input, Backspace recovery, and 6-digit Paste support.
  */
-keyBoxes.forEach((box, index) => {
-    // Sirf numbers allow karo
-    box.addEventListener('input', (e) => {
-        e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        
-        if (e.target.value.length === 1 && index < keyBoxes.length - 1) {
-            keyBoxes[index + 1].focus();
-        }
-    });
+if (keyBoxes) {
+    keyBoxes.forEach((box, index) => {
+        // Sirf numbers allow karo aur auto-focus aage bhejo
+        box.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            if (e.target.value.length === 1 && index < keyBoxes.length - 1) {
+                keyBoxes[index + 1].focus();
+            }
+        });
 
-    // Backspace dabane par piche wale box me jao
-    box.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && !box.value && index > 0) {
-            keyBoxes[index - 1].focus();
-        }
-    });
+        // Backspace dabane par piche wale box me jao
+        box.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !box.value && index > 0) {
+                keyBoxes[index - 1].focus();
+            }
+        });
 
-    // Paste support
-    box.addEventListener('paste', (e) => {
-        e.preventDefault();
-        const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
-        if (pastedData.length === 6) {
-            keyBoxes.forEach((b, i) => { b.value = pastedData[i] || ''; });
-            keyBoxes[5].focus();
-        }
+        // Paste support: Jab user poora 6-digit code paste kare
+        box.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+            if (pastedData.length === 6) {
+                keyBoxes.forEach((b, i) => { b.value = pastedData[i] || ''; });
+                keyBoxes[5].focus();
+            }
+        });
     });
-});
+}
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 3A file : 2-verification/Verification.js --- */ 
 /* --------------------------------------------------------------------- */
@@ -380,93 +337,101 @@ keyBoxes.forEach((box, index) => {
 /* --------------------------------------------------------------------- */
 /**
  * verifyKeyBtn: 
- * Database lookup ke liye ab 'login_mobile' (Old: phone) ka use hoga.
- * Rule: Match hone par turant delete nahi karna, taaki Sub-Block 4A 
- * Telegram ka verified naam utha sake.
+ * Supabase 'otp_store' table se OTP match karke identity confirm karta hai.
+ * UPDATE: Ab 'login_mobile' column ka use ho raha hai (Sync with Block 103).
  */
-verifyKeyBtn.addEventListener('click', async () => {
-    if (typeof triggerHaptic === 'function') triggerHaptic();
+if (verifyKeyBtn) {
+    verifyKeyBtn.addEventListener('click', async () => {
+        triggerHaptic();
 
-    // 1. Boxes se poora 6-digit code nikalo
-    let enteredOTP = "";
-    keyBoxes.forEach(box => enteredOTP += box.value);
+        // 1. Boxes se poora code nikaalo
+        let enteredOTP = "";
+        keyBoxes.forEach(box => enteredOTP += box.value);
 
-    if (enteredOTP.length < 6) {
-        return showIsland("Please enter the full 6-digit key.", "error");
-    }
-
-    const phone = sessionStorage.getItem('RP_Temp_Phone');
-    const countryCode = sessionStorage.getItem('RP_Country_Code') || '+91';
-    const fullPhone = (countryCode + phone).replace(/\s/g, '');
-
-    if (!phone) {
-        showIsland("Session expired. Please login again.", "error");
-        setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
-        return;
-    }
-
-    // UI State: Loading Visuals
-    verifyKeyBtn.disabled = true;
-    verifyKeyBtn.querySelector('.btn-text').style.opacity = '0';
-    verifyKeyBtn.querySelector('.btn-loader').style.display = 'block';
-
-    try {
-        // 2. Database Lookup: Fetch OTP using 'login_mobile' column (New Naming)
-        const { data: otpRecord, error } = await _sb
-            .from('otp_store')
-            .select('otp, expires_at')
-            .eq('login_mobile', fullPhone) 
-            .maybeSingle();
-
-        if (error || !otpRecord) {
-            throw new Error('Key not found. Please request a new code.');
+        if (enteredOTP.length < 6) {
+            if (typeof showIsland === 'function') showIsland("Please enter the full 6-digit key.", "error");
+            return;
         }
 
-        // 3. Expiry Check
-        const now = new Date();
-        const expiry = new Date(otpRecord.expires_at);
-        if (now > expiry) {
-            throw new Error('Verification Key expired.');
+        const phone = sessionStorage.getItem('RP_Temp_Phone');
+        const countryCode = sessionStorage.getItem('RP_Country_Code') || '+91';
+        const fullPhone = (countryCode + phone).replace(/\s/g, '');
+
+        if (!phone) {
+            if (typeof showIsland === 'function') showIsland("Session expired. Please re-login.", "error");
+            setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
+            return;
         }
 
-        // 4. OTP Match Check (The Gatekeeper)
-        if (enteredOTP !== otpRecord.otp) {
-            throw new Error('Invalid Key. Access Denied.');
+        // UI Loading State
+        verifyKeyBtn.disabled = true;
+        const btnText = verifyKeyBtn.querySelector('.btn-text');
+        const btnLoader = verifyKeyBtn.querySelector('.btn-loader');
+        if (btnText) btnText.style.opacity = '0';
+        if (btnLoader) btnLoader.style.display = 'block';
+
+        try {
+            // 2. Database Lookup: 'login_mobile' column se search karo
+            const { data: otpRecord, error } = await _sb
+                .from('otp_store')
+                .select('otp, expires_at')
+                .eq('login_mobile', fullPhone) 
+                .maybeSingle();
+
+            if (error || !otpRecord) {
+                throw new Error('Key not found. Please request a new code.');
+            }
+
+            // 3. Expiry Check
+            const now = new Date();
+            const expiry = new Date(otpRecord.expires_at);
+            if (now > expiry) {
+                throw new Error('Verification Key expired.');
+            }
+
+            // 4. OTP Match Check
+            if (enteredOTP !== otpRecord.otp) {
+                throw new Error('Invalid Key. Access Denied.');
+            }
+
+            // 5. Match Success!
+            if (typeof showIsland === 'function') showIsland("Identity Confirmed!", "success");
+
+            // Execute Final Identity Bridge (Sub-Block 4A)
+            await handleIdentitySuccess();
+
+        } catch (err) {
+            console.error("Verification Guard Error:", err.message);
+            if (typeof showIsland === 'function') showIsland(err.message, "error");
+
+            // Reset UI for retry
+            keyBoxes.forEach(box => box.value = "");
+            if (keyBoxes[0]) keyBoxes[0].focus();
+
+            verifyKeyBtn.disabled = false;
+            if (btnText) btnText.style.opacity = '1';
+            if (btnLoader) btnLoader.style.display = 'none';
         }
-
-        // 5. Match Success!
-        showIsland("Identity Confirmed!", "success");
-
-        // Execute Final Identity Bridge (Sub-Block 4A)
-        await handleIdentitySuccess();
-
-    } catch (err) {
-        console.error("Verification Guard Error:", err.message);
-        showIsland(err.message, "error");
-
-        // Clear Boxes for Retry
-        keyBoxes.forEach(box => box.value = "");
-        keyBoxes[0].focus();
-
-        // Reset Button
-        verifyKeyBtn.disabled = false;
-        verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
-        verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
-    }
-});
+    });
+}
 /* --------------------------------------------------------------------- */
 /* —-- Function#2 END OF BLOCK JS 3B: file : 2-verification/Verification.js —-- */
 /* --------------------------------------------------------------------- */
-
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 3C : Countdown Timer & Resend Logic --- */
 /* --------------------------------------------------------------------- */
 let otpTimer;
 
+/**
+ * startOTPTimer: 
+ * 2 minute ka countdown timer jo resend button ko control karta hai.
+ */
 function startOTPTimer() {
     let timeLeft = 120; // 2 Minutes
     const timerDisplay = document.getElementById('resend-timer');
+    if (!timerDisplay || !resendKeyBtn) return;
+
     resendKeyBtn.disabled = true;
 
     clearInterval(otpTimer);
@@ -479,31 +444,38 @@ function startOTPTimer() {
             clearInterval(otpTimer);
             resendKeyBtn.disabled = false;
             timerDisplay.textContent = "0:00";
-            showIsland("You can now request a new key.", "info");
+            if (typeof showIsland === 'function') showIsland("You can now request a new key.", "info");
         }
         timeLeft--;
     }, 1000);
 }
 
-// Resend Button Click
-resendKeyBtn.addEventListener('click', () => {
-    triggerHaptic();
+// Resend Button Click Listener
+if (resendKeyBtn) {
+    resendKeyBtn.addEventListener('click', () => {
+        triggerHaptic();
+        
+        // Form Reset
+        keyBoxes.forEach(box => box.value = "");
+        if (keyBoxes[0]) keyBoxes[0].focus();
 
-    // Boxes reset karo
-    keyBoxes.forEach(box => box.value = "");
-    keyBoxes[0].focus();
+        // Wapas selection par bhejo taaki user naya flow start kare
+        const wrapper = document.getElementById('telegram-open-wrapper');
+        if (wrapper) wrapper.remove();
+        switchView(selectionView, keyInputView);
 
-    // Wapis selection view par le jao
-    const wrapper = document.getElementById('telegram-open-wrapper');
-    if (wrapper) wrapper.remove();
-    switchView(selectionView, keyInputView);
-
-    showIsland("Please tap Telegram path again to resend.", "info");
-});
+        if (typeof showIsland === 'function') showIsland("Tap Telegram to get a new key.", "info");
+    });
+}
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 3C file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK JS 3 file : 2-Verification/Verification.js <<=== */
+/* ===>> END OF BLOCK JS 3 file : 2-verification/Verification.js <<=== */
 /* ===================================================================== */
+
+
 
 
 /* ===================================================================== */
@@ -515,8 +487,8 @@ resendKeyBtn.addEventListener('click', () => {
 /* --------------------------------------------------------------------- */
 /**
  * handleIdentitySuccess: 
- * Naye naming convention (login_email, login_mobile, provider_name, telegram_name)
- * ke sath users table mein verified data silent save karta hai.
+ * OTP verify hone ke baad Google aur Telegram se saara verified data (Hiden)
+ * ikatha karta hai aur use 'users' table mein naye column names ke sath save karta hai.
  */
 async function handleIdentitySuccess() {
     const currentDID = localStorage.getItem('RP_DeviceID');
@@ -526,29 +498,33 @@ async function handleIdentitySuccess() {
     const countryCode = sessionStorage.getItem('RP_Country_Code') || '+91';
     const fullPhone = (countryCode + tempPhone).replace(/\s/g, '');
 
-    // Google/Yahoo Data from Session
-    const verifiedName = sessionStorage.getItem('RP_Verified_Name') || "";
+    // Google/Yahoo Data from Session (Captured in login.js)
+    const providerName = sessionStorage.getItem('RP_Verified_Name') || "";
     const providerUID  = sessionStorage.getItem('RP_Provider_UID') || "";
     const authProvider = sessionStorage.getItem('RP_Auth_Provider') || "manual";
 
-    // UI state: Processing
-    verifyKeyBtn.disabled = true;
-    verifyKeyBtn.querySelector('.btn-text').style.opacity = '0';
-    verifyKeyBtn.querySelector('.btn-loader').style.display = 'block';
+    // UI State: Processing Animation
+    if (verifyKeyBtn) {
+        verifyKeyBtn.disabled = true;
+        const btnText = verifyKeyBtn.querySelector('.btn-text');
+        const btnLoader = verifyKeyBtn.querySelector('.btn-loader');
+        if (btnText) btnText.style.opacity = '0';
+        if (btnLoader) btnLoader.style.display = 'block';
+    }
 
     try {
-        // 1. Capture Telegram Name from otp_store (login_mobile column)
+        // 1. Capture Telegram Name from otp_store (Hiden Data)
         const { data: otpData } = await _sb
             .from('otp_store')
-            .select('telegram_name') 
+            .select('telegram_name')
             .eq('login_mobile', fullPhone)
             .maybeSingle();
         
         const telegramName = otpData?.telegram_name || "";
 
-        // SCENARIO 1: Naya Identity Registration (First Time)
+        // SCENARIO 1: Agar User bilkul naya hai (First Time Registration)
         if (userType === 'NEW') {
-            const { error } = await _sb
+            const { error: insertError } = await _sb
                 .from('users')
                 .insert({
                     login_email: tempEmail,      
@@ -557,59 +533,72 @@ async function handleIdentitySuccess() {
                     is_blocked: false,
                     created_at: new Date().toISOString(),
                     security_level: 'Standard',
-                    // Hidden Identity Columns Updated
-                    provider_name: verifiedName,         
-                    provider_uid: providerUID,           
-                    auth_provider: authProvider,         
-                    telegram_name: telegramName 
+                    // Hidden Identity Columns (Naming Sync)
+                    provider_name: providerName,         // Google/Yahoo Name
+                    provider_uid: providerUID,           // Provider Unique ID
+                    auth_provider: authProvider,         // Source Type
+                    telegram_name: telegramName          // Telegram Profile Name
                 });
 
-            if (error) throw new Error(error.message);
+            if (insertError) throw new Error(insertError.message);
 
-            showIsland("New Identity Created Successfully!", "success");
+            if (typeof showIsland === 'function') showIsland("New Identity Created Successfully!", "success");
+            
+            // Clean-up OTP record after successful sync
+            await _sb.from('otp_store').delete().eq('login_mobile', fullPhone);
+
             setTimeout(() => { window.location.href = '../3-Dashboard/Dashboard.html'; }, 2000);
             return;
         }
 
-        // SCENARIO 2: Purana Identity Sync (Login Flow)
+        // SCENARIO 2: Agar User purana hai (Login Flow)
         const { data: user, error: userError } = await _sb
             .from('users')
             .select('id, device_fingerprint, is_blocked')
             .eq('login_email', tempEmail)
             .single();
 
-        if (userError) throw new Error("Account not found.");
+        if (userError) throw new Error("Account not found. Please register first.");
 
         if (user.is_blocked) {
             return showHighAlert("This Identity is permanently suspended.");
         }
 
-        // Silent Update: Data refresh in new columns
+        // Silent Update: Data refresh in new columns (Background Sync)
         await _sb
             .from('users')
             .update({ 
-                provider_name: verifiedName,
+                provider_name: providerName,
                 telegram_name: telegramName,
                 identity_synced_at: new Date().toISOString()
             })
             .eq('id', user.id);
 
-        // Device Guard Check
+        // Device Guard Logic: Check if device DNA matches
         if (user.device_fingerprint === currentDID) {
-            showIsland("Device Verified. Welcome back!", "success");
+            if (typeof showIsland === 'function') showIsland("Device Verified. Welcome back!", "success");
+            
+            // Clean-up OTP record
+            await _sb.from('otp_store').delete().eq('login_mobile', fullPhone);
+
             setTimeout(() => { window.location.href = '../3-Dashboard/Dashboard.html'; }, 1500);
         } else {
-            // New device triggered shift protocol
+            // New device detected — trigger Shift Protocol (Sub-Block 4B)
             triggerDeviceShiftProtocol(user.id, currentDID);
         }
 
     } catch (err) {
         console.error("Identity Bridge Error:", err);
-        showIsland(err.message, "error");
+        if (typeof showIsland === 'function') showIsland(err.message, "error");
         
-        verifyKeyBtn.disabled = false;
-        verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
-        verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
+        // Reset Button on Failure
+        if (verifyKeyBtn) {
+            verifyKeyBtn.disabled = false;
+            const btnText = verifyKeyBtn.querySelector('.btn-text');
+            const btnLoader = verifyKeyBtn.querySelector('.btn-loader');
+            if (btnText) btnText.style.opacity = '1';
+            if (btnLoader) btnLoader.style.display = 'none';
+        }
     }
 }
 /* --------------------------------------------------------------------- */
@@ -621,21 +610,29 @@ async function handleIdentitySuccess() {
 /* --------------------------------------------------------------------- */
 let shiftCountdown;
 
+/**
+ * triggerDeviceShiftProtocol: 
+ * Naye device par login karne par 3-minute ka real-time timer chalu karta hai.
+ */
 function triggerDeviceShiftProtocol(uid, newDID) {
     const shiftTimerText = document.getElementById('shift-timer-text');
     const timerRing = document.getElementById('timer-progress-ring');
     
-    showIsland("New Device detected! Verification required.", "error");
+    if (typeof showIsland === 'function') showIsland("New Device detected! Verification required.", "error");
 
-    selectionView.style.display = 'none';
-    keyInputView.style.display = 'none';
-    shiftGuardView.style.display = 'block';
-    void shiftGuardView.offsetWidth; 
-    shiftGuardView.classList.add('active');
+    // Smooth switch to Shift Guard view (Zero-Jerk Rule)
+    if (selectionView) selectionView.style.display = 'none';
+    if (keyInputView) keyInputView.style.display = 'none';
+    
+    if (shiftGuardView) {
+        shiftGuardView.style.display = 'block';
+        void shiftGuardView.offsetWidth; // Force Reflow for transition
+        shiftGuardView.classList.add('active');
+    }
 
-    let timeLeft = 180; 
+    let timeLeft = 180; // 3 Minutes (180 Seconds)
     const totalTime = 180;
-    const ringCircumference = 339;
+    const ringCircumference = 339.29;
 
     clearInterval(shiftCountdown);
     shiftCountdown = setInterval(() => {
@@ -643,6 +640,7 @@ function triggerDeviceShiftProtocol(uid, newDID) {
         let secs = timeLeft % 60;
         if(shiftTimerText) shiftTimerText.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 
+        // Circular Progress Ring animation
         const offset = ringCircumference - (timeLeft / totalTime) * ringCircumference;
         if(timerRing) timerRing.style.strokeDashoffset = offset;
 
@@ -653,6 +651,7 @@ function triggerDeviceShiftProtocol(uid, newDID) {
         timeLeft--;
     }, 1000);
 
+    // Start Real-time sync listener (JS Block 5A)
     if (typeof startShiftSyncListener === 'function') {
         startShiftSyncListener(uid, newDID);
     }
@@ -662,8 +661,11 @@ function triggerDeviceShiftProtocol(uid, newDID) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4C : High Alert Logic (Access Blocked) --- */
+/* --- Sub-Block 4C : High Alert Logic & Expiry Rules --- */
 /* --------------------------------------------------------------------- */
+/**
+ * showHighAlert: Device ko permanent block screen par bhejta hai.
+ */
 function showHighAlert(reason) {
     const blockScreen = document.getElementById('high-alert-screen');
     const blockReasonText = document.getElementById('block-reason');
@@ -675,8 +677,10 @@ function showHighAlert(reason) {
 }
 
 function handleShiftExpiry() {
-    showIsland("Verification time expired. Please re-login.", "error");
-    setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
+    if (typeof showIsland === 'function') showIsland("Verification time expired. Please re-login.", "error");
+    setTimeout(() => { 
+        window.location.href = '../1-login/login.html'; 
+    }, 2000);
 }
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 4C file : 2-verification/Verification.js --- */ 
@@ -685,6 +689,8 @@ function handleShiftExpiry() {
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 4 file : 2-verification/Verification.js <<=== */
 /* ===================================================================== */
+
+
 
 
 /* ===================================================================== */
@@ -696,8 +702,8 @@ function handleShiftExpiry() {
 /* --------------------------------------------------------------------- */
 /**
  * startShiftSyncListener: 
- * Supabase Real-time channel ka use karke primary device se APPROVED ya 
- * REJECTED signal sunta hai.
+ * Supabase Real-time channel ka use karke primary device se aane wale 
+ * APPROVED ya REJECTED signal ko live sunta hai.
  */
 function startShiftSyncListener(uid, newDID) {
     const syncChannel = _sb.channel(`identity-sync-${uid}`);
@@ -706,29 +712,33 @@ function startShiftSyncListener(uid, newDID) {
         .on('broadcast', { event: 'auth-response' }, async ({ payload }) => {
             const { action, targetDeviceID } = payload;
 
+            // Rule: Sirf tabhi action lo jab target Device ID match kare
             if (targetDeviceID === newDID) {
                 if (action === 'APPROVED') {
-                    clearInterval(shiftCountdown);
-                    showIsland("Authorization Granted!", "success");
-                    await finalizeIdentityEntry(uid, newDID);
-                } else if (action === 'REJECTED') {
-                    clearInterval(shiftCountdown);
+                    if (shiftCountdown) clearInterval(shiftCountdown);
+                    if (typeof showIsland === 'function') showIsland("Authorization Granted!", "success");
                     
-                    // Device ko permanently block karo (Hiden Security Layer)
+                    // Naye hardware ko users table mein register karo
+                    await finalizeIdentityEntry(uid, newDID);
+                } 
+                else if (action === 'REJECTED') {
+                    if (shiftCountdown) clearInterval(shiftCountdown);
+                    
+                    // Device ko nuclear block (high alert) list mein daalo
                     await _sb
                         .from('blocked_devices')
                         .insert({ 
                             device_id: newDID, 
-                            reason: 'Rejected by primary device',
+                            reason: 'Rejected by primary device owner',
                             created_at: new Date().toISOString()
                         });
 
-                    showHighAlert("Authorization REJECTED. This device is now permanently flagged.");
+                    showHighAlert("Authorization REJECTED. This hardware is now permanently flagged.");
                 }
             }
         })
         .subscribe((status) => {
-            console.log("Real-time sync status:", status);
+            console.log("Modular Engine: Real-time sync status ->", status);
         });
 }
 /* --------------------------------------------------------------------- */
@@ -741,28 +751,35 @@ function startShiftSyncListener(uid, newDID) {
 /**
  * finalizeIdentityEntry: 
  * Naye device ki fingerprint ko 'users' table me update karke 
- * dashboard par bhejta hai.
+ * user ko dashboard raste par bhejta hai.
  */
 async function finalizeIdentityEntry(uid, newDID) {
     try {
-        // Naming convention check: ID se naya fingerprint update
-        const { error } = await _sb
+        const phone = sessionStorage.getItem('RP_Temp_Phone');
+        const countryCode = sessionStorage.getItem('RP_Country_Code') || '+91';
+        const fullPhone = (countryCode + phone).replace(/\s/g, '');
+
+        // 1. Naming convention check: Update new hardware ID
+        const { error: updateError } = await _sb
             .from('users')
             .update({ device_fingerprint: newDID })
             .eq('id', uid);
 
-        if (error) throw error;
+        if (updateError) throw updateError;
 
-        showIsland("Device Sync Complete. Redirecting...", "success");
+        // 2. Clean-up: OTP record ko delete karo (login_mobile column)
+        await _sb.from('otp_store').delete().eq('login_mobile', fullPhone);
 
+        if (typeof showIsland === 'function') showIsland("Device Sync Complete. Welcome!", "success");
+
+        // 3. Final Transition to Dashboard
         setTimeout(() => {
-            // Path Fix: Case sensitive folder name (3-Dashboard)
             window.location.href = '../3-Dashboard/Dashboard.html';
         }, 1800);
 
     } catch (err) {
         console.error("Sync Error:", err);
-        showIsland("Sync failed. Please try manual re-entry.", "error");
+        if (typeof showIsland === 'function') showIsland("Sync failed. Please try manual re-entry.", "error");
     }
 }
 /* --------------------------------------------------------------------- */
@@ -772,39 +789,44 @@ async function finalizeIdentityEntry(uid, newDID) {
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 5C : Email Shift Link (Lost Phone Protocol) --- */
 /* --------------------------------------------------------------------- */
-document.getElementById('shift-via-email')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (typeof triggerHaptic === 'function') triggerHaptic();
-    showIsland("Email shift link will be active after 3 minutes.", "info");
-});
+/**
+ * shiftViaEmail: 
+ * Agar purana phone kho gaya hai, toh email raste ka link trigger karta hai.
+ */
+const emailShiftLink = document.getElementById('shift-via-email');
+if (emailShiftLink) {
+    emailShiftLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        triggerHaptic();
+        if (typeof showIsland === 'function') {
+            showIsland("Email shift link will be active after 3 minutes.", "info");
+        }
+    });
+}
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 5C file : 2-verification/Verification.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 5D : Page Load Animation & Session Check --- */
+/* --- Sub-Block 5D : Page Load Animation & Vision Entrance --- */
 /* --------------------------------------------------------------------- */
+/**
+ * revealVerificationSystem: 
+ * Page load hone par spatial glass card ko hawa mein tairta hua dikhata hai.
+ */
 window.addEventListener('load', () => {
-    // Session Guard: Check user status
-    const tempEmail = sessionStorage.getItem('RP_Temp_Email');
-    if (!tempEmail) {
-        window.location.href = '../1-login/login.html';
-        return;
-    }
-
-    // Card entrance animation (visionOS Style)
+    // Card entrance animation physics
     const card = document.querySelector('.spatial-glass-card');
     if (card) {
         card.style.opacity = '0';
         card.style.transform = 'scale(0.95) translateY(20px)';
+        
         setTimeout(() => {
-            card.style.transition = 'all 0.8s var(--spring-bounce)';
+            card.style.transition = 'all 0.8s cubic-bezier(0.32, 0.72, 0, 1)';
             card.style.opacity = '1';
             card.style.transform = 'scale(1) translateY(0)';
-        }, 100);
+        }, 150);
     }
-
-    if (typeof showIsland === 'function') showIsland("Select your Identity Path", "info");
 });
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 5D file : 2-verification/Verification.js --- */ 
