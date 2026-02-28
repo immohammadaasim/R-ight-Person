@@ -334,6 +334,10 @@ changePathBtn.addEventListener('click', () => {
 /* ===>> BLOCK JS 3: Access -R- Key Passcode Logic & Verification <<=== */
 /* ===================================================================== */
 
+/* ===================================================================== */
+/* ===>> BLOCK JS 3: Access -R- Key Passcode Logic & Verification <<=== */
+/* ===================================================================== */
+
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 3A : Auto-Focus Input Behavior --- */
 /* --------------------------------------------------------------------- */
@@ -357,7 +361,7 @@ keyBoxes.forEach((box, index) => {
         }
     });
 
-    // Paste support (agar user poora code paste kare)
+    // Paste support
     box.addEventListener('paste', (e) => {
         e.preventDefault();
         const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
@@ -367,13 +371,16 @@ keyBoxes.forEach((box, index) => {
         }
     });
 });
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 3A file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* —-- Function#2 BLOCK JS 3B: Verify Identity Execution —-- */
 /* --------------------------------------------------------------------- */
 /**
  * verifyKeyBtn: 
- * Supabase otp_store se OTP match karke identity confirm karta hai.
+ * Database lookup ke liye ab 'login_mobile' (Old: phone) ka use hoga.
  * Rule: Match hone par turant delete nahi karna, taaki Sub-Block 4A 
  * Telegram ka verified naam utha sake.
  */
@@ -404,11 +411,11 @@ verifyKeyBtn.addEventListener('click', async () => {
     verifyKeyBtn.querySelector('.btn-loader').style.display = 'block';
 
     try {
-        // 2. Database Lookup: Fetch OTP for this phone
+        // 2. Database Lookup: Fetch OTP using 'login_mobile' column (New Naming)
         const { data: otpRecord, error } = await _sb
             .from('otp_store')
             .select('otp, expires_at')
-            .eq('phone', fullPhone)
+            .eq('login_mobile', fullPhone) 
             .maybeSingle();
 
         if (error || !otpRecord) {
@@ -428,8 +435,6 @@ verifyKeyBtn.addEventListener('click', async () => {
         }
 
         // 5. Match Success!
-        // Rule: Delete yahan nahi hoga. HandleIdentitySuccess record se 
-        // Telegram verified name uthayega uske baad rasta khulega.
         showIsland("Identity Confirmed!", "success");
 
         // Execute Final Identity Bridge (Sub-Block 4A)
@@ -443,15 +448,16 @@ verifyKeyBtn.addEventListener('click', async () => {
         keyBoxes.forEach(box => box.value = "");
         keyBoxes[0].focus();
 
-        // Reset Button to Original State
+        // Reset Button
         verifyKeyBtn.disabled = false;
         verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
         verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
     }
 });
 /* --------------------------------------------------------------------- */
-/* —-- Function#2 END OF BLOCK JS 3B: file : 2-Verification/Verification.js —-- */
+/* —-- Function#2 END OF BLOCK JS 3B: file : 2-verification/Verification.js —-- */
 /* --------------------------------------------------------------------- */
+
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 3C : Countdown Timer & Resend Logic --- */
@@ -504,21 +510,13 @@ resendKeyBtn.addEventListener('click', () => {
 /* ===>> BLOCK JS 4: Device Guard & Anti-Theft Logic (Shift System) <<=== */
 /* ===================================================================== */
 
-/* ===================================================================== */
-/* ===>> BLOCK JS 4: Device Guard & Anti-Theft Logic (Shift System) <<=== */
-/* ===================================================================== */
-
-/* ===================================================================== */
-/* ===>> BLOCK JS 4: Device Guard & Anti-Theft Logic (Shift System) <<=== */
-/* ===================================================================== */
-
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 4A : handleIdentitySuccess (The Final Identity Bridge) --- */
 /* --------------------------------------------------------------------- */
 /**
  * handleIdentitySuccess: 
- * OTP verify hone ke baad Google aur Telegram se saara verified data (Hiden)
- * ikatha karta hai aur use 'users' table mein silent save karta hai.
+ * Naye naming convention (login_email, login_mobile, provider_name, telegram_name)
+ * ke sath users table mein verified data silent save karta hai.
  */
 async function handleIdentitySuccess() {
     const currentDID = localStorage.getItem('RP_DeviceID');
@@ -528,42 +526,42 @@ async function handleIdentitySuccess() {
     const countryCode = sessionStorage.getItem('RP_Country_Code') || '+91';
     const fullPhone = (countryCode + tempPhone).replace(/\s/g, '');
 
-    // 1. Fetch Google/Provider Data from Session (Hidden)
+    // Google/Yahoo Data from Session
     const verifiedName = sessionStorage.getItem('RP_Verified_Name') || "";
     const providerUID  = sessionStorage.getItem('RP_Provider_UID') || "";
     const authProvider = sessionStorage.getItem('RP_Auth_Provider') || "manual";
 
-    // Button state update (Processing Animation)
+    // UI state: Processing
     verifyKeyBtn.disabled = true;
     verifyKeyBtn.querySelector('.btn-text').style.opacity = '0';
     verifyKeyBtn.querySelector('.btn-loader').style.display = 'block';
 
     try {
-        // 2. Capture Telegram Verified Name (Hiden Data from otp_store)
+        // 1. Capture Telegram Name from otp_store (login_mobile column)
         const { data: otpData } = await _sb
             .from('otp_store')
-            .select('telegram_verified_name')
-            .eq('phone', fullPhone)
+            .select('telegram_name') 
+            .eq('login_mobile', fullPhone)
             .maybeSingle();
         
-        const telegramName = otpData?.telegram_verified_name || "";
+        const telegramName = otpData?.telegram_name || "";
 
-        // SCENARIO 1: Agar User bilkul naya hai (First Time Registration)
+        // SCENARIO 1: Naya Identity Registration (First Time)
         if (userType === 'NEW') {
             const { error } = await _sb
                 .from('users')
                 .insert({
-                    personal_email: tempEmail,      
-                    mobile: tempPhone,              
+                    login_email: tempEmail,      
+                    login_mobile: tempPhone,              
                     device_fingerprint: currentDID,
                     is_blocked: false,
                     created_at: new Date().toISOString(),
                     security_level: 'Standard',
-                    // Hidden Identity Data Capture
-                    verified_name: verifiedName,         // Google/Yahoo Name
-                    provider_uid: providerUID,           // Provider Unique ID
-                    auth_provider: authProvider,         // Google/Yahoo/iCloud
-                    telegram_verified_name: telegramName // Telegram Profile Name
+                    // Hidden Identity Columns Updated
+                    provider_name: verifiedName,         
+                    provider_uid: providerUID,           
+                    auth_provider: authProvider,         
+                    telegram_name: telegramName 
                 });
 
             if (error) throw new Error(error.message);
@@ -573,11 +571,11 @@ async function handleIdentitySuccess() {
             return;
         }
 
-        // SCENARIO 2: Agar User purana hai (Login Flow)
+        // SCENARIO 2: Purana Identity Sync (Login Flow)
         const { data: user, error: userError } = await _sb
             .from('users')
             .select('id, device_fingerprint, is_blocked')
-            .eq('personal_email', tempEmail)
+            .eq('login_email', tempEmail)
             .single();
 
         if (userError) throw new Error("Account not found.");
@@ -586,22 +584,22 @@ async function handleIdentitySuccess() {
             return showHighAlert("This Identity is permanently suspended.");
         }
 
-        // Silent Update: Purane user ka bhi naya verified data update karo
+        // Silent Update: Data refresh in new columns
         await _sb
             .from('users')
             .update({ 
-                verified_name: verifiedName,
-                telegram_verified_name: telegramName,
+                provider_name: verifiedName,
+                telegram_name: telegramName,
                 identity_synced_at: new Date().toISOString()
             })
             .eq('id', user.id);
 
-        // Device Guard Logic
+        // Device Guard Check
         if (user.device_fingerprint === currentDID) {
             showIsland("Device Verified. Welcome back!", "success");
             setTimeout(() => { window.location.href = '../3-Dashboard/Dashboard.html'; }, 1500);
         } else {
-            // New device detected — trigger Shift Protocol (Sub-Block 4B)
+            // New device triggered shift protocol
             triggerDeviceShiftProtocol(user.id, currentDID);
         }
 
@@ -615,7 +613,7 @@ async function handleIdentitySuccess() {
     }
 }
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 4A file : 2-Verification/Verification.js --- */ 
+/* --- End Sub-Block 4A file : 2-verification/Verification.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
@@ -629,14 +627,13 @@ function triggerDeviceShiftProtocol(uid, newDID) {
     
     showIsland("New Device detected! Verification required.", "error");
 
-    // Smooth switch to Shift Guard view
     selectionView.style.display = 'none';
     keyInputView.style.display = 'none';
     shiftGuardView.style.display = 'block';
-    void shiftGuardView.offsetWidth; // Force Reflow
+    void shiftGuardView.offsetWidth; 
     shiftGuardView.classList.add('active');
 
-    let timeLeft = 180; // 3 Minutes
+    let timeLeft = 180; 
     const totalTime = 180;
     const ringCircumference = 339;
 
@@ -656,13 +653,12 @@ function triggerDeviceShiftProtocol(uid, newDID) {
         timeLeft--;
     }, 1000);
 
-    // Start Real-time sync listener (Module Bridge)
     if (typeof startShiftSyncListener === 'function') {
         startShiftSyncListener(uid, newDID);
     }
 }
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 4B file : 2-Verification/Verification.js --- */ 
+/* --- End Sub-Block 4B file : 2-verification/Verification.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
@@ -680,16 +676,14 @@ function showHighAlert(reason) {
 
 function handleShiftExpiry() {
     showIsland("Verification time expired. Please re-login.", "error");
-    setTimeout(() => { 
-        window.location.href = '../1-login/login.html'; 
-    }, 2000);
+    setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
 }
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 4C file : 2-Verification/Verification.js --- */ 
+/* --- End Sub-Block 4C file : 2-verification/Verification.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK JS 4 file : 2-Verification/Verification.js <<=== */
+/* ===>> END OF BLOCK JS 4 file : 2-verification/Verification.js <<=== */
 /* ===================================================================== */
 
 
@@ -701,8 +695,9 @@ function handleShiftExpiry() {
 /* --- Sub-Block 5A : Start Shift Sync Listener (The Magic Bridge) --- */
 /* --------------------------------------------------------------------- */
 /**
- * startShiftSyncListener: Supabase Real-time channel ka use karke primary 
- * device se aane wale APPROVED ya REJECTED signal ko sunta hai.
+ * startShiftSyncListener: 
+ * Supabase Real-time channel ka use karke primary device se APPROVED ya 
+ * REJECTED signal sunta hai.
  */
 function startShiftSyncListener(uid, newDID) {
     const syncChannel = _sb.channel(`identity-sync-${uid}`);
@@ -719,7 +714,7 @@ function startShiftSyncListener(uid, newDID) {
                 } else if (action === 'REJECTED') {
                     clearInterval(shiftCountdown);
                     
-                    // Device ko permanently block karo
+                    // Device ko permanently block karo (Hiden Security Layer)
                     await _sb
                         .from('blocked_devices')
                         .insert({ 
@@ -736,16 +731,21 @@ function startShiftSyncListener(uid, newDID) {
             console.log("Real-time sync status:", status);
         });
 }
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 5A file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 5B : Finalize Identity Entry (Database Sync) --- */
 /* --------------------------------------------------------------------- */
 /**
- * finalizeIdentityEntry: Naye device ki fingerprint ko users table me 
- * update karke dashboard par bhejta hai.
+ * finalizeIdentityEntry: 
+ * Naye device ki fingerprint ko 'users' table me update karke 
+ * dashboard par bhejta hai.
  */
 async function finalizeIdentityEntry(uid, newDID) {
     try {
+        // Naming convention check: ID se naya fingerprint update
         const { error } = await _sb
             .from('users')
             .update({ device_fingerprint: newDID })
@@ -756,7 +756,8 @@ async function finalizeIdentityEntry(uid, newDID) {
         showIsland("Device Sync Complete. Redirecting...", "success");
 
         setTimeout(() => {
-            window.location.href = '../3-dashboard/dashboard.html';
+            // Path Fix: Case sensitive folder name (3-Dashboard)
+            window.location.href = '../3-Dashboard/Dashboard.html';
         }, 1800);
 
     } catch (err) {
@@ -764,42 +765,51 @@ async function finalizeIdentityEntry(uid, newDID) {
         showIsland("Sync failed. Please try manual re-entry.", "error");
     }
 }
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 5B file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 5C : Email Shift Link (Lost Phone Protocol) --- */
 /* --------------------------------------------------------------------- */
 document.getElementById('shift-via-email')?.addEventListener('click', (e) => {
     e.preventDefault();
-    triggerHaptic();
+    if (typeof triggerHaptic === 'function') triggerHaptic();
     showIsland("Email shift link will be active after 3 minutes.", "info");
 });
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 5C file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 5D : Page Load Animation (Apple visionOS Feel) --- */
+/* --- Sub-Block 5D : Page Load Animation & Session Check --- */
 /* --------------------------------------------------------------------- */
 window.addEventListener('load', () => {
-    // Session check
+    // Session Guard: Check user status
     const tempEmail = sessionStorage.getItem('RP_Temp_Email');
     if (!tempEmail) {
         window.location.href = '../1-login/login.html';
         return;
     }
 
-    // Card entrance animation
+    // Card entrance animation (visionOS Style)
     const card = document.querySelector('.spatial-glass-card');
     if (card) {
         card.style.opacity = '0';
         card.style.transform = 'scale(0.95) translateY(20px)';
         setTimeout(() => {
-            card.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            card.style.transition = 'all 0.8s var(--spring-bounce)';
             card.style.opacity = '1';
             card.style.transform = 'scale(1) translateY(0)';
         }, 100);
     }
 
-    showIsland("Select your Identity Path", "info");
+    if (typeof showIsland === 'function') showIsland("Select your Identity Path", "info");
 });
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 5D file : 2-verification/Verification.js --- */ 
+/* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK JS 5 file : 2-Verification/Verification.js <<=== */
+/* ===>> END OF BLOCK JS 5 file : 2-verification/Verification.js <<=== */
 /* ===================================================================== */

@@ -241,26 +241,20 @@ document.addEventListener('DOMContentLoaded', handleAuthCallback);
 /**
  * updateIdentityStatus: 
  * Selected country ki 'length' property ke hisab se Tick ko active karta hai.
- * Rule: Har country ka apna dynamic target (e.g., India: 10, UAE: 9).
  */
 function updateIdentityStatus() {
-    // Sirf digits nikaalo validation ke liye
     const phone = mobileInput.value.replace(/-/g, '');
     const tickSlot = document.getElementById('phone-tick-icon');
     
     if (!tickSlot) return;
 
-    // Rule: Agar phone digits chosen country ki required length ke barabar hain
     if (phone.length === currentSelectedLength) {
         tickSlot.innerHTML = '<i class="fas fa-check-circle"></i>';
-        // Smooth slide-in trigger karne ke liye halka sa delay
         setTimeout(() => {
             tickSlot.classList.add('active');
         }, 10);
     } else {
-        // Target match nahi hota toh class hatao
         tickSlot.classList.remove('active');
-        // Animation khatam hone ke baad icon saaf karo
         setTimeout(() => {
             if (!tickSlot.classList.contains('active')) {
                 tickSlot.innerHTML = '';
@@ -269,20 +263,14 @@ function updateIdentityStatus() {
     }
 }
 
-// Phone input par real-time monitoring lagao
 if (mobileInput) {
     mobileInput.addEventListener('input', updateIdentityStatus);
 }
 
-/**
- * validateIdentityGate: 
- * Continue dabane par sakht janch (Dynamic Length based).
- */
 function validateIdentityGate(email, phone) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const cleanPhone = phone.replace(/-/g, '');
 
-    // Rule: Clean phone length must match the current country's rule
     if (cleanPhone.length !== currentSelectedLength) {
         if (typeof showIsland === 'function') {
             showIsland(`Enter full ${currentSelectedLength}-digit number`, "error");
@@ -290,7 +278,6 @@ function validateIdentityGate(email, phone) {
         return false;
     }
 
-    // Gmail Signature Validation
     if (!emailRegex.test(email) || email.split('@')[0].length < 3) {
         if (typeof showIsland === 'function') {
             showIsland("Invalid Gmail Signature", "error");
@@ -309,17 +296,15 @@ function validateIdentityGate(email, phone) {
 /* --------------------------------------------------------------------- */
 /**
  * executeContinueAction: 
- * Final step jo saare data (Visible + Hidden) ko Supabase mein sync karta hai.
+ * Database check ke liye ab 'login_email' ka use hoga (Old: personal_email).
  */
 if (continueBtn) {
     continueBtn.addEventListener('click', async () => {
         const email = emailInput.value.trim().toLowerCase();
         const phone = mobileInput.value.trim();
 
-        // 1. Final Gate Check
         if (!validateIdentityGate(email, phone)) return;
 
-        // 2. UI Reaction: Haptic + Loader
         if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
         
         continueBtn.disabled = true;
@@ -333,44 +318,39 @@ if (continueBtn) {
         }
 
         try {
-            // 3. Capture Hidden Meta-Data (From sessionStorage - Block 2C)
             const verifiedName = sessionStorage.getItem('RP_Verified_Name') || "";
             const providerUID  = sessionStorage.getItem('RP_Provider_UID') || "";
             const authProvider = sessionStorage.getItem('RP_Auth_Provider') || "manual";
             const deviceID     = localStorage.getItem('RP_DeviceID');
 
-            // 4. Database Sync: UPSERT Logic (Insert or Update)
-            // Hum data ko verify karke save kar rahe hain aage ki God-level security ke liye.
+            /**
+             * UPDATE: 'login_email' column ka use (New Naming Convention)
+             */
             const { data: user, error } = await _sb
                 .from('users')
                 .select('id, is_blocked')
-                .eq('personal_email', email)
+                .eq('login_email', email) 
                 .maybeSingle();
 
             if (error) throw error;
 
-            // Blocked User Check
             if (user && user.is_blocked) {
                 if (typeof showIsland === 'function') showIsland("Identity Suspended", "error");
                 resetEntryState();
                 return;
             }
 
-            // 5. Memory Bridge: Save for Verification Page
             sessionStorage.setItem('RP_Temp_Email', email);
             sessionStorage.setItem('RP_Temp_Phone', phone.replace(/-/g, ''));
             sessionStorage.setItem('RP_User_Type', user ? 'OLD' : 'NEW');
             
-            // Country details bridge
             const countryCode = document.getElementById('selected-code')?.textContent || '+91';
             sessionStorage.setItem('RP_Country_Code', countryCode);
 
-            // 6. Transition to Verification
             if (typeof showIsland === 'function') {
                 showIsland(user ? "Identity Identified. Syncing..." : "Securing New Identity...", "success");
             }
 
-            // 1.2s delay taaki premium feel aur security check poora ho jaye
             setTimeout(() => {
                 window.location.href = '../2-Verification/Verification.html';
             }, 1200);
@@ -383,9 +363,6 @@ if (continueBtn) {
     });
 }
 
-/**
- * resetEntryState: Failure par UI ko wapas normal karta hai.
- */
 function resetEntryState() {
     if (continueBtn) {
         continueBtn.disabled = false;
@@ -402,6 +379,8 @@ function resetEntryState() {
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 3 file : 1-login/login.js <<=== */
 /* ===================================================================== */
+
+
 
 
 /* ===================================================================== */
