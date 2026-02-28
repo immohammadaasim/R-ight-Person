@@ -41,23 +41,75 @@ let currentSelectedLength = 10;
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 1C : Device Fingerprinting & Haptic Logic --- */
+/* --- Sub-Block 1C : Device Fingerprinting System (Hardware DNA) --- */
 /* --------------------------------------------------------------------- */
 /**
+ * getCanvasFingerprint: 
+ * Ek invisible graphics test jo user ke GPU (Graphics Card) ki unique 
+ * pehchan nikalta hai. Ye browser badalne par bhi nahi badalta.
+ */
+function getCanvasFingerprint() {
+    try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const txt = 'R-ight Person Digital Identity <canvas> 1.0';
+        ctx.textBaseline = "top";
+        ctx.font = "14px 'Arial'";
+        ctx.textBaseline = "alphabetic";
+        ctx.fillStyle = "#f60";
+        ctx.fillRect(125,1,62,20);
+        ctx.fillStyle = "#069";
+        ctx.fillText(txt, 2, 15);
+        ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+        ctx.fillText(txt, 4, 17);
+        return canvas.toDataURL().substring(100, 200); // Unique fragment capture
+    } catch (e) {
+        return "canvas-blocked";
+    }
+}
+
+/**
  * generateDeviceFingerprint: 
- * User ke hardware se unique security DNA banata hai.
+ * Hardware aur Software ki 7 gehari details se 'Digital DNA' banata hai.
+ * Rule: Isme GPU, CPU, aur RAM details shamil hain taaki browser switch pakda jaye.
  */
 function generateDeviceFingerprint() {
     const nav = window.navigator;
     const screen = window.screen;
 
+    // 1. Canvas Identity (Graphics/GPU Signature)
+    const canvasID = getCanvasFingerprint();
+
+    // 2. CPU Brain (Kitne cores hain)
+    const cpuCores = nav.hardwareConcurrency || "unknown";
+
+    // 3. RAM Category (Device Memory Level)
+    const ramSize = nav.deviceMemory || "unknown";
+
+    // 4. Advanced Screen Detail (Depth & Pixel Ratio)
+    const screenMeta = `${screen.width}x${screen.height}-${screen.colorDepth}-${window.devicePixelRatio}`;
+
+    // 5. Regional Identity (Timezone & Language)
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    // 6. Platform & OS
+    const platform = nav.platform;
+
+    // 7. Browser Engine Information
+    const browserAgent = nav.userAgent;
+
+    // Poore hardware aur software detail ko mix karke DNA string banao
     const rawDNA = [
-        nav.userAgent,
-        nav.language,
-        screen.width + "x" + screen.height,
-        nav.platform
+        canvasID,
+        cpuCores,
+        ramSize,
+        screenMeta,
+        timezone,
+        platform,
+        browserAgent
     ].join('###');
 
+    // Secure Hash mein badlo taaki ID professional lage (e.g., DF-XXXX)
     const deviceHash = createSecureHash(rawDNA);
     const finalID = `DF-${deviceHash.toUpperCase()}`;
     
@@ -74,11 +126,12 @@ function createSecureHash(str) {
     return Math.abs(hash).toString(36).substring(0, 10);
 }
 
-// Global Device ID Sync
+// Global Device ID Sync (Hiden from User)
 const currentDID = localStorage.getItem('RP_DeviceID') || generateDeviceFingerprint();
+console.log("Modular Engine: Hardware DNA Sync Complete ->", currentDID);
 
 /**
- * triggerHapticFeedback: iPadOS style visual touch sensation.
+ * triggerHapticFeedback: iPadOS 18 style touch visual.
  */
 function triggerHapticFeedback() {
     if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
