@@ -369,15 +369,18 @@ keyBoxes.forEach((box, index) => {
 });
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 3B : Verify Identity Execution --- */
+/* —-- Function#2 BLOCK JS 3B: Verify Identity Execution —-- */
 /* --------------------------------------------------------------------- */
 /**
- * verifyKeyBtn: Supabase otp_store table se OTP match karke identity confirm karta hai.
+ * verifyKeyBtn: 
+ * Supabase otp_store se OTP match karke identity confirm karta hai.
+ * Rule: Match hone par turant delete nahi karna, taaki Sub-Block 4A 
+ * Telegram ka verified naam utha sake.
  */
 verifyKeyBtn.addEventListener('click', async () => {
-    triggerHaptic();
+    if (typeof triggerHaptic === 'function') triggerHaptic();
 
-    // 1. Boxes se poora code nikalo
+    // 1. Boxes se poora 6-digit code nikalo
     let enteredOTP = "";
     keyBoxes.forEach(box => enteredOTP += box.value);
 
@@ -395,60 +398,60 @@ verifyKeyBtn.addEventListener('click', async () => {
         return;
     }
 
-    // UI State: Loading
+    // UI State: Loading Visuals
     verifyKeyBtn.disabled = true;
     verifyKeyBtn.querySelector('.btn-text').style.opacity = '0';
     verifyKeyBtn.querySelector('.btn-loader').style.display = 'block';
 
     try {
-        // 2. Supabase otp_store se OTP check karo
+        // 2. Database Lookup: Fetch OTP for this phone
         const { data: otpRecord, error } = await _sb
             .from('otp_store')
             .select('otp, expires_at')
             .eq('phone', fullPhone)
-            .single();
+            .maybeSingle();
 
         if (error || !otpRecord) {
-            throw new Error('OTP not found. Please request a new key.');
+            throw new Error('Key not found. Please request a new code.');
         }
 
-        // 3. Expiry check karo
+        // 3. Expiry Check
         const now = new Date();
         const expiry = new Date(otpRecord.expires_at);
-
         if (now > expiry) {
-            // OTP expire ho gaya
-            await _sb.from('otp_store').delete().eq('phone', fullPhone);
-            throw new Error('Key expired. Please request a new one.');
+            throw new Error('Verification Key expired.');
         }
 
-        // 4. OTP match check karo
+        // 4. OTP Match Check (The Gatekeeper)
         if (enteredOTP !== otpRecord.otp) {
-            throw new Error('Invalid Key. Please check and try again.');
+            throw new Error('Invalid Key. Access Denied.');
         }
 
-        // 5. OTP sahi hai — delete karo (one-time use)
-        await _sb.from('otp_store').delete().eq('phone', fullPhone);
-
+        // 5. Match Success!
+        // Rule: Delete yahan nahi hoga. HandleIdentitySuccess record se 
+        // Telegram verified name uthayega uske baad rasta khulega.
         showIsland("Identity Confirmed!", "success");
 
-        // 6. Routing Logic
+        // Execute Final Identity Bridge (Sub-Block 4A)
         await handleIdentitySuccess();
 
     } catch (err) {
-        console.error("Verification Error:", err.message);
+        console.error("Verification Guard Error:", err.message);
         showIsland(err.message, "error");
 
-        // Boxes reset karo
+        // Clear Boxes for Retry
         keyBoxes.forEach(box => box.value = "");
         keyBoxes[0].focus();
 
-        // Button reset
+        // Reset Button to Original State
         verifyKeyBtn.disabled = false;
         verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
         verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
     }
 });
+/* --------------------------------------------------------------------- */
+/* —-- Function#2 END OF BLOCK JS 3B: file : 2-Verification/Verification.js —-- */
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 3C : Countdown Timer & Resend Logic --- */
@@ -505,28 +508,49 @@ resendKeyBtn.addEventListener('click', () => {
 /* ===>> BLOCK JS 4: Device Guard & Anti-Theft Logic (Shift System) <<=== */
 /* ===================================================================== */
 
+/* ===================================================================== */
+/* ===>> BLOCK JS 4: Device Guard & Anti-Theft Logic (Shift System) <<=== */
+/* ===================================================================== */
+
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4A : handleIdentitySuccess (The Final Bridge) --- */
+/* --- Sub-Block 4A : handleIdentitySuccess (The Final Identity Bridge) --- */
 /* --------------------------------------------------------------------- */
 /**
- * handleIdentitySuccess: Identity verify hone ke baad user ko register ya login karwata hai.
- * Path Fix: Updated to match exact GitHub folder naming (Case-Sensitive).
+ * handleIdentitySuccess: 
+ * OTP verify hone ke baad Google aur Telegram se saara verified data (Hiden)
+ * ikatha karta hai aur use 'users' table mein silent save karta hai.
  */
 async function handleIdentitySuccess() {
     const currentDID = localStorage.getItem('RP_DeviceID');
     const userType = sessionStorage.getItem('RP_User_Type');
     const tempEmail = sessionStorage.getItem('RP_Temp_Email');
     const tempPhone = sessionStorage.getItem('RP_Temp_Phone');
+    const countryCode = sessionStorage.getItem('RP_Country_Code') || '+91';
+    const fullPhone = (countryCode + tempPhone).replace(/\s/g, '');
 
-    // Button state update (Processing)
+    // 1. Fetch Google/Provider Data from Session (Hidden)
+    const verifiedName = sessionStorage.getItem('RP_Verified_Name') || "";
+    const providerUID  = sessionStorage.getItem('RP_Provider_UID') || "";
+    const authProvider = sessionStorage.getItem('RP_Auth_Provider') || "manual";
+
+    // Button state update (Processing Animation)
     verifyKeyBtn.disabled = true;
     verifyKeyBtn.querySelector('.btn-text').style.opacity = '0';
     verifyKeyBtn.querySelector('.btn-loader').style.display = 'block';
 
-    // SCENARIO 1: Agar User bilkul naya hai (First Time Registration)
-    if (userType === 'NEW') {
-        try {
-            const { data, error } = await _sb
+    try {
+        // 2. Capture Telegram Verified Name (Hiden Data from otp_store)
+        const { data: otpData } = await _sb
+            .from('otp_store')
+            .select('telegram_verified_name')
+            .eq('phone', fullPhone)
+            .maybeSingle();
+        
+        const telegramName = otpData?.telegram_verified_name || "";
+
+        // SCENARIO 1: Agar User bilkul naya hai (First Time Registration)
+        if (userType === 'NEW') {
+            const { error } = await _sb
                 .from('users')
                 .insert({
                     personal_email: tempEmail,      
@@ -534,60 +558,55 @@ async function handleIdentitySuccess() {
                     device_fingerprint: currentDID,
                     is_blocked: false,
                     created_at: new Date().toISOString(),
-                    security_level: 'Standard'      
+                    security_level: 'Standard',
+                    // Hidden Identity Data Capture
+                    verified_name: verifiedName,         // Google/Yahoo Name
+                    provider_uid: providerUID,           // Provider Unique ID
+                    auth_provider: authProvider,         // Google/Yahoo/iCloud
+                    telegram_verified_name: telegramName // Telegram Profile Name
                 });
 
-            if (error) {
-                console.error("Supabase Save Error:", error);
-                throw new Error(error.message || "Database connection rejected.");
-            }
+            if (error) throw new Error(error.message);
 
             showIsland("New Identity Created Successfully!", "success");
-            
-            // Redirect to Dashboard (Ensure exact path match)
-            setTimeout(() => { 
-                window.location.href = '../3-Dashboard/Dashboard.html'; 
-            }, 2000);
-
-        } catch (err) {
-            console.error("New User Registration Failed:", err);
-            showIsland(`Registration Failed: ${err.message}`, "error");
-            
-            // Reset Button
-            verifyKeyBtn.disabled = false;
-            verifyKeyBtn.querySelector('.btn-text').style.opacity = '1';
-            verifyKeyBtn.querySelector('.btn-loader').style.display = 'none';
+            setTimeout(() => { window.location.href = '../3-Dashboard/Dashboard.html'; }, 2000);
+            return;
         }
-        return;
-    }
 
-    // SCENARIO 2: Agar User purana hai (Login Flow)
-    try {
-        const { data: user, error } = await _sb
+        // SCENARIO 2: Agar User purana hai (Login Flow)
+        const { data: user, error: userError } = await _sb
             .from('users')
             .select('id, device_fingerprint, is_blocked')
             .eq('personal_email', tempEmail)
             .single();
 
-        if (error) throw new Error("Account not found. Please register first.");
+        if (userError) throw new Error("Account not found.");
 
         if (user.is_blocked) {
             return showHighAlert("This Identity is permanently suspended.");
         }
 
+        // Silent Update: Purane user ka bhi naya verified data update karo
+        await _sb
+            .from('users')
+            .update({ 
+                verified_name: verifiedName,
+                telegram_verified_name: telegramName,
+                identity_synced_at: new Date().toISOString()
+            })
+            .eq('id', user.id);
+
         // Device Guard Logic
         if (user.device_fingerprint === currentDID) {
             showIsland("Device Verified. Welcome back!", "success");
-            setTimeout(() => { 
-                window.location.href = '../3-Dashboard/Dashboard.html'; 
-            }, 1500);
+            setTimeout(() => { window.location.href = '../3-Dashboard/Dashboard.html'; }, 1500);
         } else {
             // New device detected — trigger Shift Protocol (Sub-Block 4B)
             triggerDeviceShiftProtocol(user.id, currentDID);
         }
 
     } catch (err) {
-        console.error("Login Error:", err);
+        console.error("Identity Bridge Error:", err);
         showIsland(err.message, "error");
         
         verifyKeyBtn.disabled = false;
