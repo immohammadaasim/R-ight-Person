@@ -132,8 +132,12 @@ body.spatial-login {
 /* ===>> BLOCK CSS 2: Spatial Form Engineering & Action Hero <<=== */
 /* ===================================================================== */
 
+/* ===================================================================== */
+/* ===>> BLOCK CSS 2: Spatial Form Engineering & Action Hero <<=== */
+/* ===================================================================== */
+
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Premium Input Engineering & iOS Status Icon --- */
+/* --- Block 2A : Premium Input Engineering & Smart Provider UI --- */
 /* --------------------------------------------------------------------- */
 .entry-form-container {
     display: flex;
@@ -147,15 +151,55 @@ body.spatial-login {
     gap: 0.75rem;
 }
 
+/* Header for Email section to align Label and Pill */
+.provider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.4rem;
+}
+
 .field-label {
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.5px;
     color: var(--s-text);
-    padding-left: 0.4rem;
     text-transform: uppercase;
 }
 
+/**
+ * Smart Mail Provider Pill:
+ * visionOS style floating pill for one-tap verification.
+ */
+.mail-provider-pill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill); /* 100px Rule */
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+}
+
+.provider-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    color: var(--s-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s var(--smooth-flow);
+}
+
+.provider-btn:hover {
+    color: var(--blue-accent);
+    transform: translateY(-1px);
+}
+
+/* Input Wrapper Logic (Restored & Enhanced) */
 .input-wrapper {
     display: flex;
     align-items: center;
@@ -168,7 +212,12 @@ body.spatial-login {
     transition: all 0.3s var(--smooth-flow);
 }
 
-/* Interaction: Blue glow focus */
+/* Lock State: Jab email verify ho jaye toh wrapper thoda chamkega */
+.input-wrapper.verified {
+    border-color: var(--blue-accent);
+    background: rgba(0, 122, 255, 0.05);
+}
+
 .input-wrapper:focus-within {
     background: var(--card-bg);
     border-color: var(--blue-accent);
@@ -185,10 +234,10 @@ body.spatial-login {
     font-weight: 600;
     color: var(--p-text);
     padding-left: 0.8rem;
-    padding-right: 35px; /* Tick mark ke liye dedicated safe space */
+    padding-right: 35px; /* Icons ke liye dedicated area */
 }
 
-/* iOS Style Slide-In Animation for Tick Mark (The Fix) */
+/* Status Icon (Tick/Shield) inside input */
 .input-status-icon {
     position: absolute;
     right: 1.2rem;
@@ -200,14 +249,11 @@ body.spatial-login {
     justify-content: center;
     font-size: 1.2rem;
     opacity: 0;
-    color: #34C759; /* Apple Success Green */
     pointer-events: none;
-    /* Start position: Halka sa left mein aur gayab */
     transform: translateY(-50%) translateX(-15px);
     transition: all 0.4s var(--spring-ease);
 }
 
-/* Active State: Left se Right Slide + Fade In */
 .input-status-icon.active {
     opacity: 1;
     transform: translateY(-50%) translateX(0);

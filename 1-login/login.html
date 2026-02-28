@@ -86,7 +86,7 @@
             </header>
 
             <div class="entry-form-container">
-                <!-- Mobile Entry -->
+                <!-- Mobile Entry Section -->
                 <div class="input-group">
                     <label class="field-label">REGISTERED MOBILE</label>
                     <div class="input-wrapper">
@@ -101,12 +101,34 @@
                     </div>
                 </div>
 
-                <!-- Gmail Entry -->
+                <!-- Smart Email Provider & Entry Section -->
                 <div class="input-group">
-                    <label class="field-label">PERSONAL GMAIL</label>
-                    <div class="input-wrapper">
+                    <div class="provider-header">
+                        <label class="field-label">PERSONAL EMAIL</label>
+                        <!-- Smart Provider Pill (iPadOS Style) -->
+                        <div class="mail-provider-pill spatial-glass">
+                            <button class="provider-btn haptic-touch" data-provider="google" title="Google Sync">
+                                <i class="fab fa-google"></i>
+                            </button>
+                            <button class="provider-btn haptic-touch" data-provider="apple" title="Apple Sync">
+                                <i class="fab fa-apple"></i>
+                            </button>
+                            <button class="provider-btn haptic-touch" data-provider="microsoft" title="Outlook Sync">
+                                <i class="fab fa-microsoft"></i>
+                            </button>
+                            <button class="provider-btn haptic-touch" data-provider="yahoo" title="Yahoo Sync">
+                                <i class="fab fa-yahoo"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="input-wrapper" id="email-wrapper">
                         <i class="fas fa-envelope secondary-label" style="font-size:1.1rem; width:24px;"></i>
-                        <input type="email" id="user-email" placeholder="name@gmail.com" autocomplete="off">
+                        <input type="email" id="user-email" placeholder="name@email.com" autocomplete="off">
+                        <!-- Email Verified Badge (Hidden by default) -->
+                        <div id="email-lock-icon" class="input-status-icon" style="color:var(--blue-accent);">
+                            <i class="fas fa-shield-check"></i>
+                        </div>
                     </div>
                     <!-- Identity Discovery Slot -->
                     <div id="identity-preview-portal" class="identity-chip-slot"></div>
@@ -115,7 +137,6 @@
                 <div class="action-container">
                     <button id="entry-continue-btn" class="main-cta-btn haptic-touch">
                         <span class="btn-text">Continue</span>
-                        <!-- God-level Elegant White Spinner -->
                         <div class="btn-loader"></div>
                     </button>
                 </div>

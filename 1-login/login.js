@@ -5,37 +5,47 @@
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 1A : Supabase & Project Credentials --- */
 /* --------------------------------------------------------------------- */
+/**
+ * Supabase Engine Initialization:
+ * Google, Apple, Microsoft aur Yahoo Auth ko handle karne ke liye.
+ */
 const SB_URL = "https://xtzdlepgpqvllwzjfrsh.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emRsZXBncHF2bGx3empmcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5OTI2MzcsImV4cCI6MjA4NzU2ODYzN30.NxX8BPCK_HNQYmn0-7YkdPv12gO8wKgOS5oP2R0OYZc";
 
-// Initialize Supabase once for the Entry Module
+// Initialize Global Supabase Client
 const _sb = supabase.createClient(SB_URL, SB_KEY);
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 1A file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 1B : DOM Elements Selection (Entry Portal) --- */
+/* --- Sub-Block 1B : DOM Elements Selection (Smart Entry) --- */
 /* --------------------------------------------------------------------- */
-// Input Fields
+// Input Fields & Wrappers
 const mobileInput = document.getElementById('user-mobile');
 const emailInput  = document.getElementById('user-email');
+const emailWrapper = document.getElementById('email-wrapper');
+const emailLockIcon = document.getElementById('email-lock-icon');
 
-// UI View Slots
+// UI Portals & Buttons
 const previewPortal = document.getElementById('identity-preview-portal');
-
-// Action Buttons
 const continueBtn = document.getElementById('entry-continue-btn');
+
+// Smart Mail Providers Buttons
+const providerBtns = document.querySelectorAll('.provider-btn');
+
+// Initial Registry Length (Default India)
+let currentSelectedLength = 10; 
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 1B file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 1C : Device Fingerprinting System (Security DNA) --- */
+/* --- Sub-Block 1C : Device Fingerprinting & Haptic Logic --- */
 /* --------------------------------------------------------------------- */
 /**
- * generateDeviceFingerprint: Device ki hardware aur software detail se 
- * ek unique ID (Digital DNA) banata hai.
+ * generateDeviceFingerprint: 
+ * User ke hardware se unique security DNA banata hai.
  */
 function generateDeviceFingerprint() {
     const nav = window.navigator;
@@ -64,18 +74,15 @@ function createSecureHash(str) {
     return Math.abs(hash).toString(36).substring(0, 10);
 }
 
-// Global Device ID for this session
+// Global Device ID Sync
 const currentDID = localStorage.getItem('RP_DeviceID') || generateDeviceFingerprint();
-console.log("Modular Engine: Device ID Sync Complete ->", currentDID);
 
 /**
- * triggerHapticFeedback: Local helper for physical touch visual.
+ * triggerHapticFeedback: iPadOS style visual touch sensation.
  */
 function triggerHapticFeedback() {
     if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
-    console.log("System: Haptic visual simulated.");
 }
-// Export helper globally for Theme.js or others
 window.triggerHapticFeedback = triggerHapticFeedback;
 
 /* --------------------------------------------------------------------- */
@@ -88,46 +95,28 @@ window.triggerHapticFeedback = triggerHapticFeedback;
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 2: Global Identity & Formatting Logic <<=== */
+/* ===>> BLOCK JS 2: Global Identity & Smart Auth Logic <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2A : Smart Phone Formatting Engine (Dynamic Pattern) --- */
+/* --- Sub-Block 2A : Smart Phone Formatting Engine (Dynamic) --- */
 /* --------------------------------------------------------------------- */
-/**
- * applyPhoneFormatting: 
- * Mobile field mein dashes (-) lagata hai aur max length control karta hai.
- * Rule: currentSelectedLength ke hisab se digits allow honge (India: 10, China: 11, etc.)
- */
 if (mobileInput) {
     mobileInput.addEventListener('input', (e) => {
-        // 1. Non-digits ko saaf karo aur dynamic length par lock karo
         let val = e.target.value.replace(/\D/g, '').substring(0, currentSelectedLength);
-        
-        // 2. Formatting Logic (Flexible for different lengths)
         let formattedValue = "";
         if (val.length > 0) {
-            if (val.length <= 3) {
-                formattedValue = val;
-            } else if (val.length <= 6) {
-                formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
-            } else {
-                // Agar 10 se zyada digits hain toh format ko extend karo
-                formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
-            }
+            if (val.length <= 3) formattedValue = val;
+            else if (val.length <= 6) formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
+            else formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
         }
-        
-        // Final value update
         e.target.value = formattedValue;
     });
 
-    // Keyboard Guard: Alphabets block karo aur Dynamic Island se notification do
     mobileInput.addEventListener('keypress', (e) => {
         if (!/[0-9]/.test(e.key)) {
             e.preventDefault();
-            if (typeof showIsland === 'function') {
-                showIsland("Only numbers allowed", "error");
-            }
+            if (typeof showIsland === 'function') showIsland("Only numbers allowed", "error");
         }
     });
 }
@@ -136,82 +125,95 @@ if (mobileInput) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2B : Identity Discovery Engine (Gmail Lookup) --- */
+/* --- Sub-Block 2B : Mail Provider Auth Engine (One-Tap Sync) --- */
 /* --------------------------------------------------------------------- */
 /**
- * identityDiscovery: Real-time mein Gmail se naam ya badge nikalta hai.
- * Rule: Debounce (600ms) taaki typing ke sath search smooth chale.
+ * triggerProviderAuth: 
+ * Google, Apple, Yahoo ya Microsoft ka login popup kholta hai.
  */
-let lookupTimer;
+async function triggerProviderAuth(provider) {
+    if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
+    
+    if (typeof showIsland === 'function') {
+        showIsland(`Connecting to ${provider.charAt(0).toUpperCase() + provider.slice(1)}...`, "info");
+    }
 
-if (emailInput) {
-    emailInput.addEventListener('input', (e) => {
-        const email = e.target.value.trim().toLowerCase();
-        
-        // Slot saaf karo aur timer reset karo
-        if (previewPortal) previewPortal.innerHTML = "";
-        clearTimeout(lookupTimer);
-
-        // Sirf tab scan karo jab user @ tak pahunch jaye aur format valid lage
-        if (email.includes('@') && email.length > 5) {
-            lookupTimer = setTimeout(() => {
-                performIdentityLookup(email);
-            }, 600);
+    const { data, error } = await _sb.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+            // Login ke baad isi page par wapas aana hai
+            redirectTo: window.location.href 
         }
     });
+
+    if (error) {
+        if (typeof showIsland === 'function') showIsland(`${provider} link failed`, "error");
+        console.error("Auth Error:", error.message);
+    }
 }
 
-/**
- * performIdentityLookup: Supabase database aur Global status check karta hai.
- */
-async function performIdentityLookup(email) {
-    if (!previewPortal) return;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    // 1. Strict Validation: Choti ya ghalat emails ko reject karo
-    const usernamePart = email.split('@')[0];
-    if (usernamePart.length < 3 || !emailRegex.test(email)) {
-        previewPortal.innerHTML = `
-            <div class="spatial-identity-chip" style="background:rgba(255,59,48,0.1); border-color:rgba(255,59,48,0.2);">
-                <span class="chip-icon"><i class="fas fa-exclamation-circle" style="color:var(--error-red);"></i></span>
-                <span class="chip-text" style="color:var(--error-red);">Invalid Identity Signature</span>
-            </div>
-        `;
-        return;
-    }
-
-    try {
-        // 2. Database Lookup: Kya ye user hamare system mein hai?
-        const { data: user } = await _sb
-            .from('users')
-            .select('personal_email')
-            .eq('personal_email', email)
-            .maybeSingle();
-
-        if (user) {
-            // CASE: Purana User (Asli Naam dikhao)
-            const name = user.personal_email.split('@')[0];
-            previewPortal.innerHTML = `
-                <div class="spatial-identity-chip">
-                    <span class="chip-icon"><i class="fas fa-user-check"></i></span>
-                    <span class="chip-text">Welcome back, ${name.charAt(0).toUpperCase() + name.slice(1)}</span>
-                </div>
-            `;
-        } else {
-            // CASE: Naya User (Security Badge dikhao)
-            previewPortal.innerHTML = `
-                <div class="spatial-identity-chip" style="background:rgba(52,199,89,0.1); border-color:rgba(52,199,89,0.2);">
-                    <span class="chip-icon"><i class="fas fa-certificate" style="color:var(--success-green);"></i></span>
-                    <span class="chip-text" style="color:var(--success-green);">✨ Verified Global Identity</span>
-                </div>
-            `;
-        }
-    } catch (err) {
-        console.error("Identity Engine Error:", err);
-    }
+// Provider buttons par click listener lagao
+if (providerBtns) {
+    providerBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const provider = btn.getAttribute('data-provider');
+            triggerProviderAuth(provider);
+        });
+    });
 }
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 2B file : 1-login/login.js --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 2C : OAuth Session Recovery & UI Fill --- */
+/* --------------------------------------------------------------------- */
+/**
+ * handleAuthCallback: 
+ * Login ke baad wapas aane par Verified Data nikalta hai aur UI lock karta hai.
+ */
+async function handleAuthCallback() {
+    const { data: { session }, error } = await _sb.auth.getSession();
+
+    if (session && session.user) {
+        const user = session.user;
+        const verifiedEmail = user.email;
+        const verifiedName = user.user_metadata.full_name || user.email.split('@')[0];
+        const providerUID = user.id;
+
+        // 1. UI Sync: Email bharo aur Lock kar do
+        if (emailInput) {
+            emailInput.value = verifiedEmail;
+            emailInput.readOnly = true; // Manual typing band
+            if (emailWrapper) emailWrapper.classList.add('verified');
+            if (emailLockIcon) emailLockIcon.classList.add('active');
+        }
+
+        // 2. Identity Chip update (Asli Naam dikhao)
+        if (previewPortal) {
+            previewPortal.innerHTML = `
+                <div class="spatial-identity-chip">
+                    <span class="chip-icon"><i class="fas fa-user-check"></i></span>
+                    <span class="chip-text">Identity Verified: ${verifiedName}</span>
+                </div>
+            `;
+        }
+
+        // 3. Hidden Data Save (Session memory for JS 3B)
+        sessionStorage.setItem('RP_Verified_Name', verifiedName);
+        sessionStorage.setItem('RP_Provider_UID', providerUID);
+        sessionStorage.setItem('RP_Auth_Provider', user.app_metadata.provider);
+
+        if (typeof showIsland === 'function') {
+            showIsland(`Verified as ${verifiedName}`, "success");
+        }
+    }
+}
+
+// Page load hote hi check karo ki kya user login karke wapas aaya hai
+document.addEventListener('DOMContentLoaded', handleAuthCallback);
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 2C file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
@@ -293,10 +295,11 @@ function validateIdentityGate(email, phone) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* —-- Function#2 BLOCK JS 3B: Entry Execution & Spinner Logic —-- */
+/* —-- Function#2 BLOCK JS 3B: Entry Execution & Hidden Data Sync —-- */
 /* --------------------------------------------------------------------- */
 /**
- * executeContinueAction: Button click par Spinner trigger aur Database sync.
+ * executeContinueAction: 
+ * Final step jo saare data (Visible + Hidden) ko Supabase mein sync karta hai.
  */
 if (continueBtn) {
     continueBtn.addEventListener('click', async () => {
@@ -306,15 +309,13 @@ if (continueBtn) {
         // 1. Final Gate Check
         if (!validateIdentityGate(email, phone)) return;
 
-        // 2. UI REACTION: Haptic + Loader (THE FIX)
+        // 2. UI Reaction: Haptic + Loader
         if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
         
-        // Button State Change
         continueBtn.disabled = true;
         const btnText = continueBtn.querySelector('.btn-text');
         const btnLoader = continueBtn.querySelector('.btn-loader');
         
-        // Text ko gayab karo aur Loader ko dikhao
         if (btnText) btnText.style.opacity = '0';
         if (btnLoader) {
             btnLoader.style.display = 'block';
@@ -322,7 +323,14 @@ if (continueBtn) {
         }
 
         try {
-            // 3. Database Sync: Identitfying User Status
+            // 3. Capture Hidden Meta-Data (From sessionStorage - Block 2C)
+            const verifiedName = sessionStorage.getItem('RP_Verified_Name') || "";
+            const providerUID  = sessionStorage.getItem('RP_Provider_UID') || "";
+            const authProvider = sessionStorage.getItem('RP_Auth_Provider') || "manual";
+            const deviceID     = localStorage.getItem('RP_DeviceID');
+
+            // 4. Database Sync: UPSERT Logic (Insert or Update)
+            // Hum data ko verify karke save kar rahe hain aage ki God-level security ke liye.
             const { data: user, error } = await _sb
                 .from('users')
                 .select('id, is_blocked')
@@ -331,22 +339,28 @@ if (continueBtn) {
 
             if (error) throw error;
 
-            // 4. Memory Bridge: Session Data Save
-            sessionStorage.setItem('RP_Temp_Email', email);
-            sessionStorage.setItem('RP_Temp_Phone', phone.replace(/-/g, ''));
-            sessionStorage.setItem('RP_User_Type', user ? 'OLD' : 'NEW');
-
+            // Blocked User Check
             if (user && user.is_blocked) {
                 if (typeof showIsland === 'function') showIsland("Identity Suspended", "error");
                 resetEntryState();
                 return;
             }
 
-            // 5. Elite Transition: 1.2s ka delay taaki Spinner feel ho
+            // 5. Memory Bridge: Save for Verification Page
+            sessionStorage.setItem('RP_Temp_Email', email);
+            sessionStorage.setItem('RP_Temp_Phone', phone.replace(/-/g, ''));
+            sessionStorage.setItem('RP_User_Type', user ? 'OLD' : 'NEW');
+            
+            // Country details bridge
+            const countryCode = document.getElementById('selected-code')?.textContent || '+91';
+            sessionStorage.setItem('RP_Country_Code', countryCode);
+
+            // 6. Transition to Verification
             if (typeof showIsland === 'function') {
-                showIsland(user ? "Syncing Identity..." : "Identity Creating...", "success");
+                showIsland(user ? "Identity Identified. Syncing..." : "Securing New Identity...", "success");
             }
 
+            // 1.2s delay taaki premium feel aur security check poora ho jaye
             setTimeout(() => {
                 window.location.href = '../2-Verification/Verification.html';
             }, 1200);
@@ -359,12 +373,17 @@ if (continueBtn) {
     });
 }
 
+/**
+ * resetEntryState: Failure par UI ko wapas normal karta hai.
+ */
 function resetEntryState() {
-    continueBtn.disabled = false;
-    const btnText = continueBtn.querySelector('.btn-text');
-    const btnLoader = continueBtn.querySelector('.btn-loader');
-    if (btnText) btnText.style.opacity = '1';
-    if (btnLoader) btnLoader.style.display = 'none';
+    if (continueBtn) {
+        continueBtn.disabled = false;
+        const btnText = continueBtn.querySelector('.btn-text');
+        const btnLoader = continueBtn.querySelector('.btn-loader');
+        if (btnText) btnText.style.opacity = '1';
+        if (btnLoader) btnLoader.style.display = 'none';
+    }
 }
 /* --------------------------------------------------------------------- */
 /* —-- Function#2 END OF BLOCK JS 3B: file : 1-login/login.js —-- */
