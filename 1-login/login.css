@@ -1,14 +1,14 @@
 /* ===================================================================== */
-/* ===>> BLOCK CSS 1: Layout Centering & Spatial Card Architecture <<=== */
+/* ===>> BLOCK CSS 1: Adaptive Centering & Spatial Card Architecture <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1A : Adaptive Centering Logic --- */
+/* --- Block 1A : Adaptive Centering Engine --- */
 /* --------------------------------------------------------------------- */
 /**
- * Centering Engine:
- * Ensure karta hai ki card hamesha screen ke bilkul beech mein rahe.
- * Background transparent hai taaki Theme.css ka system-bg dikhe.
+ * Centering Logic:
+ * Ensure karta hai ki card hamesha vertical aur horizontal center mein rahe.
+ * Background transparent rakha gaya hai taaki Theme.css ka rang dikhe.
  */
 #app-container {
     width: 100%;
@@ -16,28 +16,34 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 24px; /* Mobile par safety margin */
+    box-sizing: border-box;
     background: transparent !important;
 }
 
-/* Body correction for login page */
 body.spatial-login {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
     width: 100%;
+    margin: 0;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 1A file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1B : Spatial Glass Card (iPadOS 18 Standard) --- */
+/* --- Block 1B : Spatial Glass Card (Adaptive Responsive Architecture) --- */
 /* --------------------------------------------------------------------- */
+/**
+ * Responsive Card Rule:
+ * Mobile par wide rahega (92%), Desktop par premium widget (440px).
+ * Padding aur Gap screen ke size ke hisab se automatically scale honge.
+ */
 .spatial-glass-card {
-    width: 100%;
-    max-width: 420px; /* God-level Proportion */
+    width: 92%;
+    max-width: 440px; 
     background: var(--card-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
@@ -50,22 +56,30 @@ body.spatial-login {
     gap: 2.2rem;
     position: relative;
     overflow: hidden;
-    /* Spring Arrival Animation */
-    animation: spatialArrival 0.8s var(--spring-ease);
+    animation: spatialArrival 0.8s var(--spring-ease) forwards;
+}
+
+/* Mobile Screens (< 500px) */
+@media (max-width: 500px) {
+    .spatial-glass-card {
+        padding: 2.4rem 1.6rem; /* Mobile par padding kam ki gayi hai */
+        gap: 1.6rem; /* Mobile par spacing kam ki gayi hai */
+        border-radius: 24px; /* Slightly smaller radius for mobile */
+    }
+    #app-container {
+        padding: 16px;
+    }
+}
+
+/* Landscape/Tablet Screens */
+@media (max-height: 600px) and (orientation: landscape) {
+    #app-container { padding: 40px 20px; align-items: flex-start; }
+    .spatial-glass-card { margin-top: 20px; }
 }
 
 @keyframes spatialArrival {
     from { opacity: 0; transform: scale(0.96) translateY(20px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* Mobile Responsive Adjustments */
-@media (max-width: 480px) {
-    #app-container { padding: 15px; }
-    .spatial-glass-card {
-        padding: 2.5rem 1.5rem;
-        max-width: 100%;
-    }
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 1B file : 1-login/login.css --- */ 
@@ -77,26 +91,33 @@ body.spatial-login {
 .card-header { text-align: center; }
 
 .brand-badge {
-    font-size: 0.75rem;
-    font-weight: 800; /* Extra Bold Apple Style */
-    letter-spacing: 2px;
-    margin-bottom: 0.8rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    margin-bottom: 0.6rem;
     text-transform: uppercase;
-    color: var(--blue-accent); /* Brand identity blue */
+    color: var(--blue-accent);
 }
 
 .main-title {
     font-size: 2.2rem;
-    font-weight: 800; /* Sabse zyada Bold */
+    font-weight: 800;
     letter-spacing: -1px;
     margin-bottom: 0.4rem;
-    color: var(--p-text); /* Dynamic Theme Color */
+    line-height: 1.1;
+    color: var(--p-text);
+}
+
+/* Mobile Title Scaling */
+@media (max-width: 400px) {
+    .main-title { font-size: 1.85rem; }
 }
 
 .secondary-label {
     font-size: 1rem;
     font-weight: 500;
-    color: var(--s-text); /* Dynamic Gray Label */
+    line-height: 1.4;
+    color: var(--s-text);
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 1C file : 1-login/login.css --- */ 
