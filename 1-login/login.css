@@ -1,126 +1,47 @@
 /* ===================================================================== */
-/* ===>> BLOCK CSS 1: Full-Screen Spatial Engine & Portal Fix <<=== */
+/* ===>> BLOCK CSS 1: Layout Centering & Spatial Card Architecture <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1A : Force Full-Screen & Background Logic --- */
+/* --- Block 1A : Adaptive Centering Logic --- */
 /* --------------------------------------------------------------------- */
-/* Forceful Reset for all environments */
-html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    min-height: 100vh !important;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-}
-
-:root {
-    /* Vivid iPadOS 18 Light Mesh */
-    --spatial-bg: radial-gradient(at 0% 0%, #4158D0 0%, transparent 50%), 
-                  radial-gradient(at 50% 0%, #C850C0 0%, transparent 50%), 
-                  radial-gradient(at 100% 0%, #FFCC70 0%, transparent 50%);
-    --body-bg: #f5f5f7;
-    --card-bg: rgba(255, 255, 255, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.4);
-    --glass-blur: blur(40px);
-    --p-text: #1d1d1f;
-    --s-text: #86868b;
-    --blue-accent: #0071e3;
-    --glass-shadow: 0 30px 60px rgba(0,0,0,0.12);
-    
-    --radius-squircle: 32px;
-    --radius-item: 18px;
-    --spring-ease: cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-body.dark-mode {
-    --body-bg: #000000;
-    --spatial-bg: radial-gradient(at 0% 100%, #1a1a1a 0%, transparent 50%),
-                  radial-gradient(at 100% 0%, #0a0a0a 0%, transparent 50%),
-                  radial-gradient(at 50% 50%, #111111 0%, #000000 100%);
-    --card-bg: rgba(30, 30, 30, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --p-text: #ffffff;
-    --s-text: #a1a1a6;
-    --glass-shadow: 0 40px 80px rgba(0,0,0,0.6);
-}
-
-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--body-bg);
-    position: relative;
-    transition: background 0.8s var(--spring-ease);
-}
-
-/* Background Layer to ensure it covers everything */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--spatial-bg);
-    z-index: -1;
-    opacity: 1;
-}
-/* --------------------------------------------------------------------- */
-/* --- End Block 1A file : 1-login/login.css --- */ 
-/* --------------------------------------------------------------------- */
-
-/* --------------------------------------------------------------------- */
-/* --- Block 1B : Floating Theme Portal Fix --- */
-/* --------------------------------------------------------------------- */
-#theme-manager-portal {
-    position: fixed !important;
-    top: 30px !important;
-    right: 30px !important;
-    z-index: 9999 !important;
-}
-
-#global-theme-toggle {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    color: var(--p-text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: var(--glass-shadow);
-    transition: all 0.4s var(--spring-ease);
-}
-
-#global-theme-toggle:active { transform: scale(0.88); }
-/* --------------------------------------------------------------------- */
-/* --- End Block 1B file : 1-login/login.css --- */ 
-/* --------------------------------------------------------------------- */
-
-/* --------------------------------------------------------------------- */
-/* --- Block 1C : Adaptive Spatial Card (Responsive Fix) --- */
-/* --------------------------------------------------------------------- */
+/**
+ * Centering Engine:
+ * Ensure karta hai ki card hamesha screen ke bilkul beech mein rahe.
+ * Background transparent hai taaki Theme.css ka system-bg dikhe.
+ */
 #app-container {
     width: 100%;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 24px;
-    box-sizing: border-box;
+    padding: 20px;
+    background: transparent !important;
 }
 
+/* Body correction for login page */
+body.spatial-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100%;
+}
+/* --------------------------------------------------------------------- */
+/* --- End Block 1A file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1B : Spatial Glass Card (iPadOS 18 Standard) --- */
+/* --------------------------------------------------------------------- */
 .spatial-glass-card {
     width: 100%;
-    max-width: 440px; /* Slightly wider for better proportion */
+    max-width: 420px; /* God-level Proportion */
     background: var(--card-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: var(--radius-squircle);
+    border-radius: var(--radius-card); /* 28px Rule */
     border: 1px solid var(--glass-border);
     padding: 3.5rem 2.2rem;
     box-shadow: var(--glass-shadow);
@@ -128,21 +49,54 @@ body::before {
     flex-direction: column;
     gap: 2.2rem;
     position: relative;
-    animation: spatialArrival 1.2s var(--spring-ease) forwards;
+    overflow: hidden;
+    /* Spring Arrival Animation */
+    animation: spatialArrival 0.8s var(--spring-ease);
 }
 
 @keyframes spatialArrival {
-    0% { opacity: 0; transform: scale(0.92) translateY(30px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
+    from { opacity: 0; transform: scale(0.96) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* Mobile Screen Rule */
-@media (max-width: 500px) {
-    #app-container { padding: 16px; }
-    .spatial-glass-card { 
+/* Mobile Responsive Adjustments */
+@media (max-width: 480px) {
+    #app-container { padding: 15px; }
+    .spatial-glass-card {
         padding: 2.5rem 1.5rem;
-        border-radius: 28px;
+        max-width: 100%;
     }
+}
+/* --------------------------------------------------------------------- */
+/* --- End Block 1B file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1C : Sleek Typography & Brand Identity --- */
+/* --------------------------------------------------------------------- */
+.card-header { text-align: center; }
+
+.brand-badge {
+    font-size: 0.75rem;
+    font-weight: 800; /* Extra Bold Apple Style */
+    letter-spacing: 2px;
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+    color: var(--blue-accent); /* Brand identity blue */
+}
+
+.main-title {
+    font-size: 2.2rem;
+    font-weight: 800; /* Sabse zyada Bold */
+    letter-spacing: -1px;
+    margin-bottom: 0.4rem;
+    color: var(--p-text); /* Dynamic Theme Color */
+}
+
+.secondary-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--s-text); /* Dynamic Gray Label */
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 1C file : 1-login/login.css --- */ 
@@ -173,31 +127,30 @@ body::before {
 }
 
 .field-label {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.5px;
-    color: var(--s-text);
-    padding-left: 0.4rem;
+    color: var(--s-text); /* Subtle Gray Rule */
+    padding-left: 0.5rem;
     text-transform: uppercase;
 }
 
 .input-wrapper {
     display: flex;
     align-items: center;
-    background: rgba(142, 142, 147, 0.12);
+    background: rgba(142, 142, 147, 0.12); /* Dynamic Apple Gray */
     border: 1px solid transparent;
-    border-radius: var(--radius-item); /* 16px Rule */
+    border-radius: var(--radius-item); /* 14px Rule */
     padding: 0 1.2rem;
     height: 58px;
     transition: all 0.3s var(--smooth-flow);
 }
 
-/* Focus State: Signature Blue Glow with Glass expansion */
+/* Focus state with signature blue glow */
 .input-wrapper:focus-within {
     background: var(--card-bg);
     border-color: var(--blue-accent);
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
-    transform: translateY(-1px);
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12);
 }
 
 .input-wrapper input {
@@ -208,35 +161,34 @@ body::before {
     height: 100%;
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--p-text);
+    color: var(--p-text); /* Dynamic Theme Text */
     padding-left: 0.8rem;
 }
 
 .input-wrapper input::placeholder {
     color: var(--s-text);
-    opacity: 0.6;
+    opacity: 0.55;
 }
 
-/* Country Selector Tweak for iPad Look */
+/* Country Selector Tweak */
 .country-selector {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    padding-right: 1rem;
+    padding-right: 0.8rem;
     border-right: 1px solid var(--glass-border);
     color: var(--p-text);
     font-weight: 700;
-    cursor: pointer;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2A file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2B : Primary Action Button (Haptic Blue Hero) --- */
+/* --- Block 2B : Primary Action Button (The Blue Hero) --- */
 /* --------------------------------------------------------------------- */
 .action-container {
-    margin-top: 0.8rem;
+    margin-top: 1rem;
 }
 
 .main-cta-btn {
@@ -245,75 +197,52 @@ body::before {
     background: var(--blue-accent);
     border: none;
     border-radius: var(--radius-item);
-    color: #FFFFFF;
+    color: #FFFFFF; /* Text on blue always white */
     font-size: 1.2rem;
     font-weight: 700;
     letter-spacing: -0.2px;
     position: relative;
-    box-shadow: 0 12px 30px rgba(0, 122, 255, 0.3);
+    box-shadow: 0 10px 25px rgba(0, 122, 255, 0.3);
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.4s var(--spring-ease);
 }
 
-/* Button Active State: Physical Scale Down Rule */
+/* Haptic active feedback */
 .main-cta-btn:active {
-    transform: scale(0.96);
-    box-shadow: 0 5px 15px rgba(0, 122, 255, 0.2);
+    transform: scale(0.96) !important;
 }
 
-/* Apple Style Glossy Top Highlight */
+/* Apple Style Glossy Top Reflection */
 .main-cta-btn::after {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 50%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%);
     pointer-events: none;
-}
-
-.btn-loader {
-    display: none;
-    position: absolute;
-    width: 26px; height: 26px;
-    border: 3px solid rgba(255,255,255,0.3);
-    border-top-color: #FFFFFF;
-    border-radius: 50%;
-    left: calc(50% - 13px);
-    top: calc(50% - 13px);
-    animation: spatialSpin 0.8s linear infinite;
-}
-
-@keyframes spatialSpin {
-    to { transform: rotate(360deg); }
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2B file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2C : Footer Links & Typography --- */
+/* --- Block 2C : Footer & Legal Section --- */
 /* --------------------------------------------------------------------- */
 .card-footer {
     text-align: center;
-    margin-top: 0.2rem;
+    margin-top: 0.5rem;
 }
 
 .legal-text {
     font-size: 0.85rem;
     font-weight: 500;
     color: var(--s-text);
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
 .blue-link {
     color: var(--blue-accent);
     cursor: pointer;
     font-weight: 700;
-    transition: opacity 0.2s ease;
-}
-
-.blue-link:active {
-    opacity: 0.6;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2C file : 1-login/login.css --- */ 
