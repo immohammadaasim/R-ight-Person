@@ -67,6 +67,17 @@ function createSecureHash(str) {
 // Global Device ID for this session
 const currentDID = localStorage.getItem('RP_DeviceID') || generateDeviceFingerprint();
 console.log("Modular Engine: Device ID Sync Complete ->", currentDID);
+
+/**
+ * triggerHapticFeedback: Local helper for physical touch visual.
+ */
+function triggerHapticFeedback() {
+    if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
+    console.log("System: Haptic visual simulated.");
+}
+// Export helper globally for Theme.js or others
+window.triggerHapticFeedback = triggerHapticFeedback;
+
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 1C file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
@@ -76,39 +87,45 @@ console.log("Modular Engine: Device ID Sync Complete ->", currentDID);
 /* ===================================================================== */
 
 
-
 /* ===================================================================== */
 /* ===>> BLOCK JS 2: Global Identity & Formatting Logic <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2A : Smart Phone Formatting (888-888-8888) --- */
+/* --- Sub-Block 2A : Smart Phone Formatting Engine (Auto-Pattern) --- */
 /* --------------------------------------------------------------------- */
 /**
- * applyPhonePattern: Mobile field mein auto-dashes lagata hai.
+ * applyPhoneFormatting: Mobile field mein dashes (-) lagata hai.
  * Rule: Sirf digits allow karna aur 10 digit ka standard maintain karna.
  */
 if (mobileInput) {
     mobileInput.addEventListener('input', (e) => {
-        // Digits ke ilawa sab saaf karo
+        // Numbers ke ilawa sab saaf karo
         let val = e.target.value.replace(/\D/g, '').substring(0, 10);
         
-        let formatted = "";
+        let formattedValue = "";
         if (val.length > 0) {
             if (val.length <= 3) {
-                formatted = val;
+                formattedValue = val;
             } else if (val.length <= 6) {
-                formatted = `${val.slice(0, 3)}-${val.slice(3)}`;
+                formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
             } else {
-                formatted = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
+                formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
             }
         }
-        e.target.value = formatted;
+        
+        // Update the visible value
+        e.target.value = formattedValue;
     });
 
-    // Keyboard Guard: Alphabets block karo
+    // Keyboard Guard: Alphabets block karo aur notification do
     mobileInput.addEventListener('keypress', (e) => {
-        if (!/[0-9]/.test(e.key)) e.preventDefault();
+        if (!/[0-9]/.test(e.key)) {
+            e.preventDefault();
+            if (typeof showIsland === 'function') {
+                showIsland("Only numbers allowed", "error");
+            }
+        }
     });
 }
 /* --------------------------------------------------------------------- */
@@ -120,9 +137,9 @@ if (mobileInput) {
 /* --------------------------------------------------------------------- */
 /**
  * identityDiscovery: Real-time mein Gmail se naam ya badge nikalta hai.
- * Rule: Debounce (600ms) taaki search typing ke sath match kare.
+ * Rule: Debounce (600ms) taaki typing ke sath search smooth chale.
  */
-let discoveryTimer;
+let lookupTimer;
 
 if (emailInput) {
     emailInput.addEventListener('input', (e) => {
@@ -130,24 +147,38 @@ if (emailInput) {
         
         // Slot saaf karo aur timer reset karo
         if (previewPortal) previewPortal.innerHTML = "";
-        clearTimeout(discoveryTimer);
+        clearTimeout(lookupTimer);
 
+        // Sirf tab scan karo jab user @ tak pahunch jaye aur format valid lage
         if (email.includes('@') && email.length > 5) {
-            discoveryTimer = setTimeout(() => {
-                executeIdentityLookup(email);
+            lookupTimer = setTimeout(() => {
+                performIdentityLookup(email);
             }, 600);
         }
     });
 }
 
 /**
- * executeIdentityLookup: Database aur Global status check karta hai.
+ * performIdentityLookup: Supabase database aur Global status check karta hai.
  */
-async function executeIdentityLookup(email) {
+async function performIdentityLookup(email) {
     if (!previewPortal) return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // 1. Strict Validation: Choti ya ghalat emails ko reject karo
+    const usernamePart = email.split('@')[0];
+    if (usernamePart.length < 3 || !emailRegex.test(email)) {
+        previewPortal.innerHTML = `
+            <div class="spatial-identity-chip" style="background:rgba(255,59,48,0.1); border-color:rgba(255,59,48,0.2);">
+                <span class="chip-icon"><i class="fas fa-exclamation-circle" style="color:var(--error-red);"></i></span>
+                <span class="chip-text" style="color:var(--error-red);">Invalid Identity Signature</span>
+            </div>
+        `;
+        return;
+    }
 
     try {
-        // 1. Supabase Check: Pehle apne database mein dhoondo
+        // 2. Database Lookup: Kya ye user hamare system mein hai?
         const { data: user } = await _sb
             .from('users')
             .select('personal_email')
@@ -155,7 +186,7 @@ async function executeIdentityLookup(email) {
             .maybeSingle();
 
         if (user) {
-            // Case: Welcome Old User
+            // CASE: Purana User (Asli Naam dikhao)
             const name = user.personal_email.split('@')[0];
             previewPortal.innerHTML = `
                 <div class="spatial-identity-chip">
@@ -164,7 +195,7 @@ async function executeIdentityLookup(email) {
                 </div>
             `;
         } else {
-            // Case: New User (High-Security Verified Badge)
+            // CASE: Naya User (Security Badge dikhao)
             previewPortal.innerHTML = `
                 <div class="spatial-identity-chip" style="background:rgba(52,199,89,0.1); border-color:rgba(52,199,89,0.2);">
                     <span class="chip-icon"><i class="fas fa-certificate" style="color:var(--success-green);"></i></span>
@@ -173,7 +204,7 @@ async function executeIdentityLookup(email) {
             `;
         }
     } catch (err) {
-        console.error("Discovery Engine Offline:", err);
+        console.error("Identity Engine Error:", err);
     }
 }
 /* --------------------------------------------------------------------- */
@@ -185,31 +216,28 @@ async function executeIdentityLookup(email) {
 /* ===================================================================== */
 
 
-
 /* ===================================================================== */
 /* ===>> BLOCK JS 3: Main Entry Engine & Identity Routing <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 3A : Strict Identity Validation Logic --- */
+/* --- Sub-Block 3A : Strict Final Validation Logic --- */
 /* --------------------------------------------------------------------- */
 /**
- * validateIdentityEntry: Check karta hai ki data system rules ke mutabiq hai ya nahi.
- * Rule: Phone must be 10 digits, Email must be a full valid signature.
+ * validateIdentityGate: Rasta kholne se pehle data ki sakht janch.
+ * Rule: Phone must be 10 digits, Email must be a complete signature.
  */
-function validateIdentityEntry(email, phone) {
+function validateIdentityGate(email, phone) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const cleanPhone = phone.replace(/-/g, ''); // Dashes hata kar check karo
+    const cleanPhone = phone.replace(/-/g, ''); // Pattern dashes hatao
 
     if (cleanPhone.length < 10) {
-        window.showIsland("Enter full 10-digit mobile number", "error");
+        if (typeof showIsland === 'function') showIsland("Enter full 10-digit number", "error");
         return false;
     }
 
-    // Strict Email check (im@gmail.com jaise fake formats ko rokne ke liye)
-    const emailParts = email.split('@');
-    if (!emailRegex.test(email) || emailParts[0].length < 3) {
-        window.showIsland("Invalid Gmail Signature", "error");
+    if (!emailRegex.test(email) || email.split('@')[0].length < 3) {
+        if (typeof showIsland === 'function') showIsland("Invalid Gmail Signature", "error");
         return false;
     }
 
@@ -220,20 +248,20 @@ function validateIdentityEntry(email, phone) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 3B : Entry Execution & Routing Engine --- */
+/* --- Sub-Block 3B : Entry Execution & Identity Sync --- */
 /* --------------------------------------------------------------------- */
 /**
- * handleContinueAction: Continue button dabane par data process karta hai.
+ * executeContinueAction: Button click par database check aur routing.
  */
 if (continueBtn) {
     continueBtn.addEventListener('click', async () => {
         const email = emailInput.value.trim().toLowerCase();
         const phone = mobileInput.value.trim();
 
-        // 1. Validation Check
-        if (!validateIdentityEntry(email, phone)) return;
+        // 1. Final Gate Check
+        if (!validateIdentityGate(email, phone)) return;
 
-        // 2. UI State: Haptic + Loading
+        // 2. UI Reaction: Haptic + Loading State
         if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
         
         continueBtn.disabled = true;
@@ -244,7 +272,7 @@ if (continueBtn) {
         if (btnLoader) btnLoader.style.display = 'block';
 
         try {
-            // 3. Database Check: Search for Existing Identity
+            // 3. Database Check: Identitfying User Status
             const { data: user, error } = await _sb
                 .from('users')
                 .select('id, personal_email, device_fingerprint, is_blocked')
@@ -253,44 +281,44 @@ if (continueBtn) {
 
             if (error) throw error;
 
-            // 4. Identity Memory: Session storage mein data save karo
+            // 4. Memory Bridge: Next page ke liye data save karo
             sessionStorage.setItem('RP_Temp_Email', email);
             sessionStorage.setItem('RP_Temp_Phone', phone.replace(/-/g, ''));
             
             const countryCode = document.getElementById('selected-code')?.textContent || '+91';
             sessionStorage.setItem('RP_Country_Code', countryCode);
 
-            // 5. User Type Logic
+            // 5. Routing Logic (OLD vs NEW)
             if (user) {
                 if (user.is_blocked) {
-                    window.showIsland("This Identity is suspended", "error");
-                    resetEntryUI();
+                    if (typeof showIsland === 'function') showIsland("This Identity is suspended", "error");
+                    resetEntryState();
                     return;
                 }
                 sessionStorage.setItem('RP_User_Type', 'OLD');
-                window.showIsland("Identity Identified. Redirecting...", "success");
+                if (typeof showIsland === 'function') showIsland("Identity Identified. Syncing...", "success");
             } else {
                 sessionStorage.setItem('RP_User_Type', 'NEW');
-                window.showIsland("New Identity detected. Welcome!", "success");
+                if (typeof showIsland === 'function') showIsland("New Identity detected. Welcome!", "success");
             }
 
-            // 6. Smooth Redirect (3-Page Flow)
+            // 6. Final Transition (The Flow Rule)
             setTimeout(() => {
                 window.location.href = '../2-Verification/Verification.html';
             }, 1200);
 
         } catch (err) {
-            console.error("Entry Engine Error:", err);
-            window.showIsland("Network connection interrupted", "error");
-            resetEntryUI();
+            console.error("Entry Engine Interrupted:", err);
+            if (typeof showIsland === 'function') showIsland("Network link failed", "error");
+            resetEntryState();
         }
     });
 }
 
 /**
- * resetEntryUI: Error aane par button ko normal karta hai.
+ * resetEntryState: Failure par button ko normal karta hai.
  */
-function resetEntryUI() {
+function resetEntryState() {
     continueBtn.disabled = false;
     const btnText = continueBtn.querySelector('.btn-text');
     const btnLoader = continueBtn.querySelector('.btn-loader');
@@ -306,16 +334,18 @@ function resetEntryUI() {
 /* ===================================================================== */
 
 
-
 /* ===================================================================== */
 /* ===>> BLOCK JS 4: Global Country Picker Logic Engine <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4A : Country Dataset & Selector Elements --- */
+/* --- Sub-Block 4A : Region Dataset & DOM Linkage --- */
 /* --------------------------------------------------------------------- */
-// 1. Global Identity Regions (Duniya ki list)
-const regions = [
+/**
+ * Global Region Registry: 
+ * Duniya ki main countries ki list identity engine ke liye.
+ */
+const regionRegistry = [
     { name: "India", code: "+91", flag: "🇮🇳" },
     { name: "United States", code: "+1", flag: "🇺🇸" },
     { name: "United Kingdom", code: "+44", flag: "🇬🇧" },
@@ -328,35 +358,36 @@ const regions = [
     { name: "Japan", code: "+81", flag: "🇯🇵" }
 ];
 
-// 2. DOM Selection for Picker
+// Modal & Trigger Elements
 const pickerTrigger  = document.getElementById('country-dropdown-trigger');
 const pickerOverlay  = document.getElementById('country-picker-overlay');
 const closePickerBtn = document.getElementById('close-picker-btn');
 const searchBox      = document.getElementById('country-search-input');
 const listContainer  = document.getElementById('country-list-scroll');
 
-const displayFlag    = document.getElementById('selected-flag');
-const displayCode    = document.getElementById('selected-code');
+// Display Elements
+const currentFlag    = document.getElementById('selected-flag');
+const currentCode    = document.getElementById('selected-code');
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 4A file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4B : Picker Render & Search Engine --- */
+/* --- Sub-Block 4B : Rendering & Search Filter Logic --- */
 /* --------------------------------------------------------------------- */
 /**
- * renderPickerList: List ko screen par filter karke dikhata hai.
+ * renderPickerContent: List ko filter karke screen par dikhata hai.
  */
-function renderPickerList(filterText = "") {
+function renderPickerContent(filterText = "") {
     if (!listContainer) return;
     listContainer.innerHTML = "";
 
-    const filtered = regions.filter(r => 
+    const filteredRegions = regionRegistry.filter(r => 
         r.name.toLowerCase().includes(filterText.toLowerCase()) || 
         r.code.includes(filterText)
     );
 
-    filtered.forEach(region => {
+    filteredRegions.forEach(region => {
         const item = document.createElement('div');
         item.className = "country-item haptic-touch";
         item.innerHTML = `
@@ -365,25 +396,25 @@ function renderPickerList(filterText = "") {
             <span class="code">${region.code}</span>
         `;
         
-        item.onclick = () => finalizeRegionSelection(region);
+        item.onclick = () => finalizeSelection(region);
         listContainer.appendChild(item);
     });
 }
 
 /**
- * finalizeRegionSelection: Country chunne par UI aur memory update karta hai.
+ * finalizeSelection: Region chunne par UI aur memory update karta hai.
  */
-function finalizeRegionSelection(region) {
+function finalizeSelection(region) {
     if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
     
-    // UI Update
-    displayFlag.textContent = region.flag;
-    displayCode.textContent = region.code;
+    // Update Display
+    if (currentFlag) currentFlag.textContent = region.flag;
+    if (currentCode) currentCode.textContent = region.code;
     
-    // Memory Update (For next pages)
+    // Save to session for cross-page sync
     sessionStorage.setItem('RP_Country_Code', region.code);
     
-    closeRegionPicker();
+    closePickerModal();
 }
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 4B file : 1-login/login.js --- */ 
@@ -393,31 +424,33 @@ function finalizeRegionSelection(region) {
 /* --- Sub-Block 4C : Modal Controls & Initialization --- */
 /* --------------------------------------------------------------------- */
 /**
- * openRegionPicker: Modal ko reveal karta hai.
+ * Modal Event Listeners:
+ * Open, Close aur Real-time search handling.
  */
 if (pickerTrigger) {
     pickerTrigger.onclick = () => {
         if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
         pickerOverlay.classList.add('active');
-        renderPickerList(); // Refresh list
-        setTimeout(() => searchBox.focus(), 150);
+        renderPickerContent(); // Load fresh list
+        if (searchBox) setTimeout(() => searchBox.focus(), 200);
     };
 }
 
-function closeRegionPicker() {
-    pickerOverlay.classList.remove('active');
-    searchBox.value = "";
+function closePickerModal() {
+    if (pickerOverlay) pickerOverlay.classList.remove('active');
+    if (searchBox) searchBox.value = "";
 }
 
-if (closePickerBtn) closePickerBtn.onclick = closeRegionPicker;
+if (closePickerBtn) closePickerBtn.onclick = closePickerModal;
 
-// Real-time Search Listener
+// Search Input Listener
 if (searchBox) {
-    searchBox.oninput = (e) => renderPickerList(e.target.value);
+    searchBox.oninput = (e) => renderPickerContent(e.target.value);
 }
 
-// Initial Run
-renderPickerList();
+// Initial Data Load
+renderPickerContent();
+
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 4C file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
