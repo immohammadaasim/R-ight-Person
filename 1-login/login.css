@@ -133,30 +133,46 @@ body.spatial-login {
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Original Layout + iOS Status Tick (Inside) --- */
+/* --- Block 2A : Premium Input Engineering & iOS Status Icon --- */
 /* --------------------------------------------------------------------- */
-/**
- * Input Wrapper:
- * Humne purana layout wapas le aaya hai.
- * Position: relative rakha hai taaki Tick mark iske andar chipak sake.
- */
+.entry-form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.field-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--s-text);
+    padding-left: 0.4rem;
+    text-transform: uppercase;
+}
+
 .input-wrapper {
     display: flex;
     align-items: center;
     background: rgba(142, 142, 147, 0.12);
     border: 1px solid transparent;
-    border-radius: var(--radius-item);
+    border-radius: var(--radius-item); /* 14px Rule */
     padding: 0 1.2rem;
-    height: 58px;
-    position: relative; /* Tick mark placement ke liye */
+    height: 60px;
+    position: relative;
     transition: all 0.3s var(--smooth-flow);
 }
 
-/* Purana Focus Logic */
+/* Interaction: Blue glow focus */
 .input-wrapper:focus-within {
     background: var(--card-bg);
     border-color: var(--blue-accent);
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12);
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
 }
 
 .input-wrapper input {
@@ -165,54 +181,33 @@ body.spatial-login {
     border: none;
     outline: none;
     height: 100%;
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: var(--p-text);
     padding-left: 0.8rem;
-    padding-right: 35px; /* Tick mark ke liye safe space */
 }
 
-/* Purana Country Selector Logic */
+/* iOS Style Pop Animation for Tick Mark */
+.input-status-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.4s var(--spring-ease);
+}
+
 .country-selector {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
     padding-right: 0.8rem;
     border-right: 1px solid var(--glass-border);
     color: var(--p-text);
     font-weight: 700;
-}
-
-/**
- * iOS Slide-In Tick (The Fix):
- * Ye layout ko distrub nahi karega kyunki ye Absolute hai.
- */
-.input-status-icon {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%) translateX(-10px); /* Slide start: Left */
-    font-size: 1.2rem;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.45s var(--spring-ease);
-    color: #34C759;
-}
-
-/* Animation trigger */
-.input-status-icon.active {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0); /* Final Position: Right */
-}
-
-/* Purana Label Logic */
-.field-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: var(--s-text);
-    padding-left: 0.5rem;
-    margin-bottom: 4px;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2A file : 1-login/login.css --- */ 
