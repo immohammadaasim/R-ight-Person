@@ -121,7 +121,7 @@ body.spatial-login {
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Premium Input Engineering & Official Brand Icons --- */
+/* --- Block 2A : Premium Input Engineering (Overflow & Alignment Fix) --- */
 /* --------------------------------------------------------------------- */
 .entry-form-container {
     display: flex;
@@ -152,7 +152,7 @@ body.spatial-login {
 
 /**
  * Smart Mail Provider Pill:
- * visionOS style floating pill with official brand icon coloring.
+ * visionOS style floating pill for one-tap verification.
  */
 .mail-provider-pill {
     display: flex;
@@ -178,57 +178,70 @@ body.spatial-login {
     cursor: pointer;
 }
 
-/* Official Brand Colors on Interaction */
 .provider-btn[data-provider="google"]:hover { color: #DB4437; }
 .provider-btn[data-provider="apple"]:hover { color: var(--p-text); }
 .provider-btn[data-provider="microsoft"]:hover { color: #00A4EF; }
 .provider-btn[data-provider="yahoo"]:hover { color: #6001D2; }
 
-/* Input Wrapper & Tick Guard Logic */
+/* Input Wrapper: Pure Spatial Glass Logic */
 .input-wrapper {
     display: flex;
     align-items: center;
-    background: rgba(142, 142, 147, 0.12);
+    background: rgba(142, 142, 147, 0.08) !important; /* Force Neutral Gray */
     border: 1px solid transparent;
     border-radius: var(--radius-item);
     padding: 0 1.2rem;
     height: 60px;
     position: relative;
     transition: all 0.3s var(--smooth-flow);
+    overflow: hidden; /* Prevent child overflow */
 }
 
 .input-wrapper.verified {
     border-color: var(--blue-accent);
-    background: rgba(0, 122, 255, 0.05);
+    background: rgba(0, 122, 255, 0.05) !important;
 }
 
 .input-wrapper:focus-within {
-    background: var(--card-bg);
+    background: var(--card-bg) !important;
     border-color: var(--blue-accent);
     box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
 }
 
+/* SMART INPUT: Handles long text without breaking layout */
 .input-wrapper input {
     flex: 1;
-    background: transparent;
+    min-width: 0; /* Important fix for Flex containers */
+    background: transparent !important;
     border: none;
     outline: none;
     height: 100%;
-    font-size: 1.15rem;
+    font-size: 1.05rem; /* Slightly reduced for better fit */
     font-weight: 600;
     color: var(--p-text);
     padding-left: 0.8rem;
-    padding-right: 38px; /* Dedicated space for iOS Tick */
+    padding-right: 35px; /* Space for Tick/Icon */
+    text-overflow: ellipsis;
 }
 
-/**
- * iOS Slide-In Status Icon:
- * Absolutely positioned to prevent layout shifts.
- * Smooth Left-to-Right arrival with Fade.
- */
+/* Mobile Country Selector: Stable width to prevent jumping */
+.country-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-right: 0.8rem;
+    border-right: 1.5px solid var(--glass-border);
+    color: var(--p-text);
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    min-width: 85px; /* Keeps "IN +91" stable */
+}
+
+/* iOS Status Icon (Tick mark) placement */
 .input-status-icon {
     position: absolute;
-    right: 1.2rem;
+    right: 1rem;
     top: 50%;
     width: 24px;
     height: 24px;
@@ -237,11 +250,11 @@ body.spatial-login {
     justify-content: center;
     font-size: 1.2rem;
     opacity: 0;
-    color: #34C759; /* Apple Success Green */
+    color: #34C759;
     pointer-events: none;
     transform: translateY(-50%) translateX(-15px);
-    transition: all 0.45s var(--spring-ease);
-    z-index: 2;
+    transition: all 0.4s var(--spring-ease);
+    z-index: 5;
 }
 
 .input-status-icon.active {
@@ -249,15 +262,13 @@ body.spatial-login {
     transform: translateY(-50%) translateX(0);
 }
 
-.country-selector {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding-right: 0.8rem;
-    border-right: 1px solid var(--glass-border);
-    color: var(--p-text);
-    font-weight: 700;
-    cursor: pointer;
+/* Autofill Fix: Browser's ugly blue background removal */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--p-text);
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+    transition: background-color 5000s ease-in-out 0s;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2A file : 1-login/login.css --- */ 
