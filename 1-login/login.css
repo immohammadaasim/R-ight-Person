@@ -1,54 +1,65 @@
 /* ===================================================================== */
-/* ===>> BLOCK CSS 1: Main Layout & Spatial Card Architecture <<=== */
+/* ===>> BLOCK CSS 1: Layout Centering & Spatial Card Architecture <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1A : Adaptive Main Container --- */
+/* --- Block 1A : Adaptive Centering Logic --- */
 /* --------------------------------------------------------------------- */
+/**
+ * Centering Engine:
+ * Ensure karta hai ki card hamesha screen ke bilkul beech mein hawa mein tairta rahe.
+ */
 #app-container {
     width: 100%;
-    max-width: 400px; /* God-level Proportion Rule */
-    padding: 20px;
-    position: relative;
-    z-index: 1;
+    max-width: 400px; /* God-level Normal Proportion */
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 1;
+}
+
+/* Page body correction for perfect centering */
+body.spatial-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 1A file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1B : Spatial Glass Card (iPadOS 18 Vibe) --- */
+/* --- Block 1B : Spatial Glass Card (iPadOS 18 Standard) --- */
 /* --------------------------------------------------------------------- */
 .spatial-glass-card {
+    width: 100%;
     background: var(--card-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: var(--radius-squircle); /* 28px Squircle */
+    border-radius: var(--radius-squircle); /* 28px Rule */
     border: 1px solid var(--glass-border);
-    padding: 3.5rem 2.4rem;
+    padding: 3.2rem 2.2rem;
     box-shadow: var(--glass-shadow);
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: 2.2rem;
     position: relative;
     overflow: hidden;
     animation: spatialArrival 0.8s var(--spring-ease);
 }
 
-/* Subtle Top Edge Glow */
+/* Apple Style Top Reflection */
 .spatial-glass-card::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; height: 100%;
-    background: var(--glass-glow);
-    pointer-events: none;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
 }
 
 @keyframes spatialArrival {
-    from { opacity: 0; transform: scale(0.96) translateY(20px); }
+    from { opacity: 0; transform: scale(0.97) translateY(20px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
 }
 /* --------------------------------------------------------------------- */
@@ -56,33 +67,30 @@
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1C : Elegant Header & Branding --- */
+/* --- Block 1C : Sleek Typography & Brand Identity --- */
 /* --------------------------------------------------------------------- */
-.card-header {
-    text-align: center;
-}
+.card-header { text-align: center; }
 
 .brand-badge {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 800;
-    letter-spacing: 2.5px;
+    letter-spacing: 2px;
     margin-bottom: 0.8rem;
     text-transform: uppercase;
-    color: var(--blue-accent); /* Blue used only as an identity mark */
+    color: var(--blue-accent);
 }
 
 .main-title {
     font-size: 2rem;
     font-weight: 800;
     letter-spacing: -1px;
-    color: var(--p-text); /* Following the background logic */
     margin-bottom: 0.4rem;
 }
 
 .secondary-label {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 500;
-    color: var(--s-text); /* Muted Gray Label */
+    color: var(--s-text); /* Elegant Neutral Gray */
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 1C file : 1-login/login.css --- */ 
@@ -191,12 +199,6 @@
     overflow: hidden;
 }
 
-/* Interaction: Active press feel */
-.main-cta-btn:active {
-    transform: scale(0.96);
-    opacity: 0.9;
-}
-
 /* Button Physical Gloss Reflection */
 .main-cta-btn::after {
     content: '';
@@ -226,7 +228,7 @@
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2C : Footer & Responsive Adaptation --- */
+/* --- Block 2C : Footer & Legal Section --- */
 /* --------------------------------------------------------------------- */
 .card-footer {
     text-align: center;
@@ -245,15 +247,6 @@
     cursor: pointer;
     font-weight: 600;
 }
-
-/* Responsive Scaling for Small Devices */
-@media (max-width: 480px) {
-    .spatial-glass-card { 
-        padding: 3rem 1.8rem; 
-        gap: 2rem;
-    }
-    .main-title { font-size: 1.8rem; }
-}
 /* --------------------------------------------------------------------- */
 /* --- End Block 2C file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
@@ -261,6 +254,7 @@
 /* ===================================================================== */
 /* ===>> END OF BLOCK CSS 2 file : 1-login/login.css <<=== */
 /* ===================================================================== */
+
 
 
 
@@ -287,7 +281,7 @@
     padding: 6px 14px;
     border-radius: 100px; /* Pill rule */
     border: 0.5px solid rgba(0, 122, 255, 0.2);
-    animation: chipSlideIn 0.45s var(--spring-ease) forwards;
+    animation: chipSlideIn 0.45s var(--spring-physics) forwards;
 }
 
 .chip-icon { 
