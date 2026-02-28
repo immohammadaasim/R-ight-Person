@@ -92,17 +92,19 @@ window.triggerHapticFeedback = triggerHapticFeedback;
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2A : Smart Phone Formatting Engine (Auto-Pattern) --- */
+/* --- Sub-Block 2A : Smart Phone Formatting Engine (Dynamic Pattern) --- */
 /* --------------------------------------------------------------------- */
 /**
- * applyPhoneFormatting: Mobile field mein dashes (-) lagata hai.
- * Rule: Sirf digits allow karna aur 10 digit ka standard maintain karna.
+ * applyPhoneFormatting: 
+ * Mobile field mein dashes (-) lagata hai aur max length control karta hai.
+ * Rule: currentSelectedLength ke hisab se digits allow honge (India: 10, China: 11, etc.)
  */
 if (mobileInput) {
     mobileInput.addEventListener('input', (e) => {
-        // Numbers ke ilawa sab saaf karo
-        let val = e.target.value.replace(/\D/g, '').substring(0, 10);
+        // 1. Non-digits ko saaf karo aur dynamic length par lock karo
+        let val = e.target.value.replace(/\D/g, '').substring(0, currentSelectedLength);
         
+        // 2. Formatting Logic (Flexible for different lengths)
         let formattedValue = "";
         if (val.length > 0) {
             if (val.length <= 3) {
@@ -110,15 +112,16 @@ if (mobileInput) {
             } else if (val.length <= 6) {
                 formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
             } else {
+                // Agar 10 se zyada digits hain toh format ko extend karo
                 formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
             }
         }
         
-        // Update the visible value
+        // Final value update
         e.target.value = formattedValue;
     });
 
-    // Keyboard Guard: Alphabets block karo aur notification do
+    // Keyboard Guard: Alphabets block karo aur Dynamic Island se notification do
     mobileInput.addEventListener('keypress', (e) => {
         if (!/[0-9]/.test(e.key)) {
             e.preventDefault();
@@ -225,52 +228,61 @@ async function performIdentityLookup(email) {
 /* --------------------------------------------------------------------- */
 /**
  * updateIdentityStatus: 
- * Phone number valid hone par iOS Tick ko "Active" class deta hai.
- * Animation (Left-to-Right) CSS ke '.active' class se trigger hogi.
+ * Selected country ki 'length' property ke hisab se Tick ko active karta hai.
+ * Rule: Har country ka apna dynamic target (e.g., India: 10, UAE: 9).
  */
 function updateIdentityStatus() {
+    // Sirf digits nikaalo validation ke liye
     const phone = mobileInput.value.replace(/-/g, '');
     const tickSlot = document.getElementById('phone-tick-icon');
     
     if (!tickSlot) return;
 
-    // Rule: Agar 10 digits poore hain toh Active class add karo (Slide Animation)
-    if (phone.length === 10) {
+    // Rule: Agar phone digits chosen country ki required length ke barabar hain
+    if (phone.length === currentSelectedLength) {
         tickSlot.innerHTML = '<i class="fas fa-check-circle"></i>';
-        // 0.1s ka delay taaki animation smoothly trigger ho
+        // Smooth slide-in trigger karne ke liye halka sa delay
         setTimeout(() => {
             tickSlot.classList.add('active');
         }, 10);
     } else {
-        // 10 se kam hote hi gayab kar do
+        // Target match nahi hota toh class hatao
         tickSlot.classList.remove('active');
+        // Animation khatam hone ke baad icon saaf karo
         setTimeout(() => {
             if (!tickSlot.classList.contains('active')) {
                 tickSlot.innerHTML = '';
             }
-        }, 400); // Transition time ke baad saaf karo
+        }, 400); 
     }
 }
 
-// Phone input par real-time monitoring
+// Phone input par real-time monitoring lagao
 if (mobileInput) {
     mobileInput.addEventListener('input', updateIdentityStatus);
 }
 
 /**
- * validateIdentityGate: Final security check rasta kholne se pehle.
+ * validateIdentityGate: 
+ * Continue dabane par sakht janch (Dynamic Length based).
  */
 function validateIdentityGate(email, phone) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const cleanPhone = phone.replace(/-/g, '');
 
-    if (cleanPhone.length < 10) {
-        if (typeof showIsland === 'function') showIsland("Enter full 10-digit number", "error");
+    // Rule: Clean phone length must match the current country's rule
+    if (cleanPhone.length !== currentSelectedLength) {
+        if (typeof showIsland === 'function') {
+            showIsland(`Enter full ${currentSelectedLength}-digit number`, "error");
+        }
         return false;
     }
 
+    // Gmail Signature Validation
     if (!emailRegex.test(email) || email.split('@')[0].length < 3) {
-        if (typeof showIsland === 'function') showIsland("Invalid Gmail Signature", "error");
+        if (typeof showIsland === 'function') {
+            showIsland("Invalid Gmail Signature", "error");
+        }
         return false;
     }
 
@@ -367,45 +379,201 @@ function resetEntryState() {
 /* ===>> BLOCK JS 4: Global Country Picker Logic Engine <<=== */
 /* ===================================================================== */
 
+/* ===================================================================== */
+/* ===>> BLOCK JS 4: Global Country Picker Logic Engine <<=== */
+/* ===================================================================== */
+
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4A : Region Dataset & DOM Linkage --- */
+/* --- Sub-Block 4A-1 : Global Region Registry (A to I) --- */
 /* --------------------------------------------------------------------- */
 /**
- * Global Region Registry: 
- * Duniya ki main countries ki list identity engine ke liye.
+ * regionRegistry: 
+ * Duniya bhar ki countries ka database.
+ * 'length' property validation engine ke liye use hogi.
  */
 const regionRegistry = [
-    { name: "India", code: "+91", flag: "🇮🇳" },
-    { name: "United States", code: "+1", flag: "🇺🇸" },
-    { name: "United Kingdom", code: "+44", flag: "🇬🇧" },
-    { name: "United Arab Emirates", code: "+971", flag: "🇦🇪" },
-    { name: "Canada", code: "+1", flag: "🇨🇦" },
-    { name: "Australia", code: "+61", flag: "🇦🇺" },
-    { name: "Germany", code: "+49", flag: "🇩🇪" },
-    { name: "France", code: "+33", flag: "🇫🇷" },
-    { name: "Singapore", code: "+65", flag: "🇸🇬" },
-    { name: "Japan", code: "+81", flag: "🇯🇵" }
+    { name: "Afghanistan", code: "+93", flag: "🇦🇫", length: 9 },
+    { name: "Albania", code: "+355", flag: "🇦🇱", length: 9 },
+    { name: "Algeria", code: "+213", flag: "🇩🇿", length: 9 },
+    { name: "Andorra", code: "+376", flag: "🇦🇩", length: 6 },
+    { name: "Angola", code: "+244", flag: "🇦🇴", length: 9 },
+    { name: "Argentina", code: "+54", flag: "🇦🇷", length: 10 },
+    { name: "Armenia", code: "+374", flag: "🇦🇲", length: 8 },
+    { name: "Australia", code: "+61", flag: "🇦🇺", length: 9 },
+    { name: "Austria", code: "+43", flag: "🇦🇹", length: 10 },
+    { name: "Azerbaijan", code: "+994", flag: "🇦🇿", length: 9 },
+    { name: "Bahrain", code: "+973", flag: "🇧🇭", length: 8 },
+    { name: "Bangladesh", code: "+880", flag: "🇧🇩", length: 10 },
+    { name: "Belarus", code: "+375", flag: "🇧🇾", length: 9 },
+    { name: "Belgium", code: "+32", flag: "🇧🇪", length: 9 },
+    { name: "Bhutan", code: "+975", flag: "🇧🇹", length: 8 },
+    { name: "Bolivia", code: "+591", flag: "🇧🇴", length: 8 },
+    { name: "Brazil", code: "+55", flag: "🇧🇷", length: 11 },
+    { name: "Bulgaria", code: "+359", flag: "🇧🇬", length: 9 },
+    { name: "Cambodia", code: "+855", flag: "🇰🇭", length: 9 },
+    { name: "Canada", code: "+1", flag: "🇨🇦", length: 10 },
+    { name: "Chile", code: "+56", flag: "🇨🇱", length: 9 },
+    { name: "China", code: "+86", flag: "🇨🇳", length: 11 },
+    { name: "Colombia", code: "+57", flag: "🇨🇴", length: 10 },
+    { name: "Costa Rica", code: "+506", flag: "🇨🇷", length: 8 },
+    { name: "Croatia", code: "+385", flag: "🇭🇷", length: 9 },
+    { name: "Cuba", code: "+53", flag: "🇨🇺", length: 8 },
+    { name: "Cyprus", code: "+357", flag: "🇨🇾", length: 8 },
+    { name: "Czech Republic", code: "+420", flag: "🇨🇿", length: 9 },
+    { name: "Denmark", code: "+45", flag: "🇩🇰", length: 8 },
+    { name: "Egypt", code: "+20", flag: "🇪🇬", length: 10 },
+    { name: "Estonia", code: "+372", flag: "🇪🇪", length: 8 },
+    { name: "Ethiopia", code: "+251", flag: "🇪🇹", length: 9 },
+    { name: "Finland", code: "+358", flag: "🇫🇮", length: 9 },
+    { name: "France", code: "+33", flag: "🇫🇷", length: 9 },
+    { name: "Georgia", code: "+995", flag: "🇬🇪", length: 9 },
+    { name: "Germany", code: "+49", flag: "🇩🇪", length: 10 },
+    { name: "Ghana", code: "+233", flag: "🇬🇭", length: 9 },
+    { name: "Greece", code: "+30", flag: "🇬🇷", length: 10 },
+    { name: "Hong Kong", code: "+852", flag: "🇭🇰", length: 8 },
+    { name: "Hungary", code: "+36", flag: "🇭🇺", length: 9 },
+    { name: "Iceland", code: "+354", flag: "🇮🇸", length: 7 },
+    { name: "India", code: "+91", flag: "🇮🇳", length: 10 },
+    { name: "Indonesia", code: "+62", flag: "🇮🇩", length: 10 },
+    { name: "Iran", code: "+98", flag: "🇮🇷", length: 10 },
+    { name: "Iraq", code: "+964", flag: "🇮🇶", length: 10 },
+    { name: "Ireland", code: "+353", flag: "🇮🇪", length: 9 },
+    { name: "Israel", code: "+972", flag: "🇮🇱", length: 9 },
+    { name: "Italy", code: "+39", flag: "🇮🇹", length: 10 }
 ];
 
-// Modal & Trigger Elements
+// Variables to track selection globally for validation
+let currentSelectedLength = 10; // Default India ke liye
+
+// Modal & Trigger Elements (Mapping unchanged)
 const pickerTrigger  = document.getElementById('country-dropdown-trigger');
 const pickerOverlay  = document.getElementById('country-picker-overlay');
 const closePickerBtn = document.getElementById('close-picker-btn');
 const searchBox      = document.getElementById('country-search-input');
 const listContainer  = document.getElementById('country-list-scroll');
-
-// Display Elements
 const currentFlag    = document.getElementById('selected-flag');
 const currentCode    = document.getElementById('selected-code');
+
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 4A file : 1-login/login.js --- */ 
+/* --- End Sub-Block 4A-1 file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4B : Rendering & Search Filter Logic --- */
+/* --- Sub-Block 4A-2 : Global Region Registry (J to R) --- */
 /* --------------------------------------------------------------------- */
 /**
- * renderPickerContent: List ko filter karke screen par dikhata hai.
+ * regionRegistry Expansion:
+ * J se R tak ki countries ko existing list mein add kiya ja raha hai.
+ */
+regionRegistry.push(
+    { name: "Jamaica", code: "+1", flag: "🇯🇲", length: 10 },
+    { name: "Japan", code: "+81", flag: "🇯🇵", length: 10 },
+    { name: "Jordan", code: "+962", flag: "🇯🇴", length: 9 },
+    { name: "Kazakhstan", code: "+7", flag: "🇰🇿", length: 10 },
+    { name: "Kenya", code: "+254", flag: "🇰🇪", length: 9 },
+    { name: "Kuwait", code: "+965", flag: "🇰🇼", length: 8 },
+    { name: "Kyrgyzstan", code: "+996", flag: "🇰🇬", length: 9 },
+    { name: "Laos", code: "+856", flag: "🇱🇦", length: 8 },
+    { name: "Latvia", code: "+371", flag: "🇱🇻", length: 8 },
+    { name: "Lebanon", code: "+961", flag: "🇱🇧", length: 8 },
+    { name: "Libya", code: "+218", flag: "🇱🇾", length: 9 },
+    { name: "Lithuania", code: "+370", flag: "🇱🇹", length: 8 },
+    { name: "Luxembourg", code: "+352", flag: "🇱🇺", length: 9 },
+    { name: "Macau", code: "+853", flag: "🇲🇴", length: 8 },
+    { name: "Malaysia", code: "+60", flag: "🇲🇾", length: 9 },
+    { name: "Maldives", code: "+960", flag: "🇲🇻", length: 7 },
+    { name: "Malta", code: "+356", flag: "🇲🇹", length: 8 },
+    { name: "Mauritius", code: "+230", flag: "🇲🇺", length: 7 },
+    { name: "Mexico", code: "+52", flag: "🇲🇽", length: 10 },
+    { name: "Moldova", code: "+373", flag: "🇲🇩", length: 8 },
+    { name: "Monaco", code: "+377", flag: "🇲🇨", length: 8 },
+    { name: "Mongolia", code: "+976", flag: "🇲🇳", length: 8 },
+    { name: "Montenegro", code: "+382", flag: "🇲🇪", length: 8 },
+    { name: "Morocco", code: "+212", flag: "🇲🇦", length: 9 },
+    { name: "Myanmar", code: "+95", flag: "🇲🇲", length: 9 },
+    { name: "Nepal", code: "+977", flag: "🇳🇵", length: 10 },
+    { name: "Netherlands", code: "+31", flag: "🇳🇱", length: 9 },
+    { name: "New Zealand", code: "+64", flag: "🇳🇿", length: 9 },
+    { name: "Nigeria", code: "+234", flag: "🇳🇬", length: 10 },
+    { name: "North Korea", code: "+850", flag: "🇰🇵", length: 10 },
+    { name: "Norway", code: "+47", flag: "🇳🇴", length: 8 },
+    { name: "Oman", code: "+968", flag: "🇴🇲", length: 8 },
+    { name: "Pakistan", code: "+92", flag: "🇵🇰", length: 10 },
+    { name: "Palestine", code: "+970", flag: "🇵🇸", length: 9 },
+    { name: "Panama", code: "+507", flag: "🇵🇦", length: 8 },
+    { name: "Paraguay", code: "+595", flag: "🇵🇾", length: 9 },
+    { name: "Peru", code: "+51", flag: "🇵🇪", length: 9 },
+    { name: "Philippines", code: "+63", flag: "🇵🇭", length: 10 },
+    { name: "Poland", code: "+48", flag: "🇵🇱", length: 9 },
+    { name: "Portugal", code: "+351", flag: "🇵🇹", length: 9 },
+    { name: "Qatar", code: "+974", flag: "🇶🇦", length: 8 },
+    { name: "Romania", code: "+40", flag: "🇷🇴", length: 9 },
+    { name: "Russia", code: "+7", flag: "🇷🇺", length: 10 },
+    { name: "Rwanda", code: "+250", flag: "🇷🇼", length: 9 }
+);
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 4A-2 file : 1-login/login.js --- */ 
+/* --------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 4A-3 : Global Region Registry (S to Z) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * regionRegistry Final Expansion:
+ * S se Z tak ki baki countries ko list mein shamil kiya ja raha hai.
+ */
+regionRegistry.push(
+    { name: "Saudi Arabia", code: "+966", flag: "🇸🇦", length: 9 },
+    { name: "Senegal", code: "+221", flag: "🇸🇳", length: 9 },
+    { name: "Serbia", code: "+381", flag: "🇷🇸", length: 9 },
+    { name: "Seychelles", code: "+248", flag: "🇸🇨", length: 7 },
+    { name: "Singapore", code: "+65", flag: "🇸🇬", length: 8 },
+    { name: "Slovakia", code: "+421", flag: "🇸🇰", length: 9 },
+    { name: "Slovenia", code: "+386", flag: "🇸🇮", length: 8 },
+    { name: "South Africa", code: "+27", flag: "🇿🇦", length: 9 },
+    { name: "South Korea", code: "+82", flag: "🇰🇷", length: 10 },
+    { name: "Spain", code: "+34", flag: "🇪🇸", length: 9 },
+    { name: "Sri Lanka", code: "+94", flag: "🇱🇰", length: 9 },
+    { name: "Sudan", code: "+249", flag: "🇸🇩", length: 9 },
+    { name: "Sweden", code: "+46", flag: "🇸🇪", length: 9 },
+    { name: "Switzerland", code: "+41", flag: "🇨🇭", length: 9 },
+    { name: "Syria", code: "+963", flag: "🇸🇾", length: 9 },
+    { name: "Taiwan", code: "+886", flag: "🇹🇼", length: 9 },
+    { name: "Tajikistan", code: "+992", flag: "🇹🇯", length: 9 },
+    { name: "Tanzania", code: "+255", flag: "🇹🇿", length: 9 },
+    { name: "Thailand", code: "+66", flag: "🇹🇭", length: 9 },
+    { name: "Tunisia", code: "+216", flag: "🇹🇳", length: 8 },
+    { name: "Turkey", code: "+90", flag: "🇹🇷", length: 10 },
+    { name: "Turkmenistan", code: "+993", flag: "🇹🇲", length: 8 },
+    { name: "Uganda", code: "+256", flag: "🇺🇬", length: 9 },
+    { name: "Ukraine", code: "+380", flag: "🇺🇦", length: 9 },
+    { name: "United Arab Emirates", code: "+971", flag: "🇦🇪", length: 9 },
+    { name: "United Kingdom", code: "+44", flag: "🇬🇧", length: 10 },
+    { name: "United States", code: "+1", flag: "🇺🇸", length: 10 },
+    { name: "Uruguay", code: "+598", flag: "🇺🇾", length: 8 },
+    { name: "Uzbekistan", code: "+998", flag: "🇺🇿", length: 9 },
+    { name: "Venezuela", code: "+58", flag: "🇻🇪", length: 10 },
+    { name: "Vietnam", code: "+84", flag: "🇻🇳", length: 9 },
+    { name: "Yemen", code: "+967", flag: "🇾🇪", length: 9 },
+    { name: "Zambia", code: "+260", flag: "🇿🇲", length: 9 },
+    { name: "Zimbabwe", code: "+263", flag: "🇿🇼", length: 9 }
+);
+
+// Registry ko Alphabetical order me sort karo taaki picker me asani ho
+regionRegistry.sort((a, b) => a.name.localeCompare(b.name));
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 4A-3 file : 1-login/login.js --- */ 
+/* --------------------------------------------------------------------- */
+
+
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 4B : Rendering & Dynamic Selection Logic --- */
+/* --------------------------------------------------------------------- */
+/**
+ * renderPickerContent: 
+ * List ko modal ke andar dikhata hai aur search filter apply karta hai.
  */
 function renderPickerContent(filterText = "") {
     if (!listContainer) return;
@@ -425,23 +593,39 @@ function renderPickerContent(filterText = "") {
             <span class="code">${region.code}</span>
         `;
         
+        // Click karne par selection finalize karo
         item.onclick = () => finalizeSelection(region);
         listContainer.appendChild(item);
     });
 }
 
 /**
- * finalizeSelection: Region chunne par UI aur memory update karta hai.
+ * finalizeSelection: 
+ * Region chunne par UI badalta hai aur validation length set karta hai.
  */
 function finalizeSelection(region) {
+    // 1. Haptic Feedback
     if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
     
-    // Update Display
+    // 2. Update Global Validation Length
+    currentSelectedLength = region.length;
+    console.log(`System: Validation target updated to ${currentSelectedLength} digits for ${region.name}`);
+
+    // 3. Update UI Display
     if (currentFlag) currentFlag.textContent = region.flag;
     if (currentCode) currentCode.textContent = region.code;
     
-    // Save to session for cross-page sync
+    // 4. Reset Mobile Input (Nayi country ke sath purana number reset karna behtar hai)
+    if (mobileInput) {
+        mobileInput.value = "";
+        // Tick mark gayab karo agar active tha
+        const tickSlot = document.getElementById('phone-tick-icon');
+        if (tickSlot) tickSlot.classList.remove('active');
+    }
+
+    // 5. Memory Sync for next pages
     sessionStorage.setItem('RP_Country_Code', region.code);
+    sessionStorage.setItem('RP_Expected_Length', region.length);
     
     closePickerModal();
 }
@@ -458,26 +642,35 @@ function finalizeSelection(region) {
  */
 if (pickerTrigger) {
     pickerTrigger.onclick = () => {
+        // Physical feedback on click
         if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
+        
+        // Show Spatial Modal with scale animation (CSS managed)
         pickerOverlay.classList.add('active');
-        renderPickerContent(); // Load fresh list
+        
+        // Load fresh list and focus search box for speed
+        renderPickerContent(); 
         if (searchBox) setTimeout(() => searchBox.focus(), 200);
     };
 }
 
+/**
+ * closePickerModal: Modal ko band karta hai aur search saaf karta hai.
+ */
 function closePickerModal() {
     if (pickerOverlay) pickerOverlay.classList.remove('active');
     if (searchBox) searchBox.value = "";
 }
 
+// Close button listener
 if (closePickerBtn) closePickerBtn.onclick = closePickerModal;
 
-// Search Input Listener
+// Search Input Listener: Filter as user types
 if (searchBox) {
     searchBox.oninput = (e) => renderPickerContent(e.target.value);
 }
 
-// Initial Data Load
+// Initial Data Load: Page load par list taiyar rakho
 renderPickerContent();
 
 /* --------------------------------------------------------------------- */
