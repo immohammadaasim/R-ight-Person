@@ -133,11 +133,11 @@ body.spatial-login {
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Premium Input Engineering & iOS Slide-In Tick --- */
+/* --- Block 2A : Premium Input Engineering (The Perfect Alignment) --- */
 /* --------------------------------------------------------------------- */
 /**
  * Input Wrapper:
- * Isko humne relative banaya hai taaki Tick mark iske andar chipak sake.
+ * Ek dum seedhi line (row) mein sab elements ko rakhta hai.
  */
 .input-wrapper {
     display: flex;
@@ -145,49 +145,86 @@ body.spatial-login {
     background: rgba(142, 142, 147, 0.12);
     border: 1px solid transparent;
     border-radius: var(--radius-item);
-    padding: 0 1.2rem;
+    padding: 0 1rem;
     height: 60px;
-    position: relative; /* Inside placement ke liye zaruri */
+    position: relative;
+    gap: 10px;
     transition: all 0.3s var(--smooth-flow);
 }
 
+/* Interaction: Signature Blue Glow */
+.input-wrapper:focus-within {
+    background: var(--card-bg);
+    border-color: var(--blue-accent);
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12);
+}
+
+/**
+ * Country Selector:
+ * Elements ko ek line mein (horizontal) force karta hai.
+ */
+.country-selector {
+    display: flex;
+    flex-direction: row; /* Force Horizontal */
+    align-items: center;
+    gap: 6px;
+    padding-right: 10px;
+    border-right: 1.5px solid var(--glass-border);
+    cursor: pointer;
+    height: 30px;
+    color: var(--p-text);
+    font-weight: 700;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+/* Country Flag/Code Styling */
+#selected-flag { font-size: 1.1rem; }
+#selected-code { margin-left: 2px; }
+
+/* Input field inside the wrapper */
 .input-wrapper input {
     flex: 1;
     background: transparent;
     border: none;
     outline: none;
     height: 100%;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--p-text);
-    padding-right: 40px; /* Tick mark ke liye jagah chhodi */
+    padding: 0 5px;
 }
 
 /**
- * iOS Tick Icon Styling:
- * Ye hamesha input ke andar right side mein rahega.
+ * iOS Slide-In Tick:
+ * Input ke andar right side mein absolutely positioned.
  */
 .input-status-icon {
     position: absolute;
     right: 15px;
     top: 50%;
-    transform: translateY(-50%) translateX(-15px); /* Start position: Left */
+    transform: translateY(-50%) translateX(-15px);
     font-size: 1.25rem;
     opacity: 0;
     pointer-events: none;
     transition: all 0.5s var(--spring-ease);
-    color: #34C759; /* Apple Green */
+    color: #34C759;
 }
 
-/* Jab Tick active hoga: Left to Right Slide + Fade In */
 .input-status-icon.active {
     opacity: 1;
-    transform: translateY(-50%) translateX(0); /* Final position: Right */
+    transform: translateY(-50%) translateX(0);
 }
 
-@keyframes tickSlide {
-    from { opacity: 0; transform: translateY(-50%) translateX(-15px); }
-    to { opacity: 1; transform: translateY(-50%) translateX(0); }
+/* Field Labels Correction */
+.field-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--s-text);
+    padding-left: 10px; /* Kinare se hataya */
+    margin-bottom: 2px;
+    text-transform: uppercase;
 }
 
 /* --------------------------------------------------------------------- */
