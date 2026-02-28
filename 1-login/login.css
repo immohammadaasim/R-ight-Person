@@ -1,133 +1,62 @@
 /* ===================================================================== */
-/* ===>> BLOCK CSS 1: Unified Spatial Engine & Color Architecture <<=== */
+/* ===>> BLOCK CSS 1: Main Layout & Spatial Card Architecture <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1A : iPadOS 18 Adaptive Variables (Sleek Balance) --- */
+/* --- Block 1A : Adaptive Main Container --- */
 /* --------------------------------------------------------------------- */
-:root {
-    /* --- Light Appearance (Clean & Blue Highlights) --- */
-    --system-bg: #F2F2F7; /* Apple Gray 6 */
-    --card-bg: rgba(255, 255, 255, 0.72);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    --glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
-    
-    /* --- Balanced Typography Rule --- */
-    --p-text: #1C1C1E; /* Neutral Primary Text */
-    --s-text: #8E8E93; /* Elegant Gray Label */
-    --blue-accent: #007AFF; /* Interactive Color Only */
-    --error-red: #FF3B30;
-    --success-green: #34C759;
-    
-    /* --- Proportions & Squircles --- */
-    --radius-squircle: 28px; /* Deep corner for card */
-    --radius-input: 12px;    /* Sleek corner for items */
-    --glass-blur: blur(45px) saturate(190%);
-    
-    /* --- Physics --- */
-    --spring-physics: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --smooth-flow: cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-/* --- Dark Appearance (Midnight & Blue Highlights) --- */
-body.dark-mode {
-    --system-bg: #000000; /* True Midnight */
-    --card-bg: rgba(28, 28, 30, 0.75);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    
-    --p-text: #FFFFFF; /* High Contrast White */
-    --s-text: rgba(235, 235, 245, 0.6);
-    --blue-accent: #0A84FF; /* Vibrant Interactive Blue */
-}
-
-/* --------------------------------------------------------------------- */
-/* --- Block 1B : Base Global Reset & High-Fidelity Rendering --- */
-/* --------------------------------------------------------------------- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-    font-smoothing: antialiased;
-    -webkit-font-smoothing: antialiased;
-}
-
-html, body {
+#app-container {
     width: 100%;
-    height: 100%;
-    background-color: var(--system-bg);
-    color: var(--p-text);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
-    transition: background-color 0.6s var(--smooth-flow), color 0.5s ease;
-    overflow: hidden;
+    max-width: 400px; /* God-level Proportion Rule */
+    padding: 20px;
+    position: relative;
+    z-index: 1;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+/* --------------------------------------------------------------------- */
+/* --- End Block 1A file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1B : Spatial Glass Card (iPadOS 18 Vibe) --- */
+/* --------------------------------------------------------------------- */
+.spatial-glass-card {
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius-squircle); /* 28px Squircle */
+    border: 1px solid var(--glass-border);
+    padding: 3.5rem 2.4rem;
+    box-shadow: var(--glass-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    animation: spatialArrival 0.8s var(--spring-ease);
 }
 
-/* Rule: Haptic Feedback (Active Touch Simulation) */
-.haptic-touch {
-    transition: transform 0.2s var(--spring-physics), opacity 0.2s ease;
-    cursor: pointer;
-    user-select: none;
+/* Subtle Top Edge Glow */
+.spatial-glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 100%;
+    background: var(--glass-glow);
+    pointer-events: none;
 }
 
-.haptic-touch:active {
-    transform: scale(0.96) !important;
-    opacity: 0.85;
+@keyframes spatialArrival {
+    from { opacity: 0; transform: scale(0.96) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
-
 /* --------------------------------------------------------------------- */
 /* --- End Block 1B file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
 
-/* ===================================================================== */
-/* ===>> END OF BLOCK CSS 1 file : 1-login/login.css <<=== */
-/* ===================================================================== */
-
-
-
-/* ===================================================================== */
-/* ===>> BLOCK CSS 2: Main Spatial Card & Sleek Header Layout <<=== */
-/* ===================================================================== */
-
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Floating Spatial Card (Adaptive Depth) --- */
-/* --------------------------------------------------------------------- */
-.spatial-glass-card {
-    width: 90%;
-    max-width: 400px; /* Normal proportions rule */
-    background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: var(--radius-squircle); /* 28px squircle */
-    border: 1px solid var(--glass-border);
-    padding: 3rem 2.2rem;
-    box-shadow: var(--glass-shadow);
-    display: flex;
-    flex-direction: column;
-    gap: 2.2rem;
-    position: relative;
-    overflow: hidden;
-    animation: spatialReveal 0.8s var(--spring-physics);
-}
-
-/* Sub-Layer: Top Edge Illumination */
-.spatial-glass-card::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-}
-
-@keyframes spatialReveal {
-    from { opacity: 0; transform: scale(0.97) translateY(20px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* --------------------------------------------------------------------- */
-/* --- Block 2B : Elegant Branding & Titles --- */
+/* --- Block 1C : Elegant Header & Branding --- */
 /* --------------------------------------------------------------------- */
 .card-header {
     text-align: center;
@@ -136,75 +65,73 @@ html, body {
 .brand-badge {
     font-size: 0.72rem;
     font-weight: 800;
-    letter-spacing: 2px;
+    letter-spacing: 2.5px;
     margin-bottom: 0.8rem;
     text-transform: uppercase;
-    color: var(--blue-accent); /* Branding highlight */
+    color: var(--blue-accent); /* Blue used only as an identity mark */
 }
 
 .main-title {
-    font-size: 1.9rem;
+    font-size: 2rem;
     font-weight: 800;
-    letter-spacing: -0.8px;
-    color: var(--p-text); /* Following the theme background */
+    letter-spacing: -1px;
+    color: var(--p-text); /* Following the background logic */
     margin-bottom: 0.4rem;
 }
 
 .secondary-label {
     font-size: 0.95rem;
     font-weight: 500;
-    color: var(--s-text); /* Sleek Neutral Gray */
+    color: var(--s-text); /* Muted Gray Label */
 }
-
 /* --------------------------------------------------------------------- */
-/* --- End Block 2B file : 1-login/login.css --- */ 
+/* --- End Block 1C file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 2 file : 1-login/login.css <<=== */
+/* ===>> END OF BLOCK CSS 1 file : 1-login/login.css <<=== */
 /* ===================================================================== */
 
 
-
 /* ===================================================================== */
-/* ===>> BLOCK CSS 3: Spatial Form Engineering & Action Elements <<=== */
+/* ===>> BLOCK CSS 2: Spatial Form Engineering & Action Hero <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3A : Sleek Input Wrappers (iOS Precision) --- */
+/* --- Block 2A : Sleek Input Wrappers (iOS Precision) --- */
 /* --------------------------------------------------------------------- */
 .entry-form-container {
     display: flex;
     flex-direction: column;
-    gap: 1.4rem;
+    gap: 1.5rem;
 }
 
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.65rem;
 }
 
 .field-label {
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.5px;
-    color: var(--s-text); /* Neutral Gray Label */
+    color: var(--s-text); /* Neutral Gray Label Rule */
     padding-left: 0.5rem;
 }
 
 .input-wrapper {
     display: flex;
     align-items: center;
-    background: rgba(142, 142, 147, 0.12); /* Dynamic iOS Gray */
+    background: rgba(142, 142, 147, 0.12); /* Dynamic Apple Gray */
     border: 1px solid transparent;
-    border-radius: var(--radius-input); /* 12px-14px Sleek Squircle */
-    padding: 0 1.1rem;
-    height: 54px; /* Normal proportions */
+    border-radius: var(--radius-item); /* 14px Rule */
+    padding: 0 1.2rem;
+    height: 56px;
     transition: all 0.3s var(--smooth-flow);
 }
 
-/* Interaction: Focus state with subtle blue glow */
+/* Interaction: Focus state with signature blue glow */
 .input-wrapper:focus-within {
     background: var(--card-bg);
     border-color: var(--blue-accent);
@@ -219,13 +146,13 @@ html, body {
     height: 100%;
     font-size: 1.05rem;
     font-weight: 600;
-    color: var(--p-text);
+    color: var(--p-text); /* Following theme background */
     padding-left: 0.8rem;
 }
 
 .input-wrapper input::placeholder {
     color: var(--s-text);
-    opacity: 0.6;
+    opacity: 0.55;
 }
 
 /* Country Selector Tweak */
@@ -238,9 +165,12 @@ html, body {
     color: var(--p-text);
     font-weight: 700;
 }
+/* --------------------------------------------------------------------- */
+/* --- End Block 2A file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3B : Primary CTA Button (Interactive Hero) --- */
+/* --- Block 2B : Primary Action Button (The Blue Hero) --- */
 /* --------------------------------------------------------------------- */
 .action-container {
     margin-top: 1rem;
@@ -248,17 +178,23 @@ html, body {
 
 .main-cta-btn {
     width: 100%;
-    height: 58px;
+    height: 60px;
     background: var(--blue-accent); /* Blue used only for Action */
     border: none;
-    border-radius: var(--radius-input);
+    border-radius: var(--radius-item);
     color: #FFFFFF;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: -0.2px;
     position: relative;
     box-shadow: 0 10px 25px rgba(0, 122, 255, 0.3);
     overflow: hidden;
+}
+
+/* Interaction: Active press feel */
+.main-cta-btn:active {
+    transform: scale(0.96);
+    opacity: 0.9;
 }
 
 /* Button Physical Gloss Reflection */
@@ -273,103 +209,24 @@ html, body {
 .btn-loader {
     display: none;
     position: absolute;
-    width: 22px; height: 22px;
+    width: 24px; height: 24px;
     border: 3px solid rgba(255,255,255,0.3);
     border-top-color: #FFFFFF;
     border-radius: 50%;
-    left: calc(50% - 11px);
-    top: calc(50% - 11px);
+    left: calc(50% - 12px);
+    top: calc(50% - 12px);
     animation: spatialSpin 0.8s linear infinite;
 }
 
 @keyframes spatialSpin {
     to { transform: rotate(360deg); }
 }
+/* --------------------------------------------------------------------- */
+/* --- End Block 2B file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- End Block 3B file : 1-login/login.css --- */ 
-/* --------------------------------------------------------------------- */
-
-/* ===================================================================== */
-/* ===>> END OF BLOCK CSS 3 file : 1-login/login.css <<=== */
-/* ===================================================================== */
-
-
-/* ===================================================================== */
-/* ===>> BLOCK CSS 4: System Utilities (Island, Toggle & Footer) <<=== */
-/* ===================================================================== */
-
-/* --------------------------------------------------------------------- */
-/* --- Block 4A : Spatial Dynamic Island (Universal Alert) --- */
-/* --------------------------------------------------------------------- */
-.dynamic-island {
-    position: fixed;
-    top: 1.5rem; /* Floating from top */
-    left: 50%;
-    transform: translateX(-50%) translateY(-160%) scale(0.8);
-    z-index: 2000;
-    min-width: 220px;
-    padding: 12px 24px;
-    background: #000000; /* Apple Notch Black */
-    color: #FFFFFF;
-    border-radius: 100px; /* Pill shape rule */
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    transition: all 0.7s var(--spring-physics);
-    pointer-events: none;
-}
-
-/* Island Reveal State */
-.dynamic-island.active {
-    transform: translateX(-50%) translateY(0) scale(1);
-    opacity: 1;
-}
-
-.island-icon {
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#island-message {
-    font-size: 0.92rem;
-    font-weight: 600;
-    white-space: nowrap;
-    letter-spacing: -0.2px;
-}
-
-/* --------------------------------------------------------------------- */
-/* --- Block 4B : Floating Theme Switcher (Control Center Style) --- */
-/* --------------------------------------------------------------------- */
-.theme-utility-bar {
-    position: fixed;
-    top: 1.5rem;
-    right: 1.5rem;
-    z-index: 100;
-}
-
-#theme-toggle-btn {
-    width: 46px;
-    height: 46px;
-    background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: 14px; /* Super Squircle */
-    color: var(--blue-accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    box-shadow: var(--glass-shadow);
-}
-
-/* --------------------------------------------------------------------- */
-/* --- Block 4C : Legal Footer & Mobile Adaptation --- */
+/* --- Block 2C : Footer & Responsive Adaptation --- */
 /* --------------------------------------------------------------------- */
 .card-footer {
     text-align: center;
@@ -379,7 +236,7 @@ html, body {
 .legal-text {
     font-size: 0.82rem;
     font-weight: 500;
-    color: var(--s-text); /* Sleek Neutral Gray */
+    color: var(--s-text);
     line-height: 1.5;
 }
 
@@ -392,30 +249,27 @@ html, body {
 /* Responsive Scaling for Small Devices */
 @media (max-width: 480px) {
     .spatial-glass-card { 
-        padding: 2.5rem 1.8rem; 
+        padding: 3rem 1.8rem; 
         gap: 2rem;
     }
-    .main-title { font-size: 1.7rem; }
-    .theme-utility-bar { top: 1rem; right: 1.2rem; }
-    .dynamic-island { top: 1rem; min-width: 190px; }
+    .main-title { font-size: 1.8rem; }
 }
+/* --------------------------------------------------------------------- */
+/* --- End Block 2C file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 2 file : 1-login/login.css <<=== */
+/* ===================================================================== */
+
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 3: Global Identity Components & Spatial Modals <<=== */
+/* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- End Block 4C file : 1-login/login.css --- */ 
-/* --------------------------------------------------------------------- */
-
-/* ===================================================================== */
-/* ===>> END OF BLOCK CSS 4 file : 1-login/login.css <<=== */
-/* ===================================================================== */
-
-
-
-/* ===================================================================== */
-/* ===>> BLOCK CSS 5: Global Identity Components & Modal System <<=== */
-/* ===================================================================== */
-
-/* --------------------------------------------------------------------- */
-/* --- Block 5A : Identity Discovery Chip (Gmail Lookup UI) --- */
+/* --- Block 3A : Identity Discovery Chip (Gmail Lookup UI) --- */
 /* --------------------------------------------------------------------- */
 .identity-chip-slot {
     min-height: 28px;
@@ -426,41 +280,57 @@ html, body {
 }
 
 .spatial-identity-chip {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
     background: rgba(0, 122, 255, 0.1);
-    padding: 4px 12px;
-    border-radius: 100px;
+    padding: 6px 14px;
+    border-radius: 100px; /* Pill rule */
     border: 0.5px solid rgba(0, 122, 255, 0.2);
-    animation: chipSlideIn 0.5s var(--spring-physics) forwards;
+    animation: chipSlideIn 0.45s var(--spring-ease) forwards;
 }
 
-.chip-icon { font-size: 0.85rem; color: var(--blue-accent); }
-.chip-text { font-size: 0.82rem; font-weight: 600; color: var(--blue-accent); letter-spacing: -0.1px; }
+.chip-icon { 
+    font-size: 0.85rem; 
+    color: var(--blue-accent); 
+}
+
+.chip-text { 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    color: var(--blue-accent); 
+    letter-spacing: -0.1px; 
+}
 
 @keyframes chipSlideIn {
-    from { opacity: 0; transform: translateX(-15px); }
+    from { opacity: 0; transform: translateX(-12px); }
     to { opacity: 1; transform: translateX(0); }
 }
+/* --------------------------------------------------------------------- */
+/* --- End Block 3A file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 5B : Spatial Modal Overlay (Searchable Picker) --- */
+/* --- Block 3B : Spatial Modal Architecture (Overlay & Container) --- */
 /* --------------------------------------------------------------------- */
 .spatial-modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(15px);
-    z-index: 3000;
-    display: none; /* Controlled via JS */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 5000;
+    display: none; /* Managed by JS .active class */
     align-items: center;
     justify-content: center;
     opacity: 0;
     transition: opacity 0.4s var(--smooth-flow);
 }
 
-.spatial-modal-overlay.active { display: flex; opacity: 1; }
+.spatial-modal-overlay.active { 
+    display: flex; 
+    opacity: 1; 
+}
 
 .spatial-modal-container {
     width: 90%;
@@ -468,20 +338,25 @@ html, body {
     background: var(--card-bg);
     backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+    border-radius: 24px; /* Super Squircle */
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
-    max-height: 80vh;
+    max-height: 75vh;
     overflow: hidden;
     transform: scale(0.9);
-    transition: transform 0.5s var(--spring-physics);
+    transition: transform 0.5s var(--spring-ease);
 }
 
-.spatial-modal-overlay.active .spatial-modal-container { transform: scale(1); }
+.spatial-modal-overlay.active .spatial-modal-container { 
+    transform: scale(1); 
+}
+/* --------------------------------------------------------------------- */
+/* --- End Block 3B file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 5C : Modal Header & Search Engine UI --- */
+/* --- Block 3C : Search UI & Country List Styling --- */
 /* --------------------------------------------------------------------- */
 .modal-header {
     padding: 1.2rem;
@@ -491,7 +366,7 @@ html, body {
     border-bottom: 0.5px solid var(--glass-border);
 }
 
-.modal-title { font-size: 1rem; font-weight: 700; color: var(--p-text); }
+.modal-title { font-size: 1.05rem; font-weight: 700; color: var(--p-text); }
 .modal-close-btn { background: transparent; border: none; font-size: 1.2rem; color: var(--s-text); }
 
 .modal-search-wrapper {
@@ -510,20 +385,17 @@ html, body {
 
 #country-search-input {
     width: 100%;
-    height: 40px;
+    height: 42px;
     background: var(--card-bg);
     border: 1px solid var(--glass-border);
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 0 1rem 0 2.5rem;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 500;
     color: var(--p-text);
     outline: none;
 }
 
-/* --------------------------------------------------------------------- */
-/* --- Block 5D : Country List & Scroll System --- */
-/* --------------------------------------------------------------------- */
 .modal-list-container {
     flex: 1;
     overflow-y: auto;
@@ -533,26 +405,27 @@ html, body {
 .country-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 0.8rem 1rem;
+    gap: 14px;
+    padding: 0.9rem 1.1rem;
     border-radius: 12px;
     transition: background 0.2s ease;
 }
 
-.country-item:hover { background: rgba(0, 122, 255, 0.08); }
+.country-item:hover { 
+    background: rgba(0, 122, 255, 0.08); 
+}
 
-.country-item .flag { font-size: 1.2rem; }
-.country-item .name { flex: 1; font-size: 0.95rem; font-weight: 500; color: var(--p-text); }
-.country-item .code { font-size: 0.9rem; font-weight: 700; color: var(--blue-accent); }
+.country-item .flag { font-size: 1.3rem; }
+.country-item .name { flex: 1; font-size: 1rem; font-weight: 500; color: var(--p-text); }
+.country-item .code { font-size: 0.95rem; font-weight: 700; color: var(--blue-accent); }
 
-/* Custom Scrollbar for iOS feel */
+/* iOS Feel Scrollbar */
 .modal-list-container::-webkit-scrollbar { width: 4px; }
 .modal-list-container::-webkit-scrollbar-thumb { background: rgba(142, 142, 147, 0.4); border-radius: 10px; }
-
 /* --------------------------------------------------------------------- */
-/* --- End Block 5D file : 1-login/login.css --- */ 
+/* --- End Block 3C file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 5 file : 1-login/login.css <<=== */
+/* ===>> END OF BLOCK CSS 3 file : 1-login/login.css <<=== */
 /* ===================================================================== */

@@ -1,0 +1,85 @@
+/* ===================================================================== */
+/* ===>> BLOCK CSS 1: Universal Dynamic Island Architecture <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1A : Spatial Island Styling (The Notch) --- */
+/* --------------------------------------------------------------------- */
+.dynamic-island-wrapper {
+    position: fixed;
+    top: 1.2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(-180%) scale(0.8);
+    z-index: 9999;
+    pointer-events: none;
+    transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Apple Spring Physics */
+    opacity: 0;
+}
+
+/* Island Activation Engine */
+.dynamic-island-wrapper.active {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+}
+
+.dynamic-island-pill {
+    background: #000000; /* True Apple Notch Black */
+    min-width: 210px;
+    max-width: 380px;
+    padding: 10px 22px;
+    border-radius: 100px; /* Perfect Pill Rule */
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4), inset 0 0 0 0.5px rgba(255, 255, 255, 0.15);
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1B : Content & Status Icons (SF Symbol Vibe) --- */
+/* --------------------------------------------------------------------- */
+.island-icon-box {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Icons are thin and elegant */
+.island-icon-box svg {
+    width: 100%;
+    height: 100%;
+}
+
+.island-msg-text {
+    color: #FFFFFF;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    letter-spacing: -0.2px;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1C : Status Color Logic (Blue Rule Champion) --- */
+/* --------------------------------------------------------------------- */
+/* Info state follows our Apple Blue signature */
+.dynamic-island-wrapper.info .island-icon-box svg { stroke: var(--blue-accent); }
+.dynamic-island-wrapper.success .island-icon-box svg { stroke: var(--success-green); }
+.dynamic-island-wrapper.error .island-icon-box svg { stroke: var(--error-red); }
+
+/* Mobile Optimization */
+@media (max-width: 480px) {
+    .dynamic-island-pill {
+        min-width: 180px;
+        padding: 8px 18px;
+    }
+    .island-msg-text { font-size: 0.82rem; }
+}
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 1C file : 0.1-Notification/Notification.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 1 file : 0.1-Notification/Notification.css <<=== */
+/* ===================================================================== */

@@ -27,143 +27,141 @@
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 1: Head & Essential System Links <<=== -->
+<!-- ===>> BLOCK HTML 1: Head Section (Global Module Links) <<=== -->
 <!-- ===================================================================== -->
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>R-ight Person | Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>R-ight Person - Digital Identity</title>
+
+    <!-- [ GLOBAL UI MODULES - CSS ] -->
+    <link rel="stylesheet" href="../0-Theme/Theme.css?v=1.4">
+    <link rel="stylesheet" href="../0.1-Notification/Notification.css?v=1.4">
     
-    <!-- Apple-like Typography (Inter Font for iPadOS feel) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- [ LOCAL PAGE STYLE ] -->
+    <link rel="stylesheet" href="login.css?v=1.4">
+
+    <!-- [ EXTERNAL LIBRARIES ] -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- Core CSS Link (Modular Architecture) -->
-    <link rel="stylesheet" href="login.css">
+    <style>
+        /* Block 1A: Spatial Entrance Rule */
+        body { opacity: 0; transition: opacity 0.6s ease-in-out; background-color: #000; }
+        body.loaded { opacity: 1; }
+    </style>
 </head>
-<body>
 <!-- ===================================================================== -->
 <!-- ===>> END OF BLOCK HTML 1 file : 1-login/login.html <<=== -->
 <!-- ===================================================================== -->
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 2: Main Entry Portal & Global Identity Structure <<=== -->
+<!-- ===>> BLOCK HTML 2: Entry Structure & Modular Portals <<=== -->
 <!-- ===================================================================== -->
-<div id="app-container">
-    
-    <!-- 1. Floating Theme Control (iPadOS style) -->
-    <div class="theme-utility-bar">
-        <button id="theme-toggle-btn" class="haptic-touch">
+<body class="spatial-login">
+
+    <!-- 1. Universal Notification Slot (Dynamic Island) -->
+    <div id="showIsland" class="dynamic-island-wrapper">
+        <div class="dynamic-island-pill">
+            <div id="island-icon" class="island-icon-box"></div>
+            <p id="island-message" class="island-msg-text"></p>
+        </div>
+    </div>
+
+    <!-- 2. Global Theme Switcher Slot -->
+    <div id="theme-manager-portal" class="theme-utility-bar">
+        <button id="global-theme-toggle" class="haptic-touch">
             <i id="theme-icon" class="fas fa-moon"></i>
         </button>
     </div>
 
-    <!-- 2. Main Spatial Glass Card -->
-    <main class="spatial-glass-card">
-        <header class="card-header">
-            <div class="brand-badge">R-IGHT PERSON</div>
-            <h1 class="main-title">Digital Identity</h1>
-            <p class="secondary-label">Secure entrance to your ecosystem</p>
-        </header>
+    <!-- 3. Main Spatial Content -->
+    <div id="app-container">
+        <main class="spatial-glass-card">
+            <header class="card-header">
+                <div class="brand-badge">R-IGHT PERSON</div>
+                <h1 class="main-title">Digital Identity</h1>
+                <p class="secondary-label">Secure entrance to your ecosystem</p>
+            </header>
 
-        <div class="entry-form-container">
-            
-            <!-- Global Mobile Entry (With Searchable Picker) -->
-            <div class="input-group">
-                <label class="field-label">REGISTERED MOBILE</label>
-                <div class="input-wrapper">
-                    <!-- Searchable Trigger -->
-                    <div id="country-dropdown-trigger" class="country-selector haptic-touch">
-                        <span id="selected-flag">🇮🇳</span>
-                        <span id="selected-code">+91</span>
-                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+            <div class="entry-form-container">
+                <!-- Mobile Entry -->
+                <div class="input-group">
+                    <label class="field-label">REGISTERED MOBILE</label>
+                    <div class="input-wrapper">
+                        <div id="country-dropdown-trigger" class="country-selector haptic-touch">
+                            <span id="selected-flag">🇮🇳</span>
+                            <span id="selected-code">+91</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <input type="tel" id="user-mobile" placeholder="000-000-0000" maxlength="15">
                     </div>
-                    <input type="tel" id="user-mobile" placeholder="000-000-0000" maxlength="15">
+                </div>
+
+                <!-- Gmail Entry -->
+                <div class="input-group">
+                    <label class="field-label">PERSONAL GMAIL</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope secondary-label" style="font-size:1.1rem; width:24px;"></i>
+                        <input type="email" id="user-email" placeholder="name@gmail.com" autocomplete="off">
+                    </div>
+                    <!-- Identity Discovery Slot -->
+                    <div id="identity-preview-portal" class="identity-chip-slot"></div>
+                </div>
+
+                <div class="action-container">
+                    <button id="entry-continue-btn" class="main-cta-btn haptic-touch">
+                        <span class="btn-text">Continue</span>
+                        <div class="btn-loader"></div>
+                    </button>
                 </div>
             </div>
 
-            <!-- Gmail Entry (With Identity Lookup Engine) -->
-            <div class="input-group">
-                <label class="field-label">PERSONAL GMAIL</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-envelope input-icon"></i>
-                    <input type="email" id="user-email" placeholder="name@gmail.com" autocomplete="off">
-                </div>
-                
-                <!-- [ SLOT : Identity Discovery Chip ] -->
-                <div id="identity-preview-portal" class="identity-chip-slot">
-                    <!-- Name or Verified Badge will slide in here via JS -->
-                </div>
-            </div>
+            <footer class="card-footer">
+                <p class="legal-text">By continuing, you agree to the <span class="blue-link">Security Protocols</span></p>
+            </footer>
+        </main>
+    </div>
 
-            <div class="action-container">
-                <button id="entry-continue-btn" class="main-cta-btn haptic-touch">
-                    <span class="btn-text">Continue</span>
-                    <div class="btn-loader"></div>
-                </button>
-            </div>
-        </div>
-
-        <footer class="card-footer">
-            <p class="legal-text">Secured by <span class="blue-link">R-ight Protocol</span></p>
-        </footer>
-    </main>
-
-    <!-- 3. Global Country Picker Overlay (iOS Style Searchable Modal) -->
+    <!-- 4. Global Modals (Country Picker) -->
     <div id="country-picker-overlay" class="spatial-modal-overlay">
         <div class="spatial-modal-container">
             <div class="modal-header">
-                <span class="modal-title">Select Country</span>
-                <button id="close-picker-btn" class="modal-close-btn"><i class="fas fa-times"></i></button>
+                <span class="modal-title">Select Region</span>
+                <button id="close-picker-btn" class="modal-close-btn haptic-touch"><i class="fas fa-times"></i></button>
             </div>
-            <!-- Search Box inside Dropdown -->
             <div class="modal-search-wrapper">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" id="country-search-input" placeholder="Search country or code...">
             </div>
-            <!-- Dynamic Country List -->
-            <div id="country-list-scroll" class="modal-list-container">
-                <!-- List will be injected by JS -->
-            </div>
+            <div id="country-list-scroll" class="modal-list-container"></div>
         </div>
     </div>
 
-</div>
 <!-- ===================================================================== -->
 <!-- ===>> END OF BLOCK HTML 2 file : 1-login/login.html <<=== -->
 <!-- ===================================================================== -->
  
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 3: Dynamic Island Notification (Universal UI) <<=== -->
+<!-- ===>> BLOCK HTML 3: System Engine & Logic Scripts <<=== -->
 <!-- ===================================================================== -->
-<!-- 
-    RULE: Universal Notification & UI Feedback Protocol
-    - Is system ka use har user-facing alert ke liye hoga.
-    - Design: Floating Pill (Dynamic Island) at the top center.
-    - Icon: SF Symbols vibe (Thin Inline SVG).
--->
-<div id="dynamic-island-container">
-    <div id="showIsland" class="dynamic-island">
-        <div class="island-content">
-            
-            <!-- Dynamic Icon Slot (Thin SVG for Apple Vibe) -->
-            <div id="island-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-            </div>
 
-            <!-- Dynamic Message Slot -->
-            <p id="island-message">System Initializing...</p>
-            
-        </div>
-    </div>
-</div>
+    <!-- [ GLOBAL ENGINE SCRIPTS ] -->
+    <script src="../0-Theme/Theme.js?v=1.4" defer></script>
+    <script src="../0.1-Notification/Notification.js?v=1.4" defer></script>
+
+    <!-- [ LOCAL PAGE LOGIC ] -->
+    <script src="login.js?v=1.4" defer></script>
+
+    <script>
+        // Reveal system after modules are initialized
+        window.addEventListener('load', () => {
+            document.body.classList.add('loaded');
+        });
+    </script>
+
 <!-- ===================================================================== -->
 <!-- ===>> END OF BLOCK HTML 3 file : 1-login/login.html <<=== -->
 <!-- ===================================================================== -->
