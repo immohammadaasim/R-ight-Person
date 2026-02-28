@@ -6,9 +6,9 @@
 /* --- Block 1A : Adaptive Centering Engine --- */
 /* --------------------------------------------------------------------- */
 /**
- * Centering Logic:
- * Ensure karta hai ki card hamesha vertical aur horizontal center mein rahe.
- * Background transparent rakha gaya hai taaki Theme.css ka rang dikhe.
+ * Centering Engine:
+ * Ensure karta hai ki card hamesha screen ke bilkul beech mein hawa mein tairta rahe.
+ * Padding: 20px ensure karti hai ki card edges se na chipke.
  */
 #app-container {
     width: 100%;
@@ -16,7 +16,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 24px; /* Mobile par safety margin */
+    padding: 24px;
     box-sizing: border-box;
     background: transparent !important;
 }
@@ -34,12 +34,12 @@ body.spatial-login {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1B : Spatial Glass Card (Adaptive Responsive Architecture) --- */
+/* --- Block 1B : Spatial Glass Card (Adaptive Responsive Rule) --- */
 /* --------------------------------------------------------------------- */
 /**
- * Responsive Card Rule:
- * Mobile par wide rahega (92%), Desktop par premium widget (440px).
- * Padding aur Gap screen ke size ke hisab se automatically scale honge.
+ * Responsive Rule:
+ * Width: 92% (Mobile par wide rahega)
+ * Max-Width: 440px (Desktop par floating widget ban jayega)
  */
 .spatial-glass-card {
     width: 92%;
@@ -47,7 +47,7 @@ body.spatial-login {
     background: var(--card-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: var(--radius-card); /* 28px Rule */
+    border-radius: var(--radius-card); /* 28px Squircle */
     border: 1px solid var(--glass-border);
     padding: 3.5rem 2.2rem;
     box-shadow: var(--glass-shadow);
@@ -59,22 +59,12 @@ body.spatial-login {
     animation: spatialArrival 0.8s var(--spring-ease) forwards;
 }
 
-/* Mobile Screens (< 500px) */
+/* Screen size ke hisab se internal proportions adjust karna */
 @media (max-width: 500px) {
     .spatial-glass-card {
-        padding: 2.4rem 1.6rem; /* Mobile par padding kam ki gayi hai */
-        gap: 1.6rem; /* Mobile par spacing kam ki gayi hai */
-        border-radius: 24px; /* Slightly smaller radius for mobile */
+        padding: 2.5rem 1.6rem;
+        gap: 1.8rem;
     }
-    #app-container {
-        padding: 16px;
-    }
-}
-
-/* Landscape/Tablet Screens */
-@media (max-height: 600px) and (orientation: landscape) {
-    #app-container { padding: 40px 20px; align-items: flex-start; }
-    .spatial-glass-card { margin-top: 20px; }
 }
 
 @keyframes spatialArrival {
@@ -94,7 +84,7 @@ body.spatial-login {
     font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 2.5px;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.8rem;
     text-transform: uppercase;
     color: var(--blue-accent);
 }
@@ -108,15 +98,13 @@ body.spatial-login {
     color: var(--p-text);
 }
 
-/* Mobile Title Scaling */
 @media (max-width: 400px) {
-    .main-title { font-size: 1.85rem; }
+    .main-title { font-size: 1.8rem; }
 }
 
 .secondary-label {
     font-size: 1rem;
     font-weight: 500;
-    line-height: 1.4;
     color: var(--s-text);
 }
 /* --------------------------------------------------------------------- */
@@ -132,12 +120,8 @@ body.spatial-login {
 /* ===>> BLOCK CSS 2: Spatial Form Engineering & Action Hero <<=== */
 /* ===================================================================== */
 
-/* ===================================================================== */
-/* ===>> BLOCK CSS 2: Spatial Form Engineering & Action Hero <<=== */
-/* ===================================================================== */
-
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Premium Input Engineering & Smart Provider UI --- */
+/* --- Block 2A : Premium Input Engineering & Official Brand Icons --- */
 /* --------------------------------------------------------------------- */
 .entry-form-container {
     display: flex;
@@ -151,7 +135,6 @@ body.spatial-login {
     gap: 0.75rem;
 }
 
-/* Header for Email section to align Label and Pill */
 .provider-header {
     display: flex;
     justify-content: space-between;
@@ -169,14 +152,14 @@ body.spatial-login {
 
 /**
  * Smart Mail Provider Pill:
- * visionOS style floating pill for one-tap verification.
+ * visionOS style floating pill with official brand icon coloring.
  */
 .mail-provider-pill {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 4px 12px;
-    border-radius: var(--radius-pill); /* 100px Rule */
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
     background: var(--card-bg);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
@@ -192,27 +175,28 @@ body.spatial-login {
     align-items: center;
     justify-content: center;
     transition: all 0.3s var(--smooth-flow);
+    cursor: pointer;
 }
 
-.provider-btn:hover {
-    color: var(--blue-accent);
-    transform: translateY(-1px);
-}
+/* Official Brand Colors on Interaction */
+.provider-btn[data-provider="google"]:hover { color: #DB4437; }
+.provider-btn[data-provider="apple"]:hover { color: var(--p-text); }
+.provider-btn[data-provider="microsoft"]:hover { color: #00A4EF; }
+.provider-btn[data-provider="yahoo"]:hover { color: #6001D2; }
 
-/* Input Wrapper Logic (Restored & Enhanced) */
+/* Input Wrapper & Tick Guard Logic */
 .input-wrapper {
     display: flex;
     align-items: center;
     background: rgba(142, 142, 147, 0.12);
     border: 1px solid transparent;
-    border-radius: var(--radius-item); /* 14px Rule */
+    border-radius: var(--radius-item);
     padding: 0 1.2rem;
     height: 60px;
     position: relative;
     transition: all 0.3s var(--smooth-flow);
 }
 
-/* Lock State: Jab email verify ho jaye toh wrapper thoda chamkega */
 .input-wrapper.verified {
     border-color: var(--blue-accent);
     background: rgba(0, 122, 255, 0.05);
@@ -234,10 +218,14 @@ body.spatial-login {
     font-weight: 600;
     color: var(--p-text);
     padding-left: 0.8rem;
-    padding-right: 35px; /* Icons ke liye dedicated area */
+    padding-right: 38px; /* Dedicated space for iOS Tick */
 }
 
-/* Status Icon (Tick/Shield) inside input */
+/**
+ * iOS Slide-In Status Icon:
+ * Absolutely positioned to prevent layout shifts.
+ * Smooth Left-to-Right arrival with Fade.
+ */
 .input-status-icon {
     position: absolute;
     right: 1.2rem;
@@ -249,9 +237,11 @@ body.spatial-login {
     justify-content: center;
     font-size: 1.2rem;
     opacity: 0;
+    color: #34C759; /* Apple Success Green */
     pointer-events: none;
     transform: translateY(-50%) translateX(-15px);
-    transition: all 0.4s var(--spring-ease);
+    transition: all 0.45s var(--spring-ease);
+    z-index: 2;
 }
 
 .input-status-icon.active {
@@ -267,13 +257,14 @@ body.spatial-login {
     border-right: 1px solid var(--glass-border);
     color: var(--p-text);
     font-weight: 700;
+    cursor: pointer;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2A file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2B : Action Hero & Elegant Spinner Loader --- */
+/* --- Block 2B : Primary Action Button (Haptic Hero) --- */
 /* --------------------------------------------------------------------- */
 .action-container {
     margin-top: 0.8rem;
@@ -286,45 +277,42 @@ body.spatial-login {
     border: none;
     border-radius: var(--radius-item);
     color: #FFFFFF;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
     letter-spacing: -0.2px;
     position: relative;
-    box-shadow: 0 12px 30px rgba(0, 122, 255, 0.35);
+    box-shadow: 0 12px 30px rgba(0, 122, 255, 0.3);
     overflow: hidden;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.4s var(--spring-ease);
 }
 
-.btn-text {
-    transition: opacity 0.3s ease;
+.main-cta-btn:active {
+    transform: scale(0.96);
 }
 
-/* Spinner Positioning: Absolutely centered */
 .btn-loader {
     display: none;
     position: absolute;
-    width: 28px;
-    height: 28px;
-    border: 3.5px solid rgba(255, 255, 255, 0.25);
+    width: 26px; height: 26px;
+    border: 3.5px solid rgba(255, 255, 255, 0.3);
     border-top-color: #FFFFFF;
     border-radius: 50%;
     animation: spatialSpin 0.8s linear infinite;
-    opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
 @keyframes spatialSpin {
     to { transform: rotate(360deg); }
 }
 
-/* Button physical highlight */
 .main-cta-btn::after {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 50%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%);
     pointer-events: none;
 }
 /* --------------------------------------------------------------------- */
@@ -332,25 +320,24 @@ body.spatial-login {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2C : Footer & Typography --- */
+/* --- Block 2C : Footer & Legal Links --- */
 /* --------------------------------------------------------------------- */
 .card-footer {
     text-align: center;
-    margin-top: 0.5rem;
+    margin-top: 0.2rem;
 }
 
 .legal-text {
     font-size: 0.85rem;
     font-weight: 500;
     color: var(--s-text);
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .blue-link {
     color: var(--blue-accent);
     cursor: pointer;
     font-weight: 700;
-    text-decoration: none;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2C file : 1-login/login.css --- */ 
