@@ -121,7 +121,7 @@ body.spatial-login {
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Premium Input Engineering (Overflow & Alignment Fix) --- */
+/* --- Block 2A : Premium Input Engineering (Autofill & Layout Fix) --- */
 /* --------------------------------------------------------------------- */
 .entry-form-container {
     display: flex;
@@ -183,18 +183,18 @@ body.spatial-login {
 .provider-btn[data-provider="microsoft"]:hover { color: #00A4EF; }
 .provider-btn[data-provider="yahoo"]:hover { color: #6001D2; }
 
-/* Input Wrapper: Pure Spatial Glass Logic */
+/* Input Wrapper: Forceful Glass Transparency */
 .input-wrapper {
     display: flex;
     align-items: center;
-    background: rgba(142, 142, 147, 0.08) !important; /* Force Neutral Gray */
+    background: rgba(142, 142, 147, 0.08) !important;
     border: 1px solid transparent;
     border-radius: var(--radius-item);
     padding: 0 1.2rem;
     height: 60px;
     position: relative;
     transition: all 0.3s var(--smooth-flow);
-    overflow: hidden; /* Prevent child overflow */
+    overflow: hidden;
 }
 
 .input-wrapper.verified {
@@ -208,23 +208,34 @@ body.spatial-login {
     box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
 }
 
-/* SMART INPUT: Handles long text without breaking layout */
+/* SMART INPUT: Fixes Autofill & Long Text Issues */
 .input-wrapper input {
     flex: 1;
-    min-width: 0; /* Important fix for Flex containers */
+    min-width: 0;
     background: transparent !important;
     border: none;
     outline: none;
     height: 100%;
-    font-size: 1.05rem; /* Slightly reduced for better fit */
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--p-text);
     padding-left: 0.8rem;
-    padding-right: 35px; /* Space for Tick/Icon */
-    text-overflow: ellipsis;
+    padding-right: 35px;
 }
 
-/* Mobile Country Selector: Stable width to prevent jumping */
+/* NUCLEAR FIX: Browser Autofill Background Removal */
+/* Isse browser ka blue/gray background kabhi nahi aayega */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--p-text) !important;
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+    background-color: transparent !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Mobile Country Selector Stabilization */
 .country-selector {
     display: flex;
     align-items: center;
@@ -235,10 +246,10 @@ body.spatial-login {
     font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
-    min-width: 85px; /* Keeps "IN +91" stable */
+    min-width: 85px;
 }
 
-/* iOS Status Icon (Tick mark) placement */
+/* iOS Status Icon (Tick) Placement */
 .input-status-icon {
     position: absolute;
     right: 1rem;
@@ -260,15 +271,6 @@ body.spatial-login {
 .input-status-icon.active {
     opacity: 1;
     transform: translateY(-50%) translateX(0);
-}
-
-/* Autofill Fix: Browser's ugly blue background removal */
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus {
-    -webkit-text-fill-color: var(--p-text);
-    -webkit-box-shadow: 0 0 0px 1000px transparent inset;
-    transition: background-color 5000s ease-in-out 0s;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2A file : 1-login/login.css --- */ 
