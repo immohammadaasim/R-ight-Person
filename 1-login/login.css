@@ -1,125 +1,148 @@
 /* ===================================================================== */
-/* ===>> BLOCK CSS 1: Global Wallpaper Engine & Theme Portal <<=== */
+/* ===>> BLOCK CSS 1: Full-Screen Spatial Engine & Portal Fix <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1A : Spatial Theme Variables (:root) --- */
+/* --- Block 1A : Force Full-Screen & Background Logic --- */
 /* --------------------------------------------------------------------- */
+/* Forceful Reset for all environments */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100vh !important;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
 :root {
-    /* --- Light Mode (iPadOS Airy Mesh) --- */
-    --spatial-bg: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-                  radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
-                  radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+    /* Vivid iPadOS 18 Light Mesh */
+    --spatial-bg: radial-gradient(at 0% 0%, #4158D0 0%, transparent 50%), 
+                  radial-gradient(at 50% 0%, #C850C0 0%, transparent 50%), 
+                  radial-gradient(at 100% 0%, #FFCC70 0%, transparent 50%);
     --body-bg: #f5f5f7;
-    --card-bg: rgba(255, 255, 255, 0.45);
-    --glass-border: rgba(255, 255, 255, 0.5);
+    --card-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.4);
     --glass-blur: blur(40px);
     --p-text: #1d1d1f;
     --s-text: #86868b;
     --blue-accent: #0071e3;
-    --glass-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    --glass-shadow: 0 30px 60px rgba(0,0,0,0.12);
     
-    /* Geometries */
     --radius-squircle: 32px;
-    --radius-item: 16px;
+    --radius-item: 18px;
     --spring-ease: cubic-bezier(0.32, 0.72, 0, 1);
-    --smooth-flow: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- Dark Mode (visionOS Deep Space) --- */
 body.dark-mode {
     --body-bg: #000000;
     --spatial-bg: radial-gradient(at 0% 100%, #1a1a1a 0%, transparent 50%),
                   radial-gradient(at 100% 0%, #0a0a0a 0%, transparent 50%),
                   radial-gradient(at 50% 50%, #111111 0%, #000000 100%);
-    --card-bg: rgba(28, 28, 30, 0.5);
-    --glass-border: rgba(255, 255, 255, 0.12);
+    --card-bg: rgba(30, 30, 30, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1);
     --p-text: #ffffff;
     --s-text: #a1a1a6;
-    --glass-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    --glass-shadow: 0 40px 80px rgba(0,0,0,0.6);
 }
 
 body {
-    margin: 0; padding: 0;
-    width: 100vw; height: 100vh;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: var(--body-bg);
-    overflow: hidden;
-    transition: background 0.8s var(--smooth-flow);
+    position: relative;
+    transition: background 0.8s var(--spring-ease);
 }
 
+/* Background Layer to ensure it covers everything */
 body::before {
     content: '';
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
     background: var(--spatial-bg);
     z-index: -1;
-    opacity: 0.8;
-    transition: all 1s var(--smooth-flow);
+    opacity: 1;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 1A file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1B : Floating Theme Switcher (iPadOS Pill) --- */
+/* --- Block 1B : Floating Theme Portal Fix --- */
 /* --------------------------------------------------------------------- */
 #theme-manager-portal {
-    position: fixed;
-    top: 24px; right: 24px;
-    z-index: 1000;
+    position: fixed !important;
+    top: 30px !important;
+    right: 30px !important;
+    z-index: 9999 !important;
 }
 
 #global-theme-toggle {
-    width: 48px; height: 48px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     background: var(--card-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border);
     color: var(--p-text);
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     box-shadow: var(--glass-shadow);
     transition: all 0.4s var(--spring-ease);
 }
 
-#global-theme-toggle:active { transform: scale(0.9); }
+#global-theme-toggle:active { transform: scale(0.88); }
 /* --------------------------------------------------------------------- */
 /* --- End Block 1B file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1C : Adaptive Card Architecture --- */
+/* --- Block 1C : Adaptive Spatial Card (Responsive Fix) --- */
 /* --------------------------------------------------------------------- */
 #app-container {
     width: 100%;
-    display: flex; justify-content: center; align-items: center;
-    padding: 20px;
-    perspective: 1000px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    box-sizing: border-box;
 }
 
 .spatial-glass-card {
     width: 100%;
-    max-width: 420px;
+    max-width: 440px; /* Slightly wider for better proportion */
     background: var(--card-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border-radius: var(--radius-squircle);
     border: 1px solid var(--glass-border);
-    padding: 3rem 2rem;
+    padding: 3.5rem 2.2rem;
     box-shadow: var(--glass-shadow);
-    display: flex; flex-direction: column; gap: 2.2rem;
-    position: relative; overflow: hidden;
-    animation: spatialArrival 1s var(--spring-ease) forwards;
-}
-
-@media (max-width: 480px) {
-    .spatial-glass-card { max-width: 95%; padding: 2.5rem 1.5rem; }
+    display: flex;
+    flex-direction: column;
+    gap: 2.2rem;
+    position: relative;
+    animation: spatialArrival 1.2s var(--spring-ease) forwards;
 }
 
 @keyframes spatialArrival {
-    0% { opacity: 0; transform: scale(0.9) translateY(40px); }
+    0% { opacity: 0; transform: scale(0.92) translateY(30px); }
     100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Mobile Screen Rule */
+@media (max-width: 500px) {
+    #app-container { padding: 16px; }
+    .spatial-glass-card { 
+        padding: 2.5rem 1.5rem;
+        border-radius: 28px;
+    }
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 1C file : 1-login/login.css --- */ 
