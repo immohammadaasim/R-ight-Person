@@ -125,29 +125,39 @@ if (mobileInput) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2B : Mail Provider Auth Engine (One-Tap Sync) --- */
+/* —-- Sub-Block 2B : Mail Provider Auth Engine (One-Tap Sync) —-- */
 /* --------------------------------------------------------------------- */
 /**
  * triggerProviderAuth: 
  * Google, Apple, Yahoo ya Microsoft ka login popup kholta hai.
+ * 
+ * NOTE: Filhal sirf 'Google' active hai. 
+ * Apple, Microsoft aur Yahoo providers "Coming Soon" status par hain.
  */
 async function triggerProviderAuth(provider) {
     if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
     
+    // Check if provider is ready or coming soon
+    if (provider !== 'google') {
+        if (typeof showIsland === 'function') {
+            showIsland(`${provider.charAt(0).toUpperCase() + provider.slice(1)} Sync coming soon`, "info");
+        }
+        return; // Aage ka process rok do
+    }
+
     if (typeof showIsland === 'function') {
-        showIsland(`Connecting to ${provider.charAt(0).toUpperCase() + provider.slice(1)}...`, "info");
+        showIsland(`Connecting to Google...`, "info");
     }
 
     const { data, error } = await _sb.auth.signInWithOAuth({
-        provider: provider,
+        provider: 'google',
         options: {
-            // Login ke baad isi page par wapas aana hai
             redirectTo: window.location.href 
         }
     });
 
     if (error) {
-        if (typeof showIsland === 'function') showIsland(`${provider} link failed`, "error");
+        if (typeof showIsland === 'function') showIsland(`Google link failed`, "error");
         console.error("Auth Error:", error.message);
     }
 }
@@ -162,7 +172,7 @@ if (providerBtns) {
     });
 }
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 2B file : 1-login/login.js --- */ 
+/* —-- Function#1 END OF BLOCK JS 2B: file : 1-login/login.js —-- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
