@@ -1,97 +1,110 @@
 /* ===================================================================== */
-/* ===>> BLOCK CSS 1: Global Spatial Theme Engine (iPadOS 18) <<=== */
+/* ===>> BLOCK CSS 1: Layout Architecture & Universal Theme Sync <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1A : Adaptive Design Variables (The Blue Rule) --- */
+/* --- Block 1A : Full-Screen Transparency & Centering --- */
 /* --------------------------------------------------------------------- */
-:root {
-    /* --- Light Appearance (Pure White & Apple Blue) --- */
-    --system-bg: #F2F2F7;
-    --card-bg: rgba(255, 255, 255, 0.72);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
-    
-    /* --- Balanced Typography --- */
-    --p-text: #1C1C1E; /* Primary Apple Black */
-    --s-text: #8E8E93; /* Elegant Gray Labels */
-    --blue-accent: #007AFF; /* Champion Interactive Blue */
-    
-    /* --- Spatial Geometry (Super Squircles) --- */
-    --radius-card: 28px;   /* For Main Containers */
-    --radius-item: 14px;   /* For Inputs & Buttons */
-    --radius-pill: 100px;  /* For Pills & Notifications */
-    
-    /* --- visionOS Glass Effects --- */
-    --glass-blur: blur(45px) saturate(190%);
-    --glass-glow: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 100%);
-    
-    /* --- Global Transitions (The Flow) --- */
-    --spring-ease: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --smooth-flow: cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-/* --- Dark Appearance (Midnight & Vibrant Blue) --- */
-body.dark-mode {
-    --system-bg: #000000;
-    --card-bg: rgba(28, 28, 30, 0.75);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-    
-    --p-text: #FFFFFF; /* High Contrast White */
-    --s-text: rgba(235, 235, 245, 0.6);
-    --blue-accent: #0A84FF; /* Vibrant Blue for Dark Mode */
-}
-
-/* --------------------------------------------------------------------- */
-/* --- End Block 1A file : 0-Theme/Theme.css --- */ 
-/* --------------------------------------------------------------------- */
-
-/* --------------------------------------------------------------------- */
-/* --- Block 1B : Global Spatial Reset & Haptics --- */
-/* --------------------------------------------------------------------- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
+/**
+ * Centering Engine:
+ * Yahan humne saare purane background gradients hata diye hain.
+ * Ab ye page poori tarah Theme.css ke variables par chalega.
+ */
+#app-container {
     width: 100%;
-    height: 100%;
-    background-color: var(--system-bg);
-    color: var(--p-text);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
-    transition: background-color 0.6s var(--smooth-flow), color 0.4s ease;
-    overflow: hidden;
+    min-height: 100vh; /* Force full viewport height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    /* Transparent background taaki Theme.css ka color dikhe */
+    background: transparent !important; 
 }
 
-/* Active Touch Reality: Rule-based physical simulation */
-.haptic-touch {
-    transition: transform 0.2s var(--spring-ease), opacity 0.2s ease;
-    cursor: pointer;
-    user-select: none;
+/* Page body correction for full screen coverage */
+body.spatial-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    /* Theme.css handle karega background ko, hum bas yahan confirm kar rahe hain */
+    background-color: var(--system-bg) !important;
 }
-
-.haptic-touch:active {
-    transform: scale(0.96) !important;
-    opacity: 0.85;
-}
-
-/* Common Global Utilities */
-.blue-accent { color: var(--blue-accent); }
-.secondary-label { color: var(--s-text); }
-.spatial-glass { 
-    background: var(--card-bg); 
-    backdrop-filter: var(--glass-blur); 
-    -webkit-backdrop-filter: var(--glass-blur);
-}
+/* --------------------------------------------------------------------- */
+/* --- End Block 1A file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- End Block 1B file : 0-Theme/Theme.css --- */ 
+/* --- Block 1B : Spatial Glass Card (iPadOS 18 Standard) --- */
+/* --------------------------------------------------------------------- */
+.spatial-glass-card {
+    width: 100%;
+    max-width: 420px; /* God-level Proportion for Desktop/Tablet */
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius-card); /* 28px Rule */
+    border: 1px solid var(--glass-border);
+    padding: 3.5rem 2.2rem;
+    box-shadow: var(--glass-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 2.2rem;
+    position: relative;
+    overflow: hidden;
+    /* Smooth Arrival Animation */
+    animation: spatialArrival 0.8s var(--spring-ease);
+}
+
+@keyframes spatialArrival {
+    from { opacity: 0; transform: scale(0.95) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Mobile Responsive Rule */
+@media (max-width: 480px) {
+    .spatial-glass-card {
+        max-width: 95%;
+        padding: 2.5rem 1.5rem;
+    }
+}
+/* --------------------------------------------------------------------- */
+/* --- End Block 1B file : 1-login/login.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1C : Sleek Typography & Brand Identity --- */
+/* --------------------------------------------------------------------- */
+.card-header { text-align: center; }
+
+.brand-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+    color: var(--blue-accent);
+}
+
+.main-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 0.4rem;
+    color: var(--p-text);
+}
+
+.secondary-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--s-text);
+}
+/* --------------------------------------------------------------------- */
+/* --- End Block 1C file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 1 file : 0-Theme/Theme.css <<=== */
+/* ===>> END OF BLOCK CSS 1 file : 1-login/login.css <<=== */
 /* ===================================================================== */
