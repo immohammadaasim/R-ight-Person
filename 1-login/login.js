@@ -221,15 +221,40 @@ async function performIdentityLookup(email) {
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 3A : Strict Final Validation Logic --- */
+/* —-- Function#1 BLOCK JS 3A: Identity Validation & iOS Tick —-- */
 /* --------------------------------------------------------------------- */
 /**
  * validateIdentityGate: Rasta kholne se pehle data ki sakht janch.
- * Rule: Phone must be 10 digits, Email must be a complete signature.
+ * Isme Tick Mark ka logic bhi shamil hai.
  */
+function updateIdentityStatus() {
+    const phone = mobileInput.value.replace(/-/g, '');
+    const tickSlot = document.getElementById('phone-tick-icon');
+    
+    // Rule: Agar 10 digits poore hain toh iOS Tick dikhao
+    if (phone.length === 10) {
+        if (tickSlot) {
+            tickSlot.innerHTML = '<i class="fas fa-check-circle"></i>';
+            tickSlot.style.opacity = '1';
+            tickSlot.style.transform = 'scale(1)';
+            tickSlot.style.color = 'var(--success-green, #34C759)'; // Apple Success Green
+        }
+    } else {
+        if (tickSlot) {
+            tickSlot.style.opacity = '0';
+            tickSlot.style.transform = 'scale(0.5)';
+        }
+    }
+}
+
+// Phone input par event listener lagao taaki real-time tick dikhe
+if (mobileInput) {
+    mobileInput.addEventListener('input', updateIdentityStatus);
+}
+
 function validateIdentityGate(email, phone) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const cleanPhone = phone.replace(/-/g, ''); // Pattern dashes hatao
+    const cleanPhone = phone.replace(/-/g, '');
 
     if (cleanPhone.length < 10) {
         if (typeof showIsland === 'function') showIsland("Enter full 10-digit number", "error");
@@ -244,14 +269,14 @@ function validateIdentityGate(email, phone) {
     return true;
 }
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 3A file : 1-login/login.js --- */ 
+/* —-- Function#1 END OF BLOCK JS 3A: file : 1-login/login.js —-- */
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 3B : Entry Execution & Identity Sync --- */
+/* —-- Function#2 BLOCK JS 3B: Entry Execution & Spinner Logic —-- */
 /* --------------------------------------------------------------------- */
 /**
- * executeContinueAction: Button click par database check aur routing.
+ * executeContinueAction: Button click par Spinner trigger aur Database sync.
  */
 if (continueBtn) {
     continueBtn.addEventListener('click', async () => {
@@ -261,63 +286,59 @@ if (continueBtn) {
         // 1. Final Gate Check
         if (!validateIdentityGate(email, phone)) return;
 
-        // 2. UI Reaction: Haptic + Loading State
+        // 2. UI REACTION: Haptic + Loader (THE FIX)
         if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
         
+        // Button State Change
         continueBtn.disabled = true;
         const btnText = continueBtn.querySelector('.btn-text');
         const btnLoader = continueBtn.querySelector('.btn-loader');
         
+        // Text ko gayab karo aur Loader ko dikhao
         if (btnText) btnText.style.opacity = '0';
-        if (btnLoader) btnLoader.style.display = 'block';
+        if (btnLoader) {
+            btnLoader.style.display = 'block';
+            btnLoader.style.opacity = '1';
+        }
 
         try {
-            // 3. Database Check: Identitfying User Status
+            // 3. Database Sync: Identitfying User Status
             const { data: user, error } = await _sb
                 .from('users')
-                .select('id, personal_email, device_fingerprint, is_blocked')
+                .select('id, is_blocked')
                 .eq('personal_email', email)
                 .maybeSingle();
 
             if (error) throw error;
 
-            // 4. Memory Bridge: Next page ke liye data save karo
+            // 4. Memory Bridge: Session Data Save
             sessionStorage.setItem('RP_Temp_Email', email);
             sessionStorage.setItem('RP_Temp_Phone', phone.replace(/-/g, ''));
-            
-            const countryCode = document.getElementById('selected-code')?.textContent || '+91';
-            sessionStorage.setItem('RP_Country_Code', countryCode);
+            sessionStorage.setItem('RP_User_Type', user ? 'OLD' : 'NEW');
 
-            // 5. Routing Logic (OLD vs NEW)
-            if (user) {
-                if (user.is_blocked) {
-                    if (typeof showIsland === 'function') showIsland("This Identity is suspended", "error");
-                    resetEntryState();
-                    return;
-                }
-                sessionStorage.setItem('RP_User_Type', 'OLD');
-                if (typeof showIsland === 'function') showIsland("Identity Identified. Syncing...", "success");
-            } else {
-                sessionStorage.setItem('RP_User_Type', 'NEW');
-                if (typeof showIsland === 'function') showIsland("New Identity detected. Welcome!", "success");
+            if (user && user.is_blocked) {
+                if (typeof showIsland === 'function') showIsland("Identity Suspended", "error");
+                resetEntryState();
+                return;
             }
 
-            // 6. Final Transition (The Flow Rule)
+            // 5. Elite Transition: 1.2s ka delay taaki Spinner feel ho
+            if (typeof showIsland === 'function') {
+                showIsland(user ? "Syncing Identity..." : "Identity Creating...", "success");
+            }
+
             setTimeout(() => {
                 window.location.href = '../2-Verification/Verification.html';
             }, 1200);
 
         } catch (err) {
             console.error("Entry Engine Interrupted:", err);
-            if (typeof showIsland === 'function') showIsland("Network link failed", "error");
+            if (typeof showIsland === 'function') showIsland("Network Link Failed", "error");
             resetEntryState();
         }
     });
 }
 
-/**
- * resetEntryState: Failure par button ko normal karta hai.
- */
 function resetEntryState() {
     continueBtn.disabled = false;
     const btnText = continueBtn.querySelector('.btn-text');
@@ -326,7 +347,7 @@ function resetEntryState() {
     if (btnLoader) btnLoader.style.display = 'none';
 }
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 3B file : 1-login/login.js --- */ 
+/* —-- Function#2 END OF BLOCK JS 3B: file : 1-login/login.js —-- */
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
