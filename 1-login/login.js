@@ -176,11 +176,12 @@ if (providerBtns) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2C : OAuth Session Recovery & UI Fill --- */
+/* --- Sub-Block 2C : OAuth Session Recovery & UI Sync (Auto-Reset) --- */
 /* --------------------------------------------------------------------- */
 /**
  * handleAuthCallback: 
- * Login ke baad wapas aane par Verified Data nikalta hai aur UI lock karta hai.
+ * Login ke baad wapas aane par Verified Data nikalta hai aur turant 
+ * session clear karta hai taaki refresh karne par form khali mile.
  */
 async function handleAuthCallback() {
     const { data: { session }, error } = await _sb.auth.getSession();
@@ -194,7 +195,7 @@ async function handleAuthCallback() {
         // 1. UI Sync: Email bharo aur Lock kar do
         if (emailInput) {
             emailInput.value = verifiedEmail;
-            emailInput.readOnly = true; // Manual typing band
+            emailInput.readOnly = true; 
             if (emailWrapper) emailWrapper.classList.add('verified');
             if (emailLockIcon) emailLockIcon.classList.add('active');
         }
@@ -209,10 +210,15 @@ async function handleAuthCallback() {
             `;
         }
 
-        // 3. Hidden Data Save (Session memory for JS 3B)
+        // 3. Hidden Data Save: 'sessionStorage' refresh par bhi data nahi khota 
+        // jab tak tab khuli hai, lekin 'signOut' session reset kar dega.
         sessionStorage.setItem('RP_Verified_Name', verifiedName);
         sessionStorage.setItem('RP_Provider_UID', providerUID);
         sessionStorage.setItem('RP_Auth_Provider', user.app_metadata.provider);
+
+        // 4. THE FIX: Supabase session ko turant khatam karo 
+        // taaki refresh par form reset ho jaye.
+        await _sb.auth.signOut();
 
         if (typeof showIsland === 'function') {
             showIsland(`Verified as ${verifiedName}`, "success");
@@ -220,7 +226,7 @@ async function handleAuthCallback() {
     }
 }
 
-// Page load hote hi check karo ki kya user login karke wapas aaya hai
+// Page load hote hi session check engine ko trigger karo
 document.addEventListener('DOMContentLoaded', handleAuthCallback);
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 2C file : 1-login/login.js --- */ 
