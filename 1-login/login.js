@@ -125,54 +125,80 @@ if (mobileInput) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* —-- Sub-Block 2B : Mail Provider Auth Engine (One-Tap Sync) —-- */
+/* --- Sub-Block 2B : Identity Discovery Engine (Gmail Lookup) --- */
 /* --------------------------------------------------------------------- */
 /**
- * triggerProviderAuth: 
- * Google, Apple, Yahoo ya Microsoft ka login popup kholta hai.
- * 
- * NOTE: Filhal sirf 'Google' active hai. 
- * Apple, Microsoft aur Yahoo providers "Coming Soon" status par hain.
+ * identityDiscovery: 
+ * Real-time mein Gmail se naam ya badge nikalta hai.
+ * Rule: Debounce (600ms) taaki typing ke sath search smooth chale.
  */
-async function triggerProviderAuth(provider) {
-    if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
-    
-    // Check if provider is ready or coming soon
-    if (provider !== 'google') {
-        if (typeof showIsland === 'function') {
-            showIsland(`${provider.charAt(0).toUpperCase() + provider.slice(1)} Sync coming soon`, "info");
-        }
-        return; // Aage ka process rok do
-    }
+let lookupTimer;
 
-    if (typeof showIsland === 'function') {
-        showIsland(`Connecting to Google...`, "info");
-    }
+if (emailInput) {
+    emailInput.addEventListener('input', (e) => {
+        const email = e.target.value.trim().toLowerCase();
+        
+        // Slot saaf karo aur timer reset karo
+        if (previewPortal) previewPortal.innerHTML = "";
+        clearTimeout(lookupTimer);
 
-    const { data, error } = await _sb.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-            redirectTo: window.location.href 
+        // Sirf tab scan karo jab user @ tak pahunch jaye aur format valid lage
+        if (email.includes('@') && email.length > 5) {
+            lookupTimer = setTimeout(() => {
+                performIdentityLookup(email);
+            }, 600);
         }
     });
-
-    if (error) {
-        if (typeof showIsland === 'function') showIsland(`Google link failed`, "error");
-        console.error("Auth Error:", error.message);
-    }
 }
 
-// Provider buttons par click listener lagao
-if (providerBtns) {
-    providerBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const provider = btn.getAttribute('data-provider');
-            triggerProviderAuth(provider);
-        });
-    });
+/**
+ * performIdentityLookup: 
+ * Supabase database check karta hai naye naming convention ke sath.
+ */
+async function performIdentityLookup(email) {
+    if (!previewPortal) return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // 1. Strict Validation: Choti ya ghalat emails ko ignore karo
+    const usernamePart = email.split('@')[0];
+    if (usernamePart.length < 3 || !emailRegex.test(email)) {
+        return; // Silent ignore during typing
+    }
+
+    try {
+        /**
+         * UPDATE: 'login_email' column ka use (Identity Sync Fix)
+         */
+        const { data: user } = await _sb
+            .from('users')
+            .select('provider_name, login_email') 
+            .eq('login_email', email) 
+            .maybeSingle();
+
+        if (user) {
+            // CASE: Purana User (Database se aaya hua Provider Name dikhao)
+            const displayName = user.provider_name || user.login_email.split('@')[0];
+            previewPortal.innerHTML = `
+                <div class="spatial-identity-chip">
+                    <span class="chip-icon"><i class="fas fa-user-check"></i></span>
+                    <span class="chip-text">Welcome back, ${displayName}</span>
+                </div>
+            `;
+        } else {
+            // CASE: Naya User (Security Badge dikhao)
+            previewPortal.innerHTML = `
+                <div class="spatial-identity-chip" style="background:rgba(52,199,89,0.1); border-color:rgba(52,199,89,0.2);">
+                    <span class="chip-icon"><i class="fas fa-certificate" style="color:var(--success-green, #34C759);"></i></span>
+                    <span class="chip-text" style="color:var(--success-green, #34C759);">✨ Verified Global Identity</span>
+                </div>
+            `;
+        }
+    } catch (err) {
+        console.error("Identity Engine Error:", err);
+    }
 }
 /* --------------------------------------------------------------------- */
-/* —-- Function#1 END OF BLOCK JS 2B: file : 1-login/login.js —-- */ 
+/* --- End Sub-Block 2B file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
