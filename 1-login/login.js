@@ -402,6 +402,10 @@ function resetEntryState() {
 /* ===>> BLOCK JS 4: Global Country Picker Logic Engine <<=== */
 /* ===================================================================== */
 
+/* ===================================================================== */
+/* ===>> BLOCK JS 4: Global Country Picker Logic Engine <<=== */
+/* ===================================================================== */
+
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 4A-1 : Global Region Registry (A to I) --- */
 /* --------------------------------------------------------------------- */
@@ -461,10 +465,12 @@ const regionRegistry = [
     { name: "Italy", code: "+39", flag: "🇮🇹", length: 10 }
 ];
 
-// Variables to track selection globally for validation
-let currentSelectedLength = 10; // Default India ke liye
+/**
+ * NOTE: currentSelectedLength variable BLOCK JS 1B mein declare ho chuka hai.
+ * Hum yahan sirf usko update karenge selection ke waqt.
+ */
 
-// Modal & Trigger Elements (Mapping unchanged)
+// Modal & Trigger Elements Mapping (Must match BLOCK HTML 2)
 const pickerTrigger  = document.getElementById('country-dropdown-trigger');
 const pickerOverlay  = document.getElementById('country-picker-overlay');
 const closePickerBtn = document.getElementById('close-picker-btn');
