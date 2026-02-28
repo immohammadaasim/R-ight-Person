@@ -133,46 +133,22 @@ body.spatial-login {
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Premium Input Engineering & iOS Status Icon --- */
+/* --- Block 2A : Premium Input Engineering & iOS Slide-In Tick --- */
 /* --------------------------------------------------------------------- */
-.entry-form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1.6rem;
-}
-
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.field-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: var(--s-text);
-    padding-left: 0.4rem;
-    text-transform: uppercase;
-}
-
+/**
+ * Input Wrapper:
+ * Isko humne relative banaya hai taaki Tick mark iske andar chipak sake.
+ */
 .input-wrapper {
     display: flex;
     align-items: center;
     background: rgba(142, 142, 147, 0.12);
     border: 1px solid transparent;
-    border-radius: var(--radius-item); /* 14px Rule */
+    border-radius: var(--radius-item);
     padding: 0 1.2rem;
     height: 60px;
-    position: relative;
+    position: relative; /* Inside placement ke liye zaruri */
     transition: all 0.3s var(--smooth-flow);
-}
-
-/* Interaction: Blue glow focus */
-.input-wrapper:focus-within {
-    background: var(--card-bg);
-    border-color: var(--blue-accent);
-    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
 }
 
 .input-wrapper input {
@@ -184,31 +160,36 @@ body.spatial-login {
     font-size: 1.15rem;
     font-weight: 600;
     color: var(--p-text);
-    padding-left: 0.8rem;
+    padding-right: 40px; /* Tick mark ke liye jagah chhodi */
 }
 
-/* iOS Style Pop Animation for Tick Mark */
+/**
+ * iOS Tick Icon Styling:
+ * Ye hamesha input ke andar right side mein rahega.
+ */
 .input-status-icon {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%) translateX(-15px); /* Start position: Left */
+    font-size: 1.25rem;
     opacity: 0;
-    transform: scale(0.5);
-    transition: all 0.4s var(--spring-ease);
+    pointer-events: none;
+    transition: all 0.5s var(--spring-ease);
+    color: #34C759; /* Apple Green */
 }
 
-.country-selector {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding-right: 0.8rem;
-    border-right: 1px solid var(--glass-border);
-    color: var(--p-text);
-    font-weight: 700;
+/* Jab Tick active hoga: Left to Right Slide + Fade In */
+.input-status-icon.active {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0); /* Final position: Right */
 }
+
+@keyframes tickSlide {
+    from { opacity: 0; transform: translateY(-50%) translateX(-15px); }
+    to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
 /* --------------------------------------------------------------------- */
 /* --- End Block 2A file : 1-login/login.css --- */ 
 /* --------------------------------------------------------------------- */

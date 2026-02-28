@@ -221,37 +221,45 @@ async function performIdentityLookup(email) {
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* —-- Function#1 BLOCK JS 3A: Identity Validation & iOS Tick —-- */
+/* —-- Function#1 BLOCK JS 3A: Identity Validation & iOS Slide-Tick —-- */
 /* --------------------------------------------------------------------- */
 /**
- * validateIdentityGate: Rasta kholne se pehle data ki sakht janch.
- * Isme Tick Mark ka logic bhi shamil hai.
+ * updateIdentityStatus: 
+ * Phone number valid hone par iOS Tick ko "Active" class deta hai.
+ * Animation (Left-to-Right) CSS ke '.active' class se trigger hogi.
  */
 function updateIdentityStatus() {
     const phone = mobileInput.value.replace(/-/g, '');
     const tickSlot = document.getElementById('phone-tick-icon');
     
-    // Rule: Agar 10 digits poore hain toh iOS Tick dikhao
+    if (!tickSlot) return;
+
+    // Rule: Agar 10 digits poore hain toh Active class add karo (Slide Animation)
     if (phone.length === 10) {
-        if (tickSlot) {
-            tickSlot.innerHTML = '<i class="fas fa-check-circle"></i>';
-            tickSlot.style.opacity = '1';
-            tickSlot.style.transform = 'scale(1)';
-            tickSlot.style.color = 'var(--success-green, #34C759)'; // Apple Success Green
-        }
+        tickSlot.innerHTML = '<i class="fas fa-check-circle"></i>';
+        // 0.1s ka delay taaki animation smoothly trigger ho
+        setTimeout(() => {
+            tickSlot.classList.add('active');
+        }, 10);
     } else {
-        if (tickSlot) {
-            tickSlot.style.opacity = '0';
-            tickSlot.style.transform = 'scale(0.5)';
-        }
+        // 10 se kam hote hi gayab kar do
+        tickSlot.classList.remove('active');
+        setTimeout(() => {
+            if (!tickSlot.classList.contains('active')) {
+                tickSlot.innerHTML = '';
+            }
+        }, 400); // Transition time ke baad saaf karo
     }
 }
 
-// Phone input par event listener lagao taaki real-time tick dikhe
+// Phone input par real-time monitoring
 if (mobileInput) {
     mobileInput.addEventListener('input', updateIdentityStatus);
 }
 
+/**
+ * validateIdentityGate: Final security check rasta kholne se pehle.
+ */
 function validateIdentityGate(email, phone) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const cleanPhone = phone.replace(/-/g, '');
