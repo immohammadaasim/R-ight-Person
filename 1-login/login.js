@@ -198,14 +198,18 @@ async function triggerProviderAuth(provider) {
         return;
     }
 
-    if (typeof showIsland === 'function') showIsland(`Connecting to Google...`, "info");
+    if (typeof showIsland === 'function') {
+        showIsland(`Connecting to Google...`, "info");
+    }
 
     const { data, error } = await _sb.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: window.location.href }
     });
 
-    if (error && typeof showIsland === 'function') showIsland(`Google link failed`, "error");
+    if (error && typeof showIsland === 'function') {
+        showIsland(`Google link failed`, "error");
+    }
 }
 
 if (providerBtns) {
@@ -236,7 +240,6 @@ async function handleAuthCallback() {
             emailInput.value = verifiedEmail;
             emailInput.readOnly = true; 
             emailInput.style.opacity = "1";
-            emailInput.style.pointerEvents = "auto";
             if (emailWrapper) emailWrapper.classList.add('verified');
             if (emailLockIcon) emailLockIcon.classList.add('active');
             if (manualEmailBtn) manualEmailBtn.style.display = 'none';
@@ -269,41 +272,46 @@ document.addEventListener('DOMContentLoaded', handleAuthCallback);
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2E : Smart Priority Engine (Strict Manual Unlock) --- */
+/* --- Sub-Block 2E : Smart Priority Engine (Lock & Unlock Fix) --- */
 /* --------------------------------------------------------------------- */
 /**
  * initializeSmartSync: 
- * Forcefully locks the email field on page load.
- * Unlock is only possible through the manualEmailBtn trigger.
+ * Ensures the email field is locked and guides the user.
  */
 function initializeSmartSync() {
     if (!emailInput) return;
 
-    // RULE: Pehle check karo kya user verify karke wapas aaya hai?
     const isAlreadyVerified = sessionStorage.getItem('RP_Verified_Name');
     
     if (!isAlreadyVerified) {
-        // STRICT LOCK: Field ko touch karna mana hai
+        // 1. Initial State: Forceful readOnly
         emailInput.readOnly = true;
         emailInput.style.opacity = "0.6";
-        emailInput.style.pointerEvents = "none"; // Mouse click bhi rok diya
         emailInput.placeholder = "Verify via icons below";
-        
-        // Manual Trigger Listener
+
+        // 2. Guide Notification on Click (RE-ADDED & FIXED)
+        emailInput.parentElement.addEventListener('click', () => {
+            if (emailInput.readOnly) {
+                if (typeof showIsland === 'function') {
+                    showIsland("Use icons above for One-Tap Sync", "info");
+                }
+            }
+        });
+
+        // 3. Manual Unlock Trigger
         if (manualEmailBtn) {
             manualEmailBtn.style.display = "inline-block";
             manualEmailBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
+                e.stopPropagation(); // Stop parent click event
                 triggerHapticFeedback();
                 
-                // UNLOCK ACTION
+                // Unlock Field
                 emailInput.readOnly = false;
                 emailInput.style.opacity = "1";
-                emailInput.style.pointerEvents = "auto";
                 emailInput.placeholder = "name@gmail.com";
                 emailInput.focus();
                 
-                // Hide the trigger once used
+                // UI Cleanup
                 manualEmailBtn.style.opacity = "0";
                 setTimeout(() => { manualEmailBtn.style.display = "none"; }, 300);
 
@@ -315,7 +323,7 @@ function initializeSmartSync() {
     }
 }
 
-// Poore page structure ke load hone ke baad lock trigger karo
+// Window load ensure karta hai ki sare elements load hone ke baad hi lock ho
 window.addEventListener('load', initializeSmartSync);
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 2E file : 1-login/login.js --- */ 
