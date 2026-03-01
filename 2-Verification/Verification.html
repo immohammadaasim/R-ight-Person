@@ -36,10 +36,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>R-ight Person | Verification Gateway</title>
     
+    <!-- [ PWA MANIFEST LINK ] -->
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#000000">
+    
     <!-- [ GLOBAL UI MODULES - CSS ] -->
     <link rel="stylesheet" href="../0-Theme/Theme.css?v=1.5">
     <link rel="stylesheet" href="../0.1-Notification/Notification.css?v=1.5">
-    <link rel="stylesheet" href="../0.2-Install/Install.css?v=1.5"> <!-- New PWA Module -->
+    <link rel="stylesheet" href="../0.2-Install/Install.css?v=1.5">
     
     <!-- [ LOCAL PAGE STYLE ] -->
     <link rel="stylesheet" href="Verification.css?v=1.5">
@@ -48,7 +52,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Spatial Entrance Rule: Content arrives from nothing */
         body { opacity: 0; transition: opacity 0.6s ease-in-out; }
         body.loaded { opacity: 1; }
     </style>
@@ -245,21 +248,17 @@
 <!-- 3. Local Verification Logic Engine -->
 <script src="Verification.js?v=1.5" defer></script>
 
-<!-- 4. PWA Module Injection & Page Reveal -->
+<!-- 4. PWA Service Worker Registration & Injection -->
 <script>
     window.addEventListener('load', () => {
-        // Reveal System
         setTimeout(() => { document.body.classList.add('loaded'); }, 100);
 
-        // Inject PWA Capsule HTML dynamically
-        fetch('../0.2-Install/Install.html')
-            .then(response => response.text())
-            .then(html => {
-                const wrapper = document.createElement('div');
-                wrapper.innerHTML = html;
-                document.body.appendChild(wrapper);
-            })
-            .catch(err => console.error('PWA Module Load Error:', err));
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../sw.js')
+                .then(reg => console.log('SW registered!', reg))
+                .catch(err => console.log('SW failed', err));
+        }
     });
 </script>
 
