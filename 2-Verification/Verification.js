@@ -201,58 +201,65 @@ function initiateTelegramFlow() {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2C : Telegram Open Button UI & Robust Link Logic --- */
+/* --- Sub-Block 2C : Telegram Open Button UI & Bridge Logic --- */
 /* --------------------------------------------------------------------- */
 /**
  * showTelegramOpenButton: 
- * Ensures fallback link points exactly to the Bot, not homepage.
+ * Selection List ko hide karke Telegram Action View dikhata hai.
+ * Clean UI Rule: One focus at a time.
  */
 function showTelegramOpenButton(deepLink, displayPhone) {
     if (document.getElementById('telegram-open-wrapper')) return;
 
     const selectionList = document.querySelector('.selection-list');
+    const viewHeader = document.querySelector('.view-header'); // Optional: Header update
+    
+    // 1. Hide Selection List smoothly
+    selectionList.style.display = 'none';
+
+    // 2. Create Wrapper
     const wrapper = document.createElement('div');
     wrapper.id = 'telegram-open-wrapper';
     wrapper.style.cssText = `
-        margin-top: 1.5rem;
+        margin-top: 1rem;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 14px;
         animation: spatialArrival 0.5s var(--spring-ease) forwards;
     `;
 
-    // Extract Hex Param safely from deepLink
+    // Extract Hex Param safely
     const hexParam = deepLink.split('start=')[1];
-    const botUsername = "Rightpersonverification_bot";
-    
-    // Explicit Correct Web Link
-    const webLink = `https://t.me/${botUsername}?start=${hexParam}`;
+    const webLink = `https://t.me/Rightpersonverification_bot?start=${hexParam}`;
 
     wrapper.innerHTML = `
-        <div style="background:rgba(0,122,255,0.08); border:1px solid rgba(0,122,255,0.15); border-radius:18px; padding:1rem; font-size:0.85rem; color:var(--blue-accent); line-height:1.6;">
-            📱 Mobile: <b>${displayPhone}</b><br>
-            Tap below → Open Telegram → Press <b>START</b> → Key arrives instantly!
+        <div style="background:rgba(0,122,255,0.08); border:1px solid rgba(0,122,255,0.15); border-radius:18px; padding:1.2rem; font-size:0.9rem; color:var(--blue-accent); line-height:1.6; text-align:center;">
+            <i class="fab fa-telegram-plane" style="font-size:1.8rem; margin-bottom:0.5rem; display:block;"></i>
+            Open Telegram for <b>${displayPhone}</b><br>
+            Press <b>START</b> to get your Key instantly!
         </div>
 
-        <a id="open-telegram-btn" href="#" class="ios-primary-btn" style="text-decoration:none; background:var(--telegram-blue);">
-            <i class="fab fa-telegram-plane" style="margin-right:10px;"></i> Open Telegram
+        <a id="open-telegram-btn" href="#" class="ios-primary-btn" style="text-decoration:none; background:var(--telegram-blue); display:flex; justify-content:center; align-items:center;">
+            Open Telegram App
         </a>
 
         <button id="already-got-key-btn" class="ios-secondary-btn">I have my Key → Enter it</button>
+        
+        <button id="cancel-telegram-flow" class="ios-link-btn" style="margin-top:0.5rem;">Cancel & Go Back</button>
     `;
 
     selectionList.after(wrapper);
 
-    // Smart Link Listener
+    // 3. Event Listeners
+    
+    // Open Telegram Logic
     document.getElementById('open-telegram-btn').addEventListener('click', (e) => {
         e.preventDefault();
         triggerHaptic();
         if (typeof showIsland === 'function') showIsland("Opening Telegram...", "info");
 
-        // Strategy 1: Try App Protocol
         window.location.href = deepLink;
 
-        // Strategy 2: If App fails, open Web Bot Link (Not Homepage)
         setTimeout(() => {
             if (document.hidden) return; 
             window.open(webLink, '_blank');
@@ -263,14 +270,26 @@ function showTelegramOpenButton(deepLink, displayPhone) {
         }, 4000);
     });
 
-    // Manual Switch Listener
+    // Enter Key Logic
     document.getElementById('already-got-key-btn').addEventListener('click', () => {
         triggerHaptic();
         const targetLabel = document.getElementById('target-identity');
         if (targetLabel) targetLabel.textContent = 'Telegram';
         switchView(keyInputView, selectionView);
-        
         if (typeof startOTPTimer === 'function') startOTPTimer();
+        
+        // Cleanup wrapper when moving forward
+        wrapper.remove();
+        selectionList.style.display = 'flex';
+    });
+
+    // Cancel / Back Logic (Restore List)
+    document.getElementById('cancel-telegram-flow').addEventListener('click', () => {
+        triggerHaptic();
+        wrapper.remove();
+        selectionList.style.display = 'flex'; // Show list again
+        // Animation reset for list
+        selectionList.style.animation = 'spatialArrival 0.4s var(--spring-ease)';
     });
 }
 /* --------------------------------------------------------------------- */
