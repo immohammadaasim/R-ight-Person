@@ -39,6 +39,7 @@
     <!-- [ GLOBAL UI MODULES - CSS ] -->
     <link rel="stylesheet" href="../0-Theme/Theme.css?v=1.5">
     <link rel="stylesheet" href="../0.1-Notification/Notification.css?v=1.5">
+    <link rel="stylesheet" href="../0.2-Install/Install.css?v=1.5"> <!-- New PWA Module -->
     
     <!-- [ LOCAL PAGE STYLE ] -->
     <link rel="stylesheet" href="Verification.css?v=1.5">
@@ -229,7 +230,7 @@
 <!-- 
     MODULAR ARCHITECTURE NOTE:
     - Supabase SDK: Backend connectivity dependency.
-    - Global Engines: Theme.js and Notification.js (Universal behavior).
+    - Global Engines: Theme, Notification, and PWA Install.
     - Page Engine: Verification.js (Local logic).
 -->
 
@@ -239,21 +240,26 @@
 <!-- 2. Global Universal Modules -->
 <script src="../0-Theme/Theme.js?v=1.5" defer></script>
 <script src="../0.1-Notification/Notification.js?v=1.5" defer></script>
+<script src="../0.2-Install/Install.js?v=1.5" defer></script>
 
 <!-- 3. Local Verification Logic Engine -->
 <script src="Verification.js?v=1.5" defer></script>
 
-<!-- 4. Spatial Page Activation -->
+<!-- 4. PWA Module Injection & Page Reveal -->
 <script>
-    /**
-     * Window Loader:
-     * Sabhi modules ke load hone ke baad hi system ko visual reveal karta hai.
-     * Rule: 0.6s smooth arrival transition.
-     */
     window.addEventListener('load', () => {
-        setTimeout(() => {
-            document.body.classList.add('loaded');
-        }, 100);
+        // Reveal System
+        setTimeout(() => { document.body.classList.add('loaded'); }, 100);
+
+        // Inject PWA Capsule HTML dynamically
+        fetch('../0.2-Install/Install.html')
+            .then(response => response.text())
+            .then(html => {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = html;
+                document.body.appendChild(wrapper);
+            })
+            .catch(err => console.error('PWA Module Load Error:', err));
     });
 </script>
 

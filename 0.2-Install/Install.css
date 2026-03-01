@@ -1,0 +1,132 @@
+/* ===================================================================== */
+/* ===>> BLOCK CSS 1: Universal Install Capsule Architecture <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1A : Floating Capsule Design (The Spatial Pill) --- */
+/* --------------------------------------------------------------------- */
+.install-capsule {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px) scale(0.9);
+    z-index: 999999;
+    display: none; /* Controlled by JS */
+    align-items: center;
+    gap: 12px;
+    
+    /* Spatial Glass Material */
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(35px) saturate(180%);
+    -webkit-backdrop-filter: blur(35px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    
+    padding: 10px 14px;
+    border-radius: 100px; /* Full Rounded */
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Dark Mode Override */
+body.dark-mode .install-capsule {
+    background: rgba(30, 30, 30, 0.85);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Active State: Slide Up */
+.install-capsule.visible {
+    display: flex;
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+}
+/* --------------------------------------------------------------------- */
+/* --- End Block 1A file : 0.2-Install/Install.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1B : Content & Typography --- */
+/* --------------------------------------------------------------------- */
+.capsule-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.app-icon {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #007AFF, #00C7BE);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: white;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.app-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.text-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.install-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--p-text, #000);
+}
+
+body.dark-mode .install-title { color: #FFF; }
+
+.install-subtitle {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--s-text, #888);
+}
+
+.action-btn {
+    background: rgba(0, 122, 255, 0.1);
+    color: #007AFF;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+body.dark-mode .action-btn {
+    background: rgba(10, 132, 255, 0.2);
+    color: #0A84FF;
+}
+
+/* Close Button */
+.close-capsule {
+    background: transparent;
+    border: none;
+    color: var(--s-text, #888);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 4px;
+    display: flex;
+    align-items: center;
+}
+/* --------------------------------------------------------------------- */
+/* --- End Block 1B file : 0.2-Install/Install.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 1 file : 0.2-Install/Install.css <<=== */
+/* ===================================================================== */

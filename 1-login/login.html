@@ -35,15 +35,15 @@
     <title>R-ight Person - Digital Identity</title>
 
     <!-- [ GLOBAL UI MODULES - CSS ] -->
-    <link rel="stylesheet" href="../0-Theme/Theme.css?v=1.4">
-    <link rel="stylesheet" href="../0.1-Notification/Notification.css?v=1.4">
+    <link rel="stylesheet" href="../0-Theme/Theme.css?v=1.5">
+    <link rel="stylesheet" href="../0.1-Notification/Notification.css?v=1.5">
+    <link rel="stylesheet" href="../0.2-Install/Install.css?v=1.5"> <!-- New PWA Module -->
     
     <!-- [ LOCAL PAGE STYLE ] -->
-    <link rel="stylesheet" href="login.css?v=1.4">
+    <link rel="stylesheet" href="login.css?v=1.5">
 
     <!-- [ EXTERNAL LIBRARIES ] -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         /* Block 1A: Spatial Entrance Rule */
@@ -200,14 +200,38 @@
 <!-- 
     MODULAR ARCHITECTURE NOTE:
     - Supabase SDK (v2): Handles real-time identity and auth.
-    - login.js: Logic engine for device fingerprinting and entry routing.
+    - Global Engines: Theme, Notification, and PWA Install.
+    - Local Logic: login.js handles entry routing.
 -->
 
-<!-- Supabase Global Engine Link -->
+<!-- 1. Supabase Global Engine -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Portal Logic Engine -->
-<script src="login.js"></script>
+<!-- 2. Global Universal Modules -->
+<script src="../0-Theme/Theme.js?v=1.5" defer></script>
+<script src="../0.1-Notification/Notification.js?v=1.5" defer></script>
+<script src="../0.2-Install/Install.js?v=1.5" defer></script>
+
+<!-- 3. Local Page Logic -->
+<script src="login.js?v=1.5" defer></script>
+
+<!-- 4. PWA Module Injection & Page Reveal -->
+<script>
+    window.addEventListener('load', () => {
+        // Reveal System
+        setTimeout(() => { document.body.classList.add('loaded'); }, 100);
+
+        // Inject PWA Capsule HTML dynamically
+        fetch('../0.2-Install/Install.html')
+            .then(response => response.text())
+            .then(html => {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = html;
+                document.body.appendChild(wrapper);
+            })
+            .catch(err => console.error('PWA Module Load Error:', err));
+    });
+</script>
 
 </body>
 </html>
