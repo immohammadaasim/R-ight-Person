@@ -111,13 +111,9 @@ if (mobileInput) {
         let val = e.target.value.replace(/\D/g, '').substring(0, currentSelectedLength);
         let formattedValue = "";
         if (val.length > 0) {
-            if (val.length <= 3) {
-                formattedValue = val;
-            } else if (val.length <= 6) {
-                formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
-            } else {
-                formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
-            }
+            if (val.length <= 3) formattedValue = val;
+            else if (val.length <= 6) formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
+            else formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
         }
         e.target.value = formattedValue;
     });
@@ -134,23 +130,16 @@ if (mobileInput) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2B : Identity Discovery Engine (The Welcome Back Fix) --- */
+/* --- Sub-Block 2B : Identity Discovery Engine (Welcome Back) --- */
 /* --------------------------------------------------------------------- */
-/**
- * identityDiscovery: 
- * Manual typing ke waqt Gmail se user ka naam dhoondta hai.
- */
 let lookupTimer;
 
 if (emailInput) {
     emailInput.addEventListener('input', (e) => {
         const email = e.target.value.trim().toLowerCase();
-        
-        // Purani chip saaf karo aur timer reset karo
         if (previewPortal) previewPortal.innerHTML = "";
         clearTimeout(lookupTimer);
 
-        // Jab user valid format ki taraf badhe tabhi search karo
         if (email.includes('@') && email.length > 5) {
             lookupTimer = setTimeout(() => {
                 performIdentityLookup(email);
@@ -159,19 +148,13 @@ if (emailInput) {
     });
 }
 
-/**
- * performIdentityLookup: 
- * Supabase se provider_name nikal kar 'Welcome Back' chip dikhata hai.
- */
 async function performIdentityLookup(email) {
     if (!previewPortal) return;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const usernamePart = email.split('@')[0];
-    
     if (usernamePart.length < 3 || !emailRegex.test(email)) return;
 
     try {
-        // Naye column 'login_email' ka istemal
         const { data: user } = await _sb
             .from('users')
             .select('provider_name, login_email') 
@@ -179,7 +162,6 @@ async function performIdentityLookup(email) {
             .maybeSingle();
 
         if (user) {
-            // Case: Registered User (Dikhata hai: Welcome back, Rahul)
             const displayName = user.provider_name || user.login_email.split('@')[0];
             previewPortal.innerHTML = `
                 <div class="spatial-identity-chip">
@@ -188,7 +170,6 @@ async function performIdentityLookup(email) {
                 </div>
             `;
         } else {
-            // Case: New User (Dikhata hai: Verified Global Identity)
             previewPortal.innerHTML = `
                 <div class="spatial-identity-chip" style="background:rgba(52,199,89,0.1); border-color:rgba(52,199,89,0.2);">
                     <span class="chip-icon"><i class="fas fa-certificate" style="color:#34C759;"></i></span>
@@ -224,9 +205,7 @@ async function triggerProviderAuth(provider) {
         options: { redirectTo: window.location.href }
     });
 
-    if (error && typeof showIsland === 'function') {
-        showIsland(`Google link failed`, "error");
-    }
+    if (error && typeof showIsland === 'function') showIsland(`Google link failed`, "error");
 }
 
 if (providerBtns) {
@@ -257,6 +236,7 @@ async function handleAuthCallback() {
             emailInput.value = verifiedEmail;
             emailInput.readOnly = true; 
             emailInput.style.opacity = "1";
+            emailInput.style.pointerEvents = "auto";
             if (emailWrapper) emailWrapper.classList.add('verified');
             if (emailLockIcon) emailLockIcon.classList.add('active');
             if (manualEmailBtn) manualEmailBtn.style.display = 'none';
@@ -289,32 +269,54 @@ document.addEventListener('DOMContentLoaded', handleAuthCallback);
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2E : Smart Priority Engine (Manual Unlock) --- */
+/* --- Sub-Block 2E : Smart Priority Engine (Strict Manual Unlock) --- */
 /* --------------------------------------------------------------------- */
+/**
+ * initializeSmartSync: 
+ * Forcefully locks the email field on page load.
+ * Unlock is only possible through the manualEmailBtn trigger.
+ */
 function initializeSmartSync() {
     if (!emailInput) return;
+
+    // RULE: Pehle check karo kya user verify karke wapas aaya hai?
     const isAlreadyVerified = sessionStorage.getItem('RP_Verified_Name');
     
     if (!isAlreadyVerified) {
+        // STRICT LOCK: Field ko touch karna mana hai
         emailInput.readOnly = true;
         emailInput.style.opacity = "0.6";
-        emailInput.placeholder = "Unlock via icons or link";
-    }
+        emailInput.style.pointerEvents = "none"; // Mouse click bhi rok diya
+        emailInput.placeholder = "Verify via icons below";
+        
+        // Manual Trigger Listener
+        if (manualEmailBtn) {
+            manualEmailBtn.style.display = "inline-block";
+            manualEmailBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                triggerHapticFeedback();
+                
+                // UNLOCK ACTION
+                emailInput.readOnly = false;
+                emailInput.style.opacity = "1";
+                emailInput.style.pointerEvents = "auto";
+                emailInput.placeholder = "name@gmail.com";
+                emailInput.focus();
+                
+                // Hide the trigger once used
+                manualEmailBtn.style.opacity = "0";
+                setTimeout(() => { manualEmailBtn.style.display = "none"; }, 300);
 
-    if (manualEmailBtn) {
-        manualEmailBtn.addEventListener('click', () => {
-            triggerHapticFeedback();
-            emailInput.readOnly = false;
-            emailInput.style.opacity = "1";
-            emailInput.placeholder = "Enter your email manually";
-            emailInput.focus();
-            manualEmailBtn.style.opacity = "0";
-            setTimeout(() => { manualEmailBtn.style.display = "none"; }, 300);
-            if (typeof showIsland === 'function') showIsland("Manual entry enabled", "info");
-        });
+                if (typeof showIsland === 'function') {
+                    showIsland("Manual Entry Unlocked", "info");
+                }
+            });
+        }
     }
 }
-initializeSmartSync();
+
+// Poore page structure ke load hone ke baad lock trigger karo
+window.addEventListener('load', initializeSmartSync);
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 2E file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
