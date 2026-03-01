@@ -272,44 +272,48 @@ document.addEventListener('DOMContentLoaded', handleAuthCallback);
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2E : Smart Priority Engine (Strict Locking Logic) --- */
+/* --- Sub-Block 2E : Smart Priority Engine (Manual Unlock & Reset) --- */
 /* --------------------------------------------------------------------- */
 /**
- * initializeSmartSync: 
- * Ensures lock states are enforced correctly.
- * RULE: If verified via Google, stay PERMANENTLY LOCKED.
+ * Purpose:
+ * 1. Page load par Email field ko LOCK rakhta hai.
+ * 2. Locked field par click karne par "One-Tap Sync" message dikhata hai.
+ * 3. "Don't have these? Enter manually" par click karne par field UNLOCK karta hai.
+ * 4. Agar Google se verify ho chuka hai, toh field permanently locked rahega.
  */
+
 function initializeSmartSync() {
     if (!emailInput) return;
 
-    // Check if user just came back from Google Auth
     const isAlreadyVerified = sessionStorage.getItem('RP_Verified_Name');
-    
+
+    /* --------------------------------------------------------------- */
+    /* CASE 1: User already verified via Google (PERMANENT LOCK)      */
+    /* --------------------------------------------------------------- */
     if (isAlreadyVerified) {
-        // CASE 1: Verified User (Absolute Lock)
         emailInput.readOnly = true;
         emailInput.style.opacity = "1";
-        emailInput.style.pointerEvents = "none"; // Click bhi disable
-        emailInput.parentElement.style.pointerEvents = "none"; // Wrapper click disable
-        
-        // Hide manual trigger permanently
+        emailInput.style.pointerEvents = "none";
+        emailInput.parentElement.style.pointerEvents = "none";
+
         if (manualEmailBtn) manualEmailBtn.style.display = "none";
-        
-        // Ensure lock icon is active
         if (emailWrapper) emailWrapper.classList.add('verified');
         if (emailLockIcon) emailLockIcon.classList.add('active');
-        
-        return; // Function yahi khatam, aage ka manual logic run nahi hoga
+
+        return; // Stop here. Manual logic will NOT run.
     }
 
-    // CASE 2: Unverified User (Guide to use Icons)
-    // Initial State: Locked & Faded
+    /* --------------------------------------------------------------- */
+    /* CASE 2: Fresh user (Initial LOCK + Manual option visible)      */
+    /* --------------------------------------------------------------- */
+
+    // Initial lock state
     emailInput.readOnly = true;
     emailInput.style.opacity = "0.6";
-    emailInput.placeholder = "Verify via icons below";
+    emailInput.placeholder = "Verify via icons above";
 
-    // Click Guide (Tells user to use Icons)
-    emailInput.parentElement.addEventListener('click', () => {
+    // Guide message on locked field click
+    emailInput.parentElement.addEventListener('click', function () {
         if (emailInput.readOnly) {
             if (typeof showIsland === 'function') {
                 showIsland("Use icons above for One-Tap Sync", "info");
@@ -317,22 +321,29 @@ function initializeSmartSync() {
         }
     });
 
-    // Manual Unlock Logic (Only for unverified users)
+    // Manual unlock button logic
     if (manualEmailBtn) {
         manualEmailBtn.style.display = "inline-block";
-        manualEmailBtn.addEventListener('click', (e) => {
+        manualEmailBtn.style.opacity = "1";
+
+        manualEmailBtn.addEventListener('click', function (e) {
             e.stopPropagation();
-            triggerHapticFeedback();
-            
-            // Unlock Field
+
+            if (typeof triggerHapticFeedback === 'function') {
+                triggerHapticFeedback();
+            }
+
+            // Unlock the field
             emailInput.readOnly = false;
             emailInput.style.opacity = "1";
             emailInput.placeholder = "name@gmail.com";
             emailInput.focus();
-            
-            // UI Cleanup
+
+            // Hide manual trigger after use
             manualEmailBtn.style.opacity = "0";
-            setTimeout(() => { manualEmailBtn.style.display = "none"; }, 300);
+            setTimeout(function () {
+                manualEmailBtn.style.display = "none";
+            }, 300);
 
             if (typeof showIsland === 'function') {
                 showIsland("Manual Entry Unlocked", "info");
@@ -341,10 +352,11 @@ function initializeSmartSync() {
     }
 }
 
-// Window load ensure karta hai ki sare elements load hone ke baad hi lock ho
+// Ensure it runs AFTER full page load
 window.addEventListener('load', initializeSmartSync);
+
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 2E file : 1-login/login.js --- */ 
+/* --- End Sub-Block 2E file : 1-login/login.js --- */
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
