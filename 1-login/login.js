@@ -272,59 +272,50 @@ document.addEventListener('DOMContentLoaded', handleAuthCallback);
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2E : Smart Priority Engine (Manual Unlock & Reset) --- */
+/* --- Sub-Block 2E : Smart Priority Engine (Stable Order Fix) --- */
 /* --------------------------------------------------------------------- */
-/**
- * Purpose:
- * 1. Page load par Email field ko LOCK rakhta hai.
- * 2. Locked field par click karne par "One-Tap Sync" message dikhata hai.
- * 3. "Don't have these? Enter manually" par click karne par field UNLOCK karta hai.
- * 4. Agar Google se verify ho chuka hai, toh field permanently locked rahega.
- */
 
 function initializeSmartSync() {
     if (!emailInput) return;
 
     const isAlreadyVerified = sessionStorage.getItem('RP_Verified_Name');
 
-    /* --------------------------------------------------------------- */
-    /* CASE 1: User already verified via Google (PERMANENT LOCK)      */
-    /* --------------------------------------------------------------- */
+    /* ------------------ CASE 1: Verified (Permanent Lock) ------------------ */
     if (isAlreadyVerified) {
         emailInput.readOnly = true;
         emailInput.style.opacity = "1";
-        emailInput.style.pointerEvents = "none";
-        emailInput.parentElement.style.pointerEvents = "none";
 
-        if (manualEmailBtn) manualEmailBtn.style.display = "none";
+        if (manualEmailBtn) {
+            manualEmailBtn.style.display = "none";
+        }
+
         if (emailWrapper) emailWrapper.classList.add('verified');
         if (emailLockIcon) emailLockIcon.classList.add('active');
 
-        return; // Stop here. Manual logic will NOT run.
+        return; 
     }
 
-    /* --------------------------------------------------------------- */
-    /* CASE 2: Fresh user (Initial LOCK + Manual option visible)      */
-    /* --------------------------------------------------------------- */
+    /* ------------------ CASE 2: Fresh User ------------------ */
 
-    // Initial lock state
+    // Initial lock
     emailInput.readOnly = true;
     emailInput.style.opacity = "0.6";
-    emailInput.placeholder = "Verify via icons above";
+    emailInput.placeholder = "Verify using icons above";
 
-    // Guide message on locked field click
-    emailInput.parentElement.addEventListener('click', function () {
-        if (emailInput.readOnly) {
-            if (typeof showIsland === 'function') {
-                showIsland("Use icons above for One-Tap Sync", "info");
+    // One‑Tap guide
+    if (emailWrapper) {
+        emailWrapper.addEventListener('click', function () {
+            if (emailInput.readOnly) {
+                if (typeof showIsland === 'function') {
+                    showIsland("Use icons above for One‑Tap Sync", "info");
+                }
             }
-        }
-    });
+        });
+    }
 
-    // Manual unlock button logic
+    // Manual unlock
     if (manualEmailBtn) {
         manualEmailBtn.style.display = "inline-block";
-        manualEmailBtn.style.opacity = "1";
 
         manualEmailBtn.addEventListener('click', function (e) {
             e.stopPropagation();
@@ -333,26 +324,21 @@ function initializeSmartSync() {
                 triggerHapticFeedback();
             }
 
-            // Unlock the field
             emailInput.readOnly = false;
             emailInput.style.opacity = "1";
             emailInput.placeholder = "name@gmail.com";
             emailInput.focus();
 
-            // Hide manual trigger after use
-            manualEmailBtn.style.opacity = "0";
-            setTimeout(function () {
-                manualEmailBtn.style.display = "none";
-            }, 300);
+            manualEmailBtn.style.display = "none";
 
             if (typeof showIsland === 'function') {
-                showIsland("Manual Entry Unlocked", "info");
+                showIsland("Manual entry enabled", "info");
             }
         });
     }
 }
 
-// Ensure it runs AFTER full page load
+/* ✅ IMPORTANT: Run AFTER everything including handleAuthCallback */
 window.addEventListener('load', initializeSmartSync);
 
 /* --------------------------------------------------------------------- */
