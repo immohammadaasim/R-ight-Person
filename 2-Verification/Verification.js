@@ -201,11 +201,11 @@ function initiateTelegramFlow() {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2C : Telegram Open Button UI & Smart Link Logic --- */
+/* --- Sub-Block 2C : Telegram Open Button UI & Bridge Logic --- */
 /* --------------------------------------------------------------------- */
 /**
  * showTelegramOpenButton: 
- * Smart logic: Pehle App kholne ki koshish karta hai, fail hone par Web.
+ * Selection list ke niche "Open Telegram" aur "Enter Key" buttons inject karta hai.
  */
 function showTelegramOpenButton(deepLink, displayPhone) {
     if (document.getElementById('telegram-open-wrapper')) return;
@@ -221,16 +221,13 @@ function showTelegramOpenButton(deepLink, displayPhone) {
         animation: spatialArrival 0.5s var(--spring-ease) forwards;
     `;
 
-    // Fallback Web Link creation
-    const webLink = deepLink.replace('tg://resolve?domain=', 'https://t.me/');
-
     wrapper.innerHTML = `
         <div style="background:rgba(0,122,255,0.08); border:1px solid rgba(0,122,255,0.15); border-radius:18px; padding:1rem; font-size:0.85rem; color:var(--blue-accent); line-height:1.6;">
             📱 Mobile: <b>${displayPhone}</b><br>
             Tap below → Open Telegram → Press <b>START</b> → Key arrives instantly!
         </div>
 
-        <a id="open-telegram-btn" href="#" class="ios-primary-btn" style="text-decoration:none; background:var(--telegram-blue);">
+        <a id="open-telegram-btn" href="${deepLink}" target="_blank" class="ios-primary-btn" style="text-decoration:none; background:var(--telegram-blue);">
             <i class="fab fa-telegram-plane" style="margin-right:10px;"></i> Open Telegram
         </a>
 
@@ -239,34 +236,19 @@ function showTelegramOpenButton(deepLink, displayPhone) {
 
     selectionList.after(wrapper);
 
-    // Smart Link Listener
-    document.getElementById('open-telegram-btn').addEventListener('click', (e) => {
-        e.preventDefault();
+    // Interaction Listeners
+    document.getElementById('open-telegram-btn').addEventListener('click', () => {
         triggerHaptic();
-        if (typeof showIsland === 'function') showIsland("Opening Telegram...", "info");
-
-        // Strategy 1: Try Direct App (No new tab)
-        window.location.href = deepLink;
-
-        // Strategy 2: If app fails, open Web in new tab after 1s
-        setTimeout(() => {
-            if (document.hidden) return; // App opened successfully
-            window.open(webLink, '_blank');
-        }, 1500);
-        
-        // Auto-switch view hint
-        setTimeout(() => {
-            if (typeof showIsland === 'function') showIsland("Got your key? Tap 'I have my Key'", "info");
-        }, 4000);
+        if (typeof showIsland === 'function') showIsland("Opening Telegram App...", "info");
     });
 
-    // Manual Switch Listener
     document.getElementById('already-got-key-btn').addEventListener('click', () => {
         triggerHaptic();
         const targetLabel = document.getElementById('target-identity');
         if (targetLabel) targetLabel.textContent = 'Telegram';
         switchView(keyInputView, selectionView);
         
+        // Timer engine ko trigger karo (JS Block 3C)
         if (typeof startOTPTimer === 'function') startOTPTimer();
     });
 }
