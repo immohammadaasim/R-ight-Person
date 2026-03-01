@@ -111,9 +111,13 @@ if (mobileInput) {
         let val = e.target.value.replace(/\D/g, '').substring(0, currentSelectedLength);
         let formattedValue = "";
         if (val.length > 0) {
-            if (val.length <= 3) formattedValue = val;
-            else if (val.length <= 6) formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
-            else formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
+            if (val.length <= 3) {
+                formattedValue = val;
+            } else if (val.length <= 6) {
+                formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
+            } else {
+                formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
+            }
         }
         e.target.value = formattedValue;
     });
@@ -130,20 +134,23 @@ if (mobileInput) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2B : Identity Discovery Engine (Gmail Lookup) --- */
+/* --- Sub-Block 2B : Identity Discovery Engine (The Welcome Back Fix) --- */
 /* --------------------------------------------------------------------- */
 /**
- * identityDiscovery: Real-time mein Gmail se naam ya badge nikalta hai.
- * Rule: Naye naming convention (login_email) ke sath sync hai.
+ * identityDiscovery: 
+ * Manual typing ke waqt Gmail se user ka naam dhoondta hai.
  */
 let lookupTimer;
 
 if (emailInput) {
     emailInput.addEventListener('input', (e) => {
         const email = e.target.value.trim().toLowerCase();
+        
+        // Purani chip saaf karo aur timer reset karo
         if (previewPortal) previewPortal.innerHTML = "";
         clearTimeout(lookupTimer);
 
+        // Jab user valid format ki taraf badhe tabhi search karo
         if (email.includes('@') && email.length > 5) {
             lookupTimer = setTimeout(() => {
                 performIdentityLookup(email);
@@ -152,13 +159,19 @@ if (emailInput) {
     });
 }
 
+/**
+ * performIdentityLookup: 
+ * Supabase se provider_name nikal kar 'Welcome Back' chip dikhata hai.
+ */
 async function performIdentityLookup(email) {
     if (!previewPortal) return;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const usernamePart = email.split('@')[0];
+    
     if (usernamePart.length < 3 || !emailRegex.test(email)) return;
 
     try {
+        // Naye column 'login_email' ka istemal
         const { data: user } = await _sb
             .from('users')
             .select('provider_name, login_email') 
@@ -166,6 +179,7 @@ async function performIdentityLookup(email) {
             .maybeSingle();
 
         if (user) {
+            // Case: Registered User (Dikhata hai: Welcome back, Rahul)
             const displayName = user.provider_name || user.login_email.split('@')[0];
             previewPortal.innerHTML = `
                 <div class="spatial-identity-chip">
@@ -174,10 +188,11 @@ async function performIdentityLookup(email) {
                 </div>
             `;
         } else {
+            // Case: New User (Dikhata hai: Verified Global Identity)
             previewPortal.innerHTML = `
                 <div class="spatial-identity-chip" style="background:rgba(52,199,89,0.1); border-color:rgba(52,199,89,0.2);">
-                    <span class="chip-icon"><i class="fas fa-certificate" style="color:var(--success-green, #34C759);"></i></span>
-                    <span class="chip-text" style="color:var(--success-green, #34C759);">✨ Verified Global Identity</span>
+                    <span class="chip-icon"><i class="fas fa-certificate" style="color:#34C759;"></i></span>
+                    <span class="chip-text" style="color:#34C759;">✨ Verified Global Identity</span>
                 </div>
             `;
         }
@@ -209,8 +224,8 @@ async function triggerProviderAuth(provider) {
         options: { redirectTo: window.location.href }
     });
 
-    if (error) {
-        if (typeof showIsland === 'function') showIsland(`Google link failed`, "error");
+    if (error && typeof showIsland === 'function') {
+        showIsland(`Google link failed`, "error");
     }
 }
 
