@@ -23,12 +23,12 @@
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1A : Adaptive Centering Engine --- */
+/* --- Block 1A : Adaptive Centering Engine (Universal) --- */
 /* --------------------------------------------------------------------- */
 /**
  * Centering Logic:
  * Ensure karta hai ki verification card hamesha screen ke beech mein rahe.
- * Background transparent rakha gaya hai taaki Theme.css ka system color dikhe.
+ * Padding: Har device par safe area ensure karta hai.
  */
 #app-container {
     width: 100%;
@@ -36,7 +36,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 24px;
+    padding: 20px;
     box-sizing: border-box;
     background: transparent !important;
 }
@@ -51,6 +51,7 @@ body {
     justify-content: center;
     background-color: var(--system-bg) !important;
     overflow-x: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 1A file : 2-verification/Verification.css --- */ 
@@ -59,17 +60,13 @@ body {
 /* --------------------------------------------------------------------- */
 /* --- Block 1B : Verification Specific Variables --- */
 /* --------------------------------------------------------------------- */
-/**
- * In variables ko humne iPadOS 18 ke premium raste (Paths) ke liye 
- * design kiya hai (Telegram, iMail, WhatsApp).
- */
 :root {
     --telegram-blue: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%);
     --whatsapp-green: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
     --email-blue: linear-gradient(135deg, #5AC8FA 0%, #007AFF 100%);
     
-    /* Animation timing for smooth view switching */
     --transition-speed: 0.5s;
+    --radius-squircle: 32px;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 1B file : 2-verification/Verification.css --- */ 
@@ -85,12 +82,12 @@ body {
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Adaptive Verification Card (iPadOS 18) --- */
+/* --- Block 2A : Adaptive Verification Card (Device Responsive) --- */
 /* --------------------------------------------------------------------- */
 /**
  * Main Card Physics:
- * Width: 92% (Mobile), Max-Width: 440px (Desktop Widget).
- * Border Radius: 32px (Super Squircle).
+ * Desktop: 440px Fixed Widget.
+ * Mobile: 92% Fluid Width.
  */
 .spatial-glass-card {
     width: 92%;
@@ -98,9 +95,9 @@ body {
     background: var(--card-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: var(--radius-card); /* 32px Rule */
+    border-radius: var(--radius-squircle); /* 32px Rule */
     border: 1px solid var(--glass-border);
-    padding: 3.5rem 2.2rem;
+    padding: 3.5rem 2.5rem;
     box-shadow: var(--glass-shadow);
     display: flex;
     flex-direction: column;
@@ -109,10 +106,22 @@ body {
     animation: spatialArrival 0.8s var(--spring-ease) forwards;
 }
 
+/* Standard Mobile (iPhone 14/15/Pixel) */
 @media (max-width: 500px) {
     .spatial-glass-card {
-        padding: 2.5rem 1.6rem;
+        padding: 2.5rem 1.8rem;
+        width: 94%;
+        border-radius: 28px;
     }
+}
+
+/* Small Mobile (iPhone SE/Mini) */
+@media (max-width: 380px) {
+    .spatial-glass-card {
+        padding: 2rem 1.4rem;
+        width: 96%;
+    }
+    #app-container { padding: 12px; }
 }
 
 @keyframes spatialArrival {
@@ -124,7 +133,7 @@ body {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2B : Typography & View Headers --- */
+/* --- Block 2B : Responsive Typography --- */
 /* --------------------------------------------------------------------- */
 .view-header {
     text-align: center;
@@ -132,7 +141,7 @@ body {
 }
 
 .view-title {
-    font-size: 2.1rem;
+    font-size: 2rem;
     font-weight: 800;
     letter-spacing: -1px;
     margin-bottom: 0.5rem;
@@ -145,6 +154,13 @@ body {
     font-weight: 500;
     color: var(--s-text);
     line-height: 1.4;
+    padding: 0 10px; /* Text safe area */
+}
+
+/* Mobile Text Scaling */
+@media (max-width: 400px) {
+    .view-title { font-size: 1.75rem; }
+    .view-subtitle { font-size: 0.92rem; }
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2B file : 2-verification/Verification.css --- */ 
@@ -161,7 +177,7 @@ body {
 }
 
 .selection-card {
-    background: rgba(142, 142, 147, 0.08); /* Neutral iPad Gray */
+    background: rgba(142, 142, 147, 0.08);
     border: 1px solid transparent;
     border-radius: 20px;
     padding: 1.1rem;
@@ -172,10 +188,7 @@ body {
     transition: all 0.3s var(--smooth-flow);
 }
 
-/* Interaction Rule: Scale down + Blue border glow */
-.selection-card:active {
-    transform: scale(0.97);
-}
+.selection-card:active { transform: scale(0.97); }
 
 .selection-card:hover:not(.disabled-path) {
     background: var(--card-bg);
@@ -183,7 +196,6 @@ body {
     box-shadow: 0 8px 20px rgba(0, 122, 255, 0.12);
 }
 
-/* Path Icons (Squircle Vibe) */
 .path-icon {
     width: 46px;
     height: 46px;
@@ -192,6 +204,7 @@ body {
     align-items: center;
     justify-content: center;
     color: #FFFFFF;
+    flex-shrink: 0; /* Icon shrink prevent */
 }
 
 .telegram-bg { background: var(--telegram-blue); }
@@ -225,11 +238,16 @@ body {
     border-radius: 10px;
 }
 
-/* Disabled Path Visuals (Coming Soon) */
 .disabled-path {
     opacity: 0.5;
     cursor: not-allowed;
     filter: grayscale(0.8);
+}
+
+@media (max-width: 380px) {
+    .selection-card { padding: 0.9rem; gap: 0.8rem; }
+    .path-icon { width: 40px; height: 40px; }
+    .path-name { font-size: 0.95rem; }
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2C file : 2-verification/Verification.css --- */ 
