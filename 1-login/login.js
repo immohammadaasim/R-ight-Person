@@ -130,7 +130,67 @@ if (mobileInput) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2B : Mail Provider Auth Engine (One-Tap Sync) --- */
+/* --- Sub-Block 2B : Identity Discovery Engine (Gmail Lookup) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * identityDiscovery: Real-time mein Gmail se naam ya badge nikalta hai.
+ * Rule: Naye naming convention (login_email) ke sath sync hai.
+ */
+let lookupTimer;
+
+if (emailInput) {
+    emailInput.addEventListener('input', (e) => {
+        const email = e.target.value.trim().toLowerCase();
+        if (previewPortal) previewPortal.innerHTML = "";
+        clearTimeout(lookupTimer);
+
+        if (email.includes('@') && email.length > 5) {
+            lookupTimer = setTimeout(() => {
+                performIdentityLookup(email);
+            }, 600);
+        }
+    });
+}
+
+async function performIdentityLookup(email) {
+    if (!previewPortal) return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const usernamePart = email.split('@')[0];
+    if (usernamePart.length < 3 || !emailRegex.test(email)) return;
+
+    try {
+        const { data: user } = await _sb
+            .from('users')
+            .select('provider_name, login_email') 
+            .eq('login_email', email) 
+            .maybeSingle();
+
+        if (user) {
+            const displayName = user.provider_name || user.login_email.split('@')[0];
+            previewPortal.innerHTML = `
+                <div class="spatial-identity-chip">
+                    <span class="chip-icon"><i class="fas fa-user-check"></i></span>
+                    <span class="chip-text">Welcome back, ${displayName}</span>
+                </div>
+            `;
+        } else {
+            previewPortal.innerHTML = `
+                <div class="spatial-identity-chip" style="background:rgba(52,199,89,0.1); border-color:rgba(52,199,89,0.2);">
+                    <span class="chip-icon"><i class="fas fa-certificate" style="color:var(--success-green, #34C759);"></i></span>
+                    <span class="chip-text" style="color:var(--success-green, #34C759);">✨ Verified Global Identity</span>
+                </div>
+            `;
+        }
+    } catch (err) {
+        console.error("Identity Engine Error:", err);
+    }
+}
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 2B file : 1-login/login.js --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 2C : Mail Provider Auth Engine (One-Tap Sync) --- */
 /* --------------------------------------------------------------------- */
 async function triggerProviderAuth(provider) {
     if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
@@ -151,7 +211,6 @@ async function triggerProviderAuth(provider) {
 
     if (error) {
         if (typeof showIsland === 'function') showIsland(`Google link failed`, "error");
-        console.error("Auth Error:", error.message);
     }
 }
 
@@ -164,11 +223,11 @@ if (providerBtns) {
     });
 }
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 2B file : 1-login/login.js --- */ 
+/* --- End Sub-Block 2C file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2C : OAuth Session Recovery & UI Sync (Auto-Reset) --- */
+/* --- Sub-Block 2D : OAuth Session Recovery & UI Sync --- */
 /* --------------------------------------------------------------------- */
 async function handleAuthCallback() {
     const { data: { session }, error } = await _sb.auth.getSession();
@@ -211,21 +270,14 @@ async function handleAuthCallback() {
 
 document.addEventListener('DOMContentLoaded', handleAuthCallback);
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 2C file : 1-login/login.js --- */ 
+/* --- End Sub-Block 2D file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2D : Smart Priority Engine (Manual Unlock Rule) --- */
+/* --- Sub-Block 2E : Smart Priority Engine (Manual Unlock) --- */
 /* --------------------------------------------------------------------- */
-/**
- * initializeSmartSync: 
- * User Experience priority handle karta hai. 
- * Manual entry sirf trigger click hone par unlock hoti hai.
- */
 function initializeSmartSync() {
     if (!emailInput) return;
-
-    // Initial State: Locked & Faded
     const isAlreadyVerified = sessionStorage.getItem('RP_Verified_Name');
     
     if (!isAlreadyVerified) {
@@ -234,35 +286,22 @@ function initializeSmartSync() {
         emailInput.placeholder = "Unlock via icons or link";
     }
 
-    // Manual Unlock Logic
     if (manualEmailBtn) {
         manualEmailBtn.addEventListener('click', () => {
             triggerHapticFeedback();
-            
-            // 1. Unlock Field
             emailInput.readOnly = false;
             emailInput.style.opacity = "1";
             emailInput.placeholder = "Enter your email manually";
-            
-            // 2. Focus Animation
             emailInput.focus();
-            
-            // 3. UI Cleanup
-            manualEmailBtn.style.transition = "all 0.3s ease";
             manualEmailBtn.style.opacity = "0";
             setTimeout(() => { manualEmailBtn.style.display = "none"; }, 300);
-
-            if (typeof showIsland === 'function') {
-                showIsland("Manual entry enabled", "info");
-            }
+            if (typeof showIsland === 'function') showIsland("Manual entry enabled", "info");
         });
     }
 }
-
-// System Activation
 initializeSmartSync();
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 2D file : 1-login/login.js --- */ 
+/* --- End Sub-Block 2E file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
