@@ -2,10 +2,6 @@
 /* ===>> BLOCK JS 1: System Initialization & Security Engine <<=== */
 /* ===================================================================== */
 
-/* ===================================================================== */
-/* ===>> BLOCK JS 1: System Initialization & Security Engine <<=== */
-/* ===================================================================== */
-
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 1A : Supabase & Project Credentials --- */
 /* --------------------------------------------------------------------- */
@@ -26,15 +22,16 @@ const emailInput  = document.getElementById('user-email');
 const emailWrapper = document.getElementById('email-wrapper');
 const emailLockIcon = document.getElementById('email-lock-icon');
 
-// UI View Slots
-const previewPortal = document.getElementById('identity-preview-portal');
-
-// Action Buttons
-const continueBtn = document.getElementById('entry-continue-btn');
+// UI Selection Elements
+const manualEmailBtn = document.getElementById('manual-email-trigger');
 const providerBtns = document.querySelectorAll('.provider-btn');
 
-// State Management Variable
-let currentSelectedLength = 10; // Default India
+// View Slots & Actions
+const previewPortal = document.getElementById('identity-preview-portal');
+const continueBtn = document.getElementById('entry-continue-btn');
+
+// State Variables
+let currentSelectedLength = 10; 
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 1B file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
@@ -109,22 +106,14 @@ window.triggerHapticFeedback = triggerHapticFeedback;
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 2A : Smart Phone Formatting Engine (Dynamic) --- */
 /* --------------------------------------------------------------------- */
-/**
- * applyPhoneFormatting: 
- * Mobile field mein dashes (-) lagata hai aur dynamic length control karta hai.
- */
 if (mobileInput) {
     mobileInput.addEventListener('input', (e) => {
         let val = e.target.value.replace(/\D/g, '').substring(0, currentSelectedLength);
         let formattedValue = "";
         if (val.length > 0) {
-            if (val.length <= 3) {
-                formattedValue = val;
-            } else if (val.length <= 6) {
-                formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
-            } else {
-                formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
-            }
+            if (val.length <= 3) formattedValue = val;
+            else if (val.length <= 6) formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
+            else formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
         }
         e.target.value = formattedValue;
     });
@@ -143,11 +132,6 @@ if (mobileInput) {
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 2B : Mail Provider Auth Engine (One-Tap Sync) --- */
 /* --------------------------------------------------------------------- */
-/**
- * triggerProviderAuth: 
- * Google, Apple, Yahoo ya Microsoft ka login popup kholta hai.
- * NOTE: Filhal sirf 'Google' active hai. Baaki 'Coming Soon' hain.
- */
 async function triggerProviderAuth(provider) {
     if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
     
@@ -158,9 +142,7 @@ async function triggerProviderAuth(provider) {
         return;
     }
 
-    if (typeof showIsland === 'function') {
-        showIsland(`Connecting to Google...`, "info");
-    }
+    if (typeof showIsland === 'function') showIsland(`Connecting to Google...`, "info");
 
     const { data, error } = await _sb.auth.signInWithOAuth({
         provider: 'google',
@@ -173,7 +155,6 @@ async function triggerProviderAuth(provider) {
     }
 }
 
-// Provider buttons par click listener lagao
 if (providerBtns) {
     providerBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -189,11 +170,6 @@ if (providerBtns) {
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 2C : OAuth Session Recovery & UI Sync (Auto-Reset) --- */
 /* --------------------------------------------------------------------- */
-/**
- * handleAuthCallback: 
- * Login ke baad wapas aane par Verified Data nikalta hai aur turant 
- * session clear karta hai taaki refresh karne par form khali mile.
- */
 async function handleAuthCallback() {
     const { data: { session }, error } = await _sb.auth.getSession();
 
@@ -203,16 +179,15 @@ async function handleAuthCallback() {
         const verifiedName = user.user_metadata.full_name || user.email.split('@')[0];
         const providerUID = user.id;
 
-        // UI Sync: Email bharo aur Lock kar do
         if (emailInput) {
             emailInput.value = verifiedEmail;
             emailInput.readOnly = true; 
             emailInput.style.opacity = "1";
             if (emailWrapper) emailWrapper.classList.add('verified');
             if (emailLockIcon) emailLockIcon.classList.add('active');
+            if (manualEmailBtn) manualEmailBtn.style.display = 'none';
         }
 
-        // Identity Chip update
         if (previewPortal) {
             previewPortal.innerHTML = `
                 <div class="spatial-identity-chip">
@@ -222,12 +197,10 @@ async function handleAuthCallback() {
             `;
         }
 
-        // Hidden Data Save (Session memory for JS 3B)
         sessionStorage.setItem('RP_Verified_Name', verifiedName);
         sessionStorage.setItem('RP_Provider_UID', providerUID);
         sessionStorage.setItem('RP_Auth_Provider', user.app_metadata.provider);
 
-        // Sign out to clear browser session but keep sessionStorage
         await _sb.auth.signOut();
 
         if (typeof showIsland === 'function') {
@@ -242,30 +215,51 @@ document.addEventListener('DOMContentLoaded', handleAuthCallback);
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2D : Smart Priority Engine (Manual Trigger) --- */
+/* --- Sub-Block 2D : Smart Priority Engine (Manual Unlock Rule) --- */
 /* --------------------------------------------------------------------- */
 /**
  * initializeSmartSync: 
- * Page load par Email box ko lock rakhta hai taaki user Icons use kare.
+ * User Experience priority handle karta hai. 
+ * Manual entry sirf trigger click hone par unlock hoti hai.
  */
 function initializeSmartSync() {
-    if (emailInput && !sessionStorage.getItem('RP_Verified_Name')) {
+    if (!emailInput) return;
+
+    // Initial State: Locked & Faded
+    const isAlreadyVerified = sessionStorage.getItem('RP_Verified_Name');
+    
+    if (!isAlreadyVerified) {
         emailInput.readOnly = true;
         emailInput.style.opacity = "0.6";
-        emailInput.placeholder = "Verify via icons to unlock";
-        
-        // Agar user input box par click kare toh guide karo
-        emailInput.parentElement.addEventListener('click', (e) => {
-            if (emailInput.readOnly) {
-                if (typeof showIsland === 'function') {
-                    showIsland("Use icons above for One-Tap Sync", "info");
-                }
+        emailInput.placeholder = "Unlock via icons or link";
+    }
+
+    // Manual Unlock Logic
+    if (manualEmailBtn) {
+        manualEmailBtn.addEventListener('click', () => {
+            triggerHapticFeedback();
+            
+            // 1. Unlock Field
+            emailInput.readOnly = false;
+            emailInput.style.opacity = "1";
+            emailInput.placeholder = "Enter your email manually";
+            
+            // 2. Focus Animation
+            emailInput.focus();
+            
+            // 3. UI Cleanup
+            manualEmailBtn.style.transition = "all 0.3s ease";
+            manualEmailBtn.style.opacity = "0";
+            setTimeout(() => { manualEmailBtn.style.display = "none"; }, 300);
+
+            if (typeof showIsland === 'function') {
+                showIsland("Manual entry enabled", "info");
             }
         });
     }
 }
 
-// Initial Call
+// System Activation
 initializeSmartSync();
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 2D file : 1-login/login.js --- */ 
