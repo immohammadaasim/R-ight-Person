@@ -121,7 +121,7 @@ body.spatial-login {
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Premium Input Engineering (Autofill & Layout Fix) --- */
+/* --- Block 2A : Premium Input Engineering & Official Brand Sync --- */
 /* --------------------------------------------------------------------- */
 .entry-form-container {
     display: flex;
@@ -153,11 +153,12 @@ body.spatial-login {
 /**
  * Smart Mail Provider Pill:
  * visionOS style floating pill for one-tap verification.
+ * Official Branded SVGs alignment and scaling.
  */
 .mail-provider-pill {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     padding: 6px 14px;
     border-radius: var(--radius-pill);
     background: var(--card-bg);
@@ -169,21 +170,30 @@ body.spatial-login {
     background: transparent;
     border: none;
     outline: none;
-    font-size: 1rem;
-    color: var(--s-text);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s var(--smooth-flow);
     cursor: pointer;
+    padding: 0;
+    opacity: 0.85;
 }
 
-.provider-btn[data-provider="google"]:hover { color: #DB4437; }
-.provider-btn[data-provider="apple"]:hover { color: var(--p-text); }
-.provider-btn[data-provider="microsoft"]:hover { color: #00A4EF; }
-.provider-btn[data-provider="yahoo"]:hover { color: #6001D2; }
+.provider-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
 
-/* Input Wrapper: Forceful Glass Transparency */
+.provider-btn:active {
+    transform: scale(0.9);
+}
+
+/* Apple Icon Theme Sync */
+.provider-btn[data-provider="apple"] {
+    color: var(--p-text); /* Black in Light, White in Dark */
+}
+
+/* Input Wrapper: Linear Spatial Logic */
 .input-wrapper {
     display: flex;
     align-items: center;
@@ -208,7 +218,7 @@ body.spatial-login {
     box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
 }
 
-/* SMART INPUT: Fixes Autofill & Long Text Issues */
+/* SMART INPUT: Prevents layout break with long text */
 .input-wrapper input {
     flex: 1;
     min-width: 0;
@@ -221,18 +231,7 @@ body.spatial-login {
     color: var(--p-text);
     padding-left: 0.8rem;
     padding-right: 35px;
-}
-
-/* NUCLEAR FIX: Browser Autofill Background Removal */
-/* Isse browser ka blue/gray background kabhi nahi aayega */
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
-    -webkit-text-fill-color: var(--p-text) !important;
-    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
-    background-color: transparent !important;
-    transition: background-color 5000s ease-in-out 0s;
+    text-overflow: ellipsis;
 }
 
 /* Mobile Country Selector Stabilization */
@@ -249,7 +248,18 @@ input:-webkit-autofill:active {
     min-width: 85px;
 }
 
-/* iOS Status Icon (Tick) Placement */
+/* NUCLEAR FIX: Removal of Browser's Default Autofill Styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--p-text) !important;
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+    background-color: transparent !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* iOS Status Icon (Tick/Shield) inside input */
 .input-status-icon {
     position: absolute;
     right: 1rem;

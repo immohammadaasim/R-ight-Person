@@ -2,24 +2,23 @@
 /* ===>> BLOCK JS 1: System Initialization & Security Engine <<=== */
 /* ===================================================================== */
 
+/* ===================================================================== */
+/* ===>> BLOCK JS 1: System Initialization & Security Engine <<=== */
+/* ===================================================================== */
+
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 1A : Supabase & Project Credentials --- */
 /* --------------------------------------------------------------------- */
-/**
- * Supabase Engine Initialization:
- * Google, Apple, Microsoft aur Yahoo Auth ko handle karne ke liye.
- */
 const SB_URL = "https://xtzdlepgpqvllwzjfrsh.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emRsZXBncHF2bGx3empmcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5OTI2MzcsImV4cCI6MjA4NzU2ODYzN30.NxX8BPCK_HNQYmn0-7YkdPv12gO8wKgOS5oP2R0OYZc";
 
-// Initialize Global Supabase Client
 const _sb = supabase.createClient(SB_URL, SB_KEY);
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 1A file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 1B : DOM Elements Selection (Smart Entry) --- */
+/* --- Sub-Block 1B : DOM Elements Selection (Smart Entry Sync) --- */
 /* --------------------------------------------------------------------- */
 // Input Fields & Wrappers
 const mobileInput = document.getElementById('user-mobile');
@@ -27,15 +26,15 @@ const emailInput  = document.getElementById('user-email');
 const emailWrapper = document.getElementById('email-wrapper');
 const emailLockIcon = document.getElementById('email-lock-icon');
 
-// UI Portals & Buttons
+// UI View Slots
 const previewPortal = document.getElementById('identity-preview-portal');
-const continueBtn = document.getElementById('entry-continue-btn');
 
-// Smart Mail Providers Buttons
+// Action Buttons
+const continueBtn = document.getElementById('entry-continue-btn');
 const providerBtns = document.querySelectorAll('.provider-btn');
 
-// Initial Registry Length (Default India)
-let currentSelectedLength = 10; 
+// State Management Variable
+let currentSelectedLength = 10; // Default India
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 1B file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
@@ -43,73 +42,32 @@ let currentSelectedLength = 10;
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 1C : Device Fingerprinting System (Hardware DNA) --- */
 /* --------------------------------------------------------------------- */
-/**
- * getCanvasFingerprint: 
- * Ek invisible graphics test jo user ke GPU (Graphics Card) ki unique 
- * pehchan nikalta hai. Ye browser badalne par bhi nahi badalta.
- */
 function getCanvasFingerprint() {
     try {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const txt = 'R-ight Person Digital Identity <canvas> 1.0';
-        ctx.textBaseline = "top";
-        ctx.font = "14px 'Arial'";
         ctx.textBaseline = "alphabetic";
         ctx.fillStyle = "#f60";
         ctx.fillRect(125,1,62,20);
         ctx.fillStyle = "#069";
         ctx.fillText(txt, 2, 15);
-        ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
-        ctx.fillText(txt, 4, 17);
-        return canvas.toDataURL().substring(100, 200); // Unique fragment capture
-    } catch (e) {
-        return "canvas-blocked";
-    }
+        return canvas.toDataURL().substring(100, 200);
+    } catch (e) { return "canvas-blocked"; }
 }
 
-/**
- * generateDeviceFingerprint: 
- * Hardware aur Software ki 7 gehari details se 'Digital DNA' banata hai.
- * Rule: Isme GPU, CPU, aur RAM details shamil hain taaki browser switch pakda jaye.
- */
 function generateDeviceFingerprint() {
     const nav = window.navigator;
     const screen = window.screen;
-
-    // 1. Canvas Identity (Graphics/GPU Signature)
     const canvasID = getCanvasFingerprint();
-
-    // 2. CPU Brain (Kitne cores hain)
     const cpuCores = nav.hardwareConcurrency || "unknown";
-
-    // 3. RAM Category (Device Memory Level)
     const ramSize = nav.deviceMemory || "unknown";
-
-    // 4. Advanced Screen Detail (Depth & Pixel Ratio)
     const screenMeta = `${screen.width}x${screen.height}-${screen.colorDepth}-${window.devicePixelRatio}`;
-
-    // 5. Regional Identity (Timezone & Language)
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-    // 6. Platform & OS
     const platform = nav.platform;
-
-    // 7. Browser Engine Information
     const browserAgent = nav.userAgent;
 
-    // Poore hardware aur software detail ko mix karke DNA string banao
-    const rawDNA = [
-        canvasID,
-        cpuCores,
-        ramSize,
-        screenMeta,
-        timezone,
-        platform,
-        browserAgent
-    ].join('###');
-
-    // Secure Hash mein badlo taaki ID professional lage (e.g., DF-XXXX)
+    const rawDNA = [canvasID, cpuCores, ramSize, screenMeta, timezone, platform, browserAgent].join('###');
     const deviceHash = createSecureHash(rawDNA);
     const finalID = `DF-${deviceHash.toUpperCase()}`;
     
@@ -126,13 +84,8 @@ function createSecureHash(str) {
     return Math.abs(hash).toString(36).substring(0, 10);
 }
 
-// Global Device ID Sync (Hiden from User)
 const currentDID = localStorage.getItem('RP_DeviceID') || generateDeviceFingerprint();
-console.log("Modular Engine: Hardware DNA Sync Complete ->", currentDID);
 
-/**
- * triggerHapticFeedback: iPadOS 18 style touch visual.
- */
 function triggerHapticFeedback() {
     if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
 }
@@ -147,21 +100,31 @@ window.triggerHapticFeedback = triggerHapticFeedback;
 /* ===================================================================== */
 
 
+
+
 /* ===================================================================== */
-/* ===>> BLOCK JS 2: Global Identity & Smart Auth Logic <<=== */
+/* ===>> BLOCK JS 2: Global Identity & Smart Auth Engine <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 2A : Smart Phone Formatting Engine (Dynamic) --- */
 /* --------------------------------------------------------------------- */
+/**
+ * applyPhoneFormatting: 
+ * Mobile field mein dashes (-) lagata hai aur dynamic length control karta hai.
+ */
 if (mobileInput) {
     mobileInput.addEventListener('input', (e) => {
         let val = e.target.value.replace(/\D/g, '').substring(0, currentSelectedLength);
         let formattedValue = "";
         if (val.length > 0) {
-            if (val.length <= 3) formattedValue = val;
-            else if (val.length <= 6) formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
-            else formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
+            if (val.length <= 3) {
+                formattedValue = val;
+            } else if (val.length <= 6) {
+                formattedValue = `${val.slice(0, 3)}-${val.slice(3)}`;
+            } else {
+                formattedValue = `${val.slice(0, 3)}-${val.slice(3, 6)}-${val.slice(6)}`;
+            }
         }
         e.target.value = formattedValue;
     });
@@ -178,77 +141,46 @@ if (mobileInput) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2B : Identity Discovery Engine (Gmail Lookup) --- */
+/* --- Sub-Block 2B : Mail Provider Auth Engine (One-Tap Sync) --- */
 /* --------------------------------------------------------------------- */
 /**
- * identityDiscovery: 
- * Real-time mein Gmail se naam ya badge nikalta hai.
- * Rule: Debounce (600ms) taaki typing ke sath search smooth chale.
+ * triggerProviderAuth: 
+ * Google, Apple, Yahoo ya Microsoft ka login popup kholta hai.
+ * NOTE: Filhal sirf 'Google' active hai. Baaki 'Coming Soon' hain.
  */
-let lookupTimer;
-
-if (emailInput) {
-    emailInput.addEventListener('input', (e) => {
-        const email = e.target.value.trim().toLowerCase();
-        
-        // Slot saaf karo aur timer reset karo
-        if (previewPortal) previewPortal.innerHTML = "";
-        clearTimeout(lookupTimer);
-
-        // Sirf tab scan karo jab user @ tak pahunch jaye aur format valid lage
-        if (email.includes('@') && email.length > 5) {
-            lookupTimer = setTimeout(() => {
-                performIdentityLookup(email);
-            }, 600);
+async function triggerProviderAuth(provider) {
+    if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback();
+    
+    if (provider !== 'google') {
+        if (typeof showIsland === 'function') {
+            showIsland(`${provider.charAt(0).toUpperCase() + provider.slice(1)} Sync coming soon`, "info");
         }
+        return;
+    }
+
+    if (typeof showIsland === 'function') {
+        showIsland(`Connecting to Google...`, "info");
+    }
+
+    const { data, error } = await _sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.href }
     });
+
+    if (error) {
+        if (typeof showIsland === 'function') showIsland(`Google link failed`, "error");
+        console.error("Auth Error:", error.message);
+    }
 }
 
-/**
- * performIdentityLookup: 
- * Supabase database check karta hai naye naming convention ke sath.
- */
-async function performIdentityLookup(email) {
-    if (!previewPortal) return;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    // 1. Strict Validation: Choti ya ghalat emails ko ignore karo
-    const usernamePart = email.split('@')[0];
-    if (usernamePart.length < 3 || !emailRegex.test(email)) {
-        return; // Silent ignore during typing
-    }
-
-    try {
-        /**
-         * UPDATE: 'login_email' column ka use (Identity Sync Fix)
-         */
-        const { data: user } = await _sb
-            .from('users')
-            .select('provider_name, login_email') 
-            .eq('login_email', email) 
-            .maybeSingle();
-
-        if (user) {
-            // CASE: Purana User (Database se aaya hua Provider Name dikhao)
-            const displayName = user.provider_name || user.login_email.split('@')[0];
-            previewPortal.innerHTML = `
-                <div class="spatial-identity-chip">
-                    <span class="chip-icon"><i class="fas fa-user-check"></i></span>
-                    <span class="chip-text">Welcome back, ${displayName}</span>
-                </div>
-            `;
-        } else {
-            // CASE: Naya User (Security Badge dikhao)
-            previewPortal.innerHTML = `
-                <div class="spatial-identity-chip" style="background:rgba(52,199,89,0.1); border-color:rgba(52,199,89,0.2);">
-                    <span class="chip-icon"><i class="fas fa-certificate" style="color:var(--success-green, #34C759);"></i></span>
-                    <span class="chip-text" style="color:var(--success-green, #34C759);">✨ Verified Global Identity</span>
-                </div>
-            `;
-        }
-    } catch (err) {
-        console.error("Identity Engine Error:", err);
-    }
+// Provider buttons par click listener lagao
+if (providerBtns) {
+    providerBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const provider = btn.getAttribute('data-provider');
+            triggerProviderAuth(provider);
+        });
+    });
 }
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 2B file : 1-login/login.js --- */ 
@@ -271,15 +203,16 @@ async function handleAuthCallback() {
         const verifiedName = user.user_metadata.full_name || user.email.split('@')[0];
         const providerUID = user.id;
 
-        // 1. UI Sync: Email bharo aur Lock kar do
+        // UI Sync: Email bharo aur Lock kar do
         if (emailInput) {
             emailInput.value = verifiedEmail;
             emailInput.readOnly = true; 
+            emailInput.style.opacity = "1";
             if (emailWrapper) emailWrapper.classList.add('verified');
             if (emailLockIcon) emailLockIcon.classList.add('active');
         }
 
-        // 2. Identity Chip update (Asli Naam dikhao)
+        // Identity Chip update
         if (previewPortal) {
             previewPortal.innerHTML = `
                 <div class="spatial-identity-chip">
@@ -289,14 +222,12 @@ async function handleAuthCallback() {
             `;
         }
 
-        // 3. Hidden Data Save: 'sessionStorage' refresh par bhi data nahi khota 
-        // jab tak tab khuli hai, lekin 'signOut' session reset kar dega.
+        // Hidden Data Save (Session memory for JS 3B)
         sessionStorage.setItem('RP_Verified_Name', verifiedName);
         sessionStorage.setItem('RP_Provider_UID', providerUID);
         sessionStorage.setItem('RP_Auth_Provider', user.app_metadata.provider);
 
-        // 4. THE FIX: Supabase session ko turant khatam karo 
-        // taaki refresh par form reset ho jaye.
+        // Sign out to clear browser session but keep sessionStorage
         await _sb.auth.signOut();
 
         if (typeof showIsland === 'function') {
@@ -305,10 +236,39 @@ async function handleAuthCallback() {
     }
 }
 
-// Page load hote hi session check engine ko trigger karo
 document.addEventListener('DOMContentLoaded', handleAuthCallback);
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 2C file : 1-login/login.js --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 2D : Smart Priority Engine (Manual Trigger) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * initializeSmartSync: 
+ * Page load par Email box ko lock rakhta hai taaki user Icons use kare.
+ */
+function initializeSmartSync() {
+    if (emailInput && !sessionStorage.getItem('RP_Verified_Name')) {
+        emailInput.readOnly = true;
+        emailInput.style.opacity = "0.6";
+        emailInput.placeholder = "Verify via icons to unlock";
+        
+        // Agar user input box par click kare toh guide karo
+        emailInput.parentElement.addEventListener('click', (e) => {
+            if (emailInput.readOnly) {
+                if (typeof showIsland === 'function') {
+                    showIsland("Use icons above for One-Tap Sync", "info");
+                }
+            }
+        });
+    }
+}
+
+// Initial Call
+initializeSmartSync();
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 2D file : 1-login/login.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
