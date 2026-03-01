@@ -272,54 +272,72 @@ document.addEventListener('DOMContentLoaded', handleAuthCallback);
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2E : Smart Priority Engine (Lock & Unlock Fix) --- */
+/* --- Sub-Block 2E : Smart Priority Engine (Strict Locking Logic) --- */
 /* --------------------------------------------------------------------- */
 /**
  * initializeSmartSync: 
- * Ensures the email field is locked and guides the user.
+ * Ensures lock states are enforced correctly.
+ * RULE: If verified via Google, stay PERMANENTLY LOCKED.
  */
 function initializeSmartSync() {
     if (!emailInput) return;
 
+    // Check if user just came back from Google Auth
     const isAlreadyVerified = sessionStorage.getItem('RP_Verified_Name');
     
-    if (!isAlreadyVerified) {
-        // 1. Initial State: Forceful readOnly
+    if (isAlreadyVerified) {
+        // CASE 1: Verified User (Absolute Lock)
         emailInput.readOnly = true;
-        emailInput.style.opacity = "0.6";
-        emailInput.placeholder = "Verify via icons below";
+        emailInput.style.opacity = "1";
+        emailInput.style.pointerEvents = "none"; // Click bhi disable
+        emailInput.parentElement.style.pointerEvents = "none"; // Wrapper click disable
+        
+        // Hide manual trigger permanently
+        if (manualEmailBtn) manualEmailBtn.style.display = "none";
+        
+        // Ensure lock icon is active
+        if (emailWrapper) emailWrapper.classList.add('verified');
+        if (emailLockIcon) emailLockIcon.classList.add('active');
+        
+        return; // Function yahi khatam, aage ka manual logic run nahi hoga
+    }
 
-        // 2. Guide Notification on Click (RE-ADDED & FIXED)
-        emailInput.parentElement.addEventListener('click', () => {
-            if (emailInput.readOnly) {
-                if (typeof showIsland === 'function') {
-                    showIsland("Use icons above for One-Tap Sync", "info");
-                }
+    // CASE 2: Unverified User (Guide to use Icons)
+    // Initial State: Locked & Faded
+    emailInput.readOnly = true;
+    emailInput.style.opacity = "0.6";
+    emailInput.placeholder = "Verify via icons below";
+
+    // Click Guide (Tells user to use Icons)
+    emailInput.parentElement.addEventListener('click', () => {
+        if (emailInput.readOnly) {
+            if (typeof showIsland === 'function') {
+                showIsland("Use icons above for One-Tap Sync", "info");
+            }
+        }
+    });
+
+    // Manual Unlock Logic (Only for unverified users)
+    if (manualEmailBtn) {
+        manualEmailBtn.style.display = "inline-block";
+        manualEmailBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            triggerHapticFeedback();
+            
+            // Unlock Field
+            emailInput.readOnly = false;
+            emailInput.style.opacity = "1";
+            emailInput.placeholder = "name@gmail.com";
+            emailInput.focus();
+            
+            // UI Cleanup
+            manualEmailBtn.style.opacity = "0";
+            setTimeout(() => { manualEmailBtn.style.display = "none"; }, 300);
+
+            if (typeof showIsland === 'function') {
+                showIsland("Manual Entry Unlocked", "info");
             }
         });
-
-        // 3. Manual Unlock Trigger
-        if (manualEmailBtn) {
-            manualEmailBtn.style.display = "inline-block";
-            manualEmailBtn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Stop parent click event
-                triggerHapticFeedback();
-                
-                // Unlock Field
-                emailInput.readOnly = false;
-                emailInput.style.opacity = "1";
-                emailInput.placeholder = "name@gmail.com";
-                emailInput.focus();
-                
-                // UI Cleanup
-                manualEmailBtn.style.opacity = "0";
-                setTimeout(() => { manualEmailBtn.style.display = "none"; }, 300);
-
-                if (typeof showIsland === 'function') {
-                    showIsland("Manual Entry Unlocked", "info");
-                }
-            });
-        }
     }
 }
 
