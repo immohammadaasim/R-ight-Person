@@ -257,57 +257,42 @@
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 5: Global Engine Integration & Logic Entry <<=== -->
+<!-- ===>> BLOCK HTML 5: Clean Logic Integration (No Duplicates) <<=== -->
 <!-- ===================================================================== -->
-<!-- 
-    SYSTEM ARCHITECTURE NOTE:
-    1. Global Modules: Handle Theme, Notifications, and App Installation.
-    2. Supabase: Core database and Real-time connectivity.
-    3. Dashboard.js: Local OS behavior and widget management.
--->
 
-<!-- 1. Supabase Foundation (v2) -->
+<!-- 1. Foundation -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- 2. Global Universal OS Modules -->
+<!-- 2. Universal Modules (Sirf EK EK baar) -->
 <script src="../0-Theme/Theme.js?v=1.5" defer></script>
 <script src="../0.1-Notification/Notification.js?v=1.5" defer></script>
 <script src="../0.2-Install/Install.js?v=1.5" defer></script>
 
-<!-- 3. Local Dashboard OS Logic -->
+<!-- 3. Local Dashboard Logic -->
 <script src="Dashboard.js?v=1.5" defer></script>
 
-<!-- 4. Core System Activation Script -->
 <script>
     /**
-     * revealSpatialOS: 
-     * Sabhi modules ke taiyar hone ke baad hi dashboard ko reveal karta hai.
-     * Rule: Zero-Jerk Arrival.
+     * Final Cleanup:
+     * Ensure karta hai ki koi bhi variable dobara declare na ho.
      */
     window.addEventListener('load', () => {
-        // Reveal Body (Opacity 1)
-        setTimeout(() => {
-            document.body.classList.add('loaded');
-            console.log("Spatial OS Dashboard: System Activated.");
-        }, 200);
-
-        // Inject PWA Install Capsule (Dynamic Injection)
-        if (typeof fetch === 'function') {
-            fetch('../0.2-Install/Install.html')
-                .then(res => res.text())
-                .then(html => {
-                    const portal = document.getElementById('universal-module-portal');
-                    if (portal) portal.insertAdjacentHTML('beforeend', html);
-                })
-                .catch(err => console.warn("PWA Injection skip: ", err));
-        }
+        document.body.classList.add('loaded');
+        
+        // PWA Injection
+        fetch('../0.2-Install/Install.html')
+            .then(res => res.text())
+            .then(html => {
+                const portal = document.getElementById('universal-module-portal');
+                if (portal) portal.insertAdjacentHTML('beforeend', html);
+            }).catch(e => console.log("PWA Skip"));
     });
 </script>
 
 </body>
 </html>
 <!-- ===================================================================== -->
-<!-- ===>> END OF BLOCK HTML 5 file : 3-Dashboard/Dashboard.html <<=== -->
+<!-- ===>> END OF CLEANUP file : 3-Dashboard/Dashboard.html <<=== -->
 <!-- ===================================================================== -->
 
 
