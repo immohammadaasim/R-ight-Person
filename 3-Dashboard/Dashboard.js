@@ -492,7 +492,8 @@ if (mainAppGrid) {
 /* --------------------------------------------------------------------- */
 /**
  * handleAssistiveTouch: 
- * Floating circle menu ko toggle karta hai aur quick shortcuts manage karta hai.
+ * Floating circle menu ko toggle karta hai aur navigation shortcuts handle karta hai.
+ * Rule: iPadOS 18 multitasking feel.
  */
 const atTriggerBtn   = document.getElementById('at-trigger');
 const atMenuGrid     = document.getElementById('at-menu-overlay');
@@ -517,11 +518,11 @@ if (atHomeAction) {
     };
 }
 
-// AT Menu: Manual Lock (Trigger for Identity Lock Module)
+// AT Menu: Manual Lock Trigger
 if (atLockAction) {
     atLockAction.onclick = () => {
         if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
-        if (typeof showIsland === 'function') showIsland("System Locked Manually", "info");
+        if (typeof showIsland === 'function') showIsland("Identity Locked Manually", "info");
         if (atMenuGrid) atMenuGrid.classList.remove('active');
     };
 }
@@ -543,7 +544,7 @@ document.addEventListener('click', (e) => {
 /* --------------------------------------------------------------------- */
 /**
  * handleLogoutFlow: 
- * Sign-out confirm karne ke liye premium drawer dikhata hai.
+ * Confirmation drawer dikhata hai aur session clear karke user ko bahar bhejta hai.
  */
 const logoutRequestBtn  = document.getElementById('logout-btn-trigger');
 const logoutSheet       = document.getElementById('logout-action-sheet');
@@ -562,7 +563,7 @@ if (atLogoutAction) atLogoutAction.onclick = showLogoutConfirmation;
 if (cancelLogoutBtn) {
     cancelLogoutBtn.onclick = () => {
         if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
-        logoutSheet.classList.remove('active');
+        if (logoutSheet) logoutSheet.classList.remove('active');
     };
 }
 
@@ -570,8 +571,13 @@ if (confirmLogoutBtn) {
     confirmLogoutBtn.onclick = () => {
         if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
         if (typeof window.showLoader === 'function') window.showLoader('Ending Identity Session...');
+        
+        // Clear Memory Bridge
         sessionStorage.clear();
-        setTimeout(() => { window.location.href = '../1-login/login.html'; }, 1500);
+        
+        setTimeout(() => {
+            window.location.href = '../1-login/login.html';
+        }, 1500);
     };
 }
 /* --------------------------------------------------------------------- */
@@ -579,36 +585,43 @@ if (confirmLogoutBtn) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 5C : OS Entrance Reveal (The Magic Trigger) --- */
+/* --- Sub-Block 5C : OS Entrance Reveal (The Visibility Fix) --- */
 /* --------------------------------------------------------------------- */
 /**
  * revealDashboardOS: 
- * Page load par system ko detect karta hai aur views ko zinda karta hai.
- * Fix: Ensures Home View is visible immediately after identity sync.
+ * Ensures dashboard views are unlocked and visible on page load.
+ * Fix: Content ko "display: none" se nikaal kar active karta hai.
  */
 function revealDashboardOS() {
-    console.log("Spatial OS: Environment Fully Connected.");
-    
-    // 1. Force Activate Home View on Entrance
+    console.log("Spatial OS: Final Entrance Signal Triggered.");
+
+    // 1. Force Activate Home View and Sidebar Link
     const homeView = document.getElementById('home-dashboard-view');
     const navHome  = document.getElementById('nav-home');
-    
+    const contentArea = document.getElementById('contentArea');
+
     if (homeView) {
+        // Step A: CSS Layout enable
         homeView.style.display = 'block';
+        
+        // Step B: Animation trigger (Delay for smooth scale-in)
         setTimeout(() => {
             homeView.classList.add('active');
+            if (contentArea) contentArea.classList.add('active');
         }, 100);
     }
 
-    if (navHome) navHome.classList.add('active');
+    if (navHome) {
+        navHome.classList.add('active');
+    }
 
-    // 2. Hide Loader after entrance is ready
+    // 2. Clear Entrance Loader
     setTimeout(() => {
         if (typeof window.hideLoader === 'function') window.hideLoader();
     }, 2000);
 }
 
-// Main OS Entrance trigger
+// Trigger reveal after everything is synchronized
 window.addEventListener('load', revealDashboardOS);
 
 /* --------------------------------------------------------------------- */
