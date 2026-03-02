@@ -1,84 +1,73 @@
 /* ===================================================================== */
-/* ===>> BLOCK JS 1: Spatial OS Initialization & Modular Sync <<=== */
+/* ===>> BLOCK JS 1: Spatial OS Initialization & Conflict Fix <<=== */
 /* ===================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
 
     /* --------------------------------------------------------------------- */
-    /* --- Sub-Block 1A : OS Element Selection (Sidebar & Identity Hub) --- */
+    /* --- Sub-Block 1A : OS Element Selection (Local Scope Sync) --- */
     /* --------------------------------------------------------------------- */
     /**
      * Elements Mapping:
-     * Naye Sidebar OS structure ke hisab se elements ko capture kiya gaya hai.
+     * Variables ko local scope mein rakha gaya hai taaki global modules
+     * (Theme.js/Notification.js) ke sath 'Already Declared' error na aaye.
      */
-    // Layout Containers
-    const mainContent       = document.getElementById('main-content');
-    const fullscreenLoader  = document.getElementById('fullscreen-loader');
-    const sidebar           = document.getElementById('sidebar');
+    const dashElements = {
+        mainContent:      document.getElementById('main-content'),
+        fullscreenLoader: document.getElementById('fullscreen-loader'),
+        sidebar:          document.getElementById('sidebar'),
+        pageTitle:        document.getElementById('current-page-title'),
+        clockDisplay:     document.getElementById('dash-clock'),
+        themeToggle:      document.getElementById('global-theme-toggle')
+    };
     
-    // Top Navigation & Indicators (The "Azad" Header)
-    const pageTitleLabel    = document.getElementById('current-page-title');
-    const clockDisplay      = document.getElementById('dash-clock');
-    
-    // Sidebar Primary Controls
-    const masterAvatar      = document.getElementById('master-avatar-trigger');
-    const homeNav           = document.getElementById('nav-home');
-    const calculatorTool    = document.getElementById('tool-calc');
-    const notesTool         = document.getElementById('tool-notes');
-    
-    // System Utilities (Bottom Sidebar)
-    const notifTrigger      = document.getElementById('notif-capsule-trigger');
-    const themeToggleBtn    = document.getElementById('global-theme-toggle');
-    const logoutBtn         = document.getElementById('logout-btn-trigger');
+    // Sidebar Primary Tools
+    const toolCalc      = document.getElementById('tool-calc');
+    const toolNotes     = document.getElementById('tool-notes');
+    const masterAvatar  = document.getElementById('master-avatar-trigger');
+    const logoutBtn     = document.getElementById('logout-btn-trigger');
 
     /* --------------------------------------------------------------------- */
     /* --- End Sub-Block 1A file : 3-Dashboard/Dashboard.js --- */ 
     /* --------------------------------------------------------------------- */
 
     /* --------------------------------------------------------------------- */
-    /* --- Sub-Block 1B : Universal UI Helpers (The Island & Haptics) --- */
+    /* --- Sub-Block 1B : OS UI Feedback Helpers (No Collisions) --- */
     /* --------------------------------------------------------------------- */
     /**
-     * triggerHaptic: Active Touch Reality ka rule.
-     * Click par physical feedback deta hai.
+     * triggerHaptic: Active Touch Reality Rule.
      */
     function triggerHaptic() {
         if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
-        console.log("OS: Haptic visual triggered.");
     }
+    window.triggerHaptic = triggerHaptic;
 
     /**
-     * NOTE: 'showIsland' function hamare '0.1-Notification.js' se global 
-     * ho chuka hai. Hum bas yahan ensure kar rahe hain ki dashboard 
-     * usi universal system ko use kare.
+     * NOTE: 'showIsland' aur 'islandContainer' variables ab global hain.
+     * Hum yahan unhe dobara declare nahi karenge taaki error na aaye.
      */
-    window.triggerHaptic = triggerHaptic;
 
     /* --------------------------------------------------------------------- */
     /* --- End Sub-Block 1B file : 3-Dashboard/Dashboard.js --- */ 
     /* --------------------------------------------------------------------- */
 
     /* --------------------------------------------------------------------- */
-    /* --- Sub-Block 1C : Loader Control System (Zero-Jerk Arrival) --- */
+    /* --- Sub-Block 1C : OS Loader Controls (Zero-Jerk Arrival) --- */
     /* --------------------------------------------------------------------- */
-    /**
-     * Loader Controls:
-     * Data fetch hote waqt Apple-style spatial spinner dikhata hai.
-     */
     window.showLoader = (text = 'Securing Identity...') => {
-        if (!fullscreenLoader) return;
+        if (!dashElements.fullscreenLoader) return;
         const loaderText = document.getElementById('loader-text');
         if (loaderText) loaderText.textContent = text;
-        fullscreenLoader.style.display = 'flex';
-        setTimeout(() => fullscreenLoader.classList.add('active'), 50);
+        dashElements.fullscreenLoader.style.display = 'flex';
+        setTimeout(() => dashElements.fullscreenLoader.classList.add('active'), 50);
     };
 
     window.hideLoader = () => {
-        if (!fullscreenLoader) return;
-        fullscreenLoader.classList.remove('active');
+        if (!dashElements.fullscreenLoader) return;
+        dashElements.fullscreenLoader.classList.remove('active');
         setTimeout(() => { 
-            fullscreenLoader.style.display = 'none'; 
-        }, 600); // Transition time match
+            dashElements.fullscreenLoader.style.display = 'none'; 
+        }, 600);
     };
 
     /* --------------------------------------------------------------------- */
@@ -86,28 +75,20 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --------------------------------------------------------------------- */
 
     /* --------------------------------------------------------------------- */
-    /* --- Sub-Block 1D : OS Theme Recovery (Global Sync) --- */
+    /* --- Sub-Block 1D : OS Theme Sync (Safe Recovery) --- */
     /* --------------------------------------------------------------------- */
     /**
-     * syncDashboardTheme: 
-     * Ensure karta hai ki Dashboard ka theme hamare system-wide 
-     * theme ('0-Theme') ke saath sync rahe.
+     * syncDashboardState: 
+     * Theme icons ko initial load par sahi state mein rakhta hai.
      */
-    function syncDashboardTheme() {
-        const currentTheme = localStorage.getItem('RP_System_Theme') || 'light';
-        const themeIcon = document.getElementById('theme-icon');
-        
-        if (currentTheme === 'dark') {
-            document.body.classList.add('dark-mode');
-            if (themeIcon) themeIcon.className = 'fa-light fa-sun';
-        } else {
-            document.body.classList.remove('dark-mode');
-            if (themeIcon) themeIcon.className = 'fa-light fa-moon';
+    function syncDashboardState() {
+        const savedTheme = localStorage.getItem('RP_System_Theme') || 'light';
+        const icon = document.getElementById('theme-icon');
+        if (icon) {
+            icon.className = (savedTheme === 'dark') ? 'fa-light fa-sun' : 'fa-light fa-moon';
         }
     }
-
-    // Theme recovery trigger
-    syncDashboardTheme();
+    syncDashboardState();
 
     /* --------------------------------------------------------------------- */
     /* --- End Sub-Block 1D file : 3-Dashboard/Dashboard.js --- */ 
