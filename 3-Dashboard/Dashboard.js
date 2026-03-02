@@ -150,12 +150,17 @@ document.addEventListener('DOMContentLoaded', () => {
 /* --------------------------------------------------------------------- */
 /**
  * fetchUserProfile: 
- * Supabase 'users' table se user ka verified record nikalta hai.
- * UPDATE: Ab 'login_email' column ka use ho raha hai (Master Sync).
+ * Global '_sb' instance ka use karke profile fetch karta hai.
  */
 async function fetchUserProfile(email) {
-    // Perform secure database lookup
-    const { data: user, error } = await _sb
+    // Safety: Check if global client is ready
+    const db = window._sb || (typeof _sb !== 'undefined' ? _sb : null);
+    
+    if (!db) {
+        throw new Error("Supabase Engine not initialized.");
+    }
+
+    const { data: user, error } = await db
         .from('users')
         .select('*')
         .eq('login_email', email) 
@@ -165,10 +170,7 @@ async function fetchUserProfile(email) {
         throw new Error("Identity record not found in system.");
     }
 
-    // Global memory sync for other OS apps
     window.currentUserData = user;
-
-    // Populate Dashboard UI with fetched data
     populateDashboardUI(user);
 
     if (typeof window.hideLoader === 'function') window.hideLoader();

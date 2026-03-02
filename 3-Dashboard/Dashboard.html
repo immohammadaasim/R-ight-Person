@@ -432,11 +432,25 @@
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 5: Clean Logic Integration (No Duplicates) <<=== -->
+<!-- ===>> BLOCK HTML 5 & 6: Global Engine Integration & Logic Hub <<=== -->
 <!-- ===================================================================== -->
 
-<!-- 1. Foundation -->
+<!-- 1. Supabase Core Library -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    /* --------------------------------------------------------------------- */
+    /* --- Sub-Block 6A : Nuclear Supabase Initialization --- */
+    /* --------------------------------------------------------------------- */
+    (function() {
+        const SB_URL = "https://xtzdlepgpqvllwzjfrsh.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emRsZXBncHF2bGx3empmcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5OTI2MzcsImV4cCI6MjA4NzU2ODYzN30.NxX8BPCK_HNQYmn0-7YkdPv12gO8wKgOS5oP2R0OYZc";
+
+        // Global Instance (Window Level for Zero Errors)
+        window._sb = supabase.createClient(SB_URL, SB_KEY);
+        console.log("OS: Supabase Global Client Ready.");
+    })();
+</script>
 
 <!-- 2. Universal Modules (Sirf EK EK baar) -->
 <script src="../0-Theme/Theme.js?v=1.5" defer></script>
@@ -447,30 +461,27 @@
 <script src="Dashboard.js?v=1.5" defer></script>
 
 <script>
-    /**
-     * Final Cleanup:
-     * Ensure karta hai ki koi bhi variable dobara declare na ho.
-     */
+    /* --------------------------------------------------------------------- */
+    /* --- Sub-Block 6B : Page Reveal & PWA Setup --- */
+    /* --------------------------------------------------------------------- */
     window.addEventListener('load', () => {
-        document.body.classList.add('loaded');
-        
-        // PWA Injection
-        fetch('../0.2-Install/Install.html')
-            .then(res => res.text())
-            .then(html => {
-                const portal = document.getElementById('universal-module-portal');
-                if (portal) portal.insertAdjacentHTML('beforeend', html);
-            }).catch(e => console.log("PWA Skip"));
+        // Reveal OS Environment
+        setTimeout(() => { document.body.classList.add('loaded'); }, 150);
+
+        // Modular PWA Injection
+        if (typeof fetch === 'function') {
+            fetch('../0.2-Install/Install.html')
+                .then(res => res.text())
+                .then(html => {
+                    const portal = document.getElementById('universal-module-portal');
+                    if (portal) portal.insertAdjacentHTML('beforeend', html);
+                }).catch(e => console.warn("OS: PWA skip."));
+        }
     });
 </script>
 
 </body>
 </html>
 <!-- ===================================================================== -->
-<!-- ===>> END OF CLEANUP file : 3-Dashboard/Dashboard.html <<=== -->
+<!-- ===>> END OF FINAL CLEANUP file : 3-Dashboard/Dashboard.html <<=== -->
 <!-- ===================================================================== -->
-
-
-
-
-
