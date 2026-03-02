@@ -175,59 +175,37 @@
  
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 3: System Engine & Logic Scripts <<=== -->
+<!-- ===>> BLOCK HTML 3 : Consolidated System Engine (Clean) <<=== -->
 <!-- ===================================================================== -->
 
-    <!-- [ GLOBAL ENGINE SCRIPTS ] -->
-    <script src="../0-Theme/Theme.js?v=1.4" defer></script>
-    <script src="../0.1-Notification/Notification.js?v=1.4" defer></script>
-
-    <!-- [ LOCAL PAGE LOGIC ] -->
-    <script src="login.js?v=1.4" defer></script>
-
-    <script>
-        // Reveal system after modules are initialized
-        window.addEventListener('load', () => {
-            document.body.classList.add('loaded');
-        });
-    </script>
-
-<!-- ===================================================================== -->
-<!-- ===>> END OF BLOCK HTML 3 file : 1-login/login.html <<=== -->
-<!-- ===================================================================== -->
-
-
-<!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 4: Backend & System Scripting Initialization <<=== -->
-<!-- ===================================================================== -->
-<!-- 
-    MODULAR ARCHITECTURE NOTE:
-    - Supabase SDK (v2): Handles real-time identity and auth.
-    - Global Engines: Theme, Notification, and PWA Install.
-    - Local Logic: login.js handles entry routing.
--->
-
-<!-- 1. External Dependencies -->
+<!-- 1. External Foundation (Supabase) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- 2. Global Universal Modules -->
+<!-- 2. Global Universal Modules (Sirf Ek Baar) -->
 <script src="../0-Theme/Theme.js?v=1.5" defer></script>
 <script src="../0.1-Notification/Notification.js?v=1.5" defer></script>
 <script src="../0.2-Install/Install.js?v=1.5" defer></script>
 
-<!-- 3. Local Page Logic -->
+<!-- 3. Local Page Logic Engine -->
 <script src="login.js?v=1.5" defer></script>
 
-<!-- 4. PWA Service Worker Registration & Injection -->
+<!-- 4. PWA Activation & Page Reveal -->
 <script>
+    /**
+     * revealSystem: 
+     * Sabhi scripts ke load hone ke baad system ko reveal karta hai.
+     */
     window.addEventListener('load', () => {
-        setTimeout(() => { document.body.classList.add('loaded'); }, 100);
+        // Body entrance animation logic
+        setTimeout(() => { 
+            document.body.classList.add('loaded'); 
+        }, 100);
 
-        // Register Service Worker for PWA
+        // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('../sw.js')
-                .then(reg => console.log('SW registered!', reg))
-                .catch(err => console.log('SW failed', err));
+                .then(reg => console.log('OS: Service Worker Registered'))
+                .catch(err => console.warn('OS: SW Registration Failed', err));
         }
     });
 </script>
@@ -235,5 +213,5 @@
 </body>
 </html>
 <!-- ===================================================================== -->
-<!-- ===>> END OF BLOCK HTML 4 file : 1-login/login.html <<=== -->
+<!-- ===>> END OF Block 3 : 1-login/login.html <<=== -->
 <!-- ===================================================================== -->
