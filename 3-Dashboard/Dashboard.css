@@ -1,409 +1,433 @@
 /* ===================================================================== */
-/* ===>> BLOCK CSS 1: Global Spatial Engine & Scaling Logic <<=== */
+/* ===>> BLOCK CSS 1: Global Spatial OS Engine & Scaling Logic <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1A : Adaptive Spatial Variables --- */
+/* --- Block 1A : Adaptive Spatial Variables (OS Sync) --- */
 /* --------------------------------------------------------------------- */
+/**
+ * System Variables:
+ * Inhe Global Theme variables ke sath sync kiya gaya hai taaki Dashboard
+ * hamare login/verification page jaisa hi professional lage.
+ */
 :root {
-    /* --- Layout Dimensions (Sleek Scaling) --- */
-    --sidebar-w: 68px;
-    --navbar-h: 58px;
-    --gap-main: 1.2rem;
+    /* --- Layout Dimensions --- */
+    --sidebar-w: 72px;         /* Standard iPad Sidebar Width */
+    --navbar-h: 64px;          /* Clean Top Gaps */
+    --gap-main: 1.5rem;
     
-    /* --- True Spatial Glass (visionOS 2.0 Style) --- */
-    --glass-bg: rgba(255, 255, 255, 0.28);
+    /* --- visionOS 2.0 Material (Glassmorphism) --- */
+    --glass-bg: var(--card-bg);
     --glass-border: rgba(255, 255, 255, 0.4);
     --glass-blur: blur(40px) saturate(210%);
-    --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), inset 0 0 0 0.5px rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.12), inset 0 0 0 0.5px rgba(255, 255, 255, 0.3);
     
-    /* --- Modern Typography & Accents --- */
-    --primary-text: #1D1D1F;
-    --secondary-label: rgba(60, 60, 67, 0.6);
+    /* --- Typography & Accents (The Blue Rule) --- */
+    --p-text: var(--p-text);
+    --s-text: var(--s-text);
     --blue-accent: #007AFF;
-    --destructive-red: #FF3B30;
-    --success-green: #34C759;
     
-    /* --- Super Squircles (The iPadOS 18 Rule) --- */
-    --radius-squircle: 22px; /* Sleeker, not too bulky */
+    /* --- Super Squircles (The iPadOS 18 Standard) --- */
+    --radius-squircle: 28px; 
+    --radius-item: 16px;
     --radius-pill: 100px;
     
     /* --- Animation Physics --- */
     --spring-ease: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --smooth-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-/* --- Dark Mode : Midnight Glass --- */
-body.dark-mode {
-    --system-bg: #000000;
-    --glass-bg: rgba(28, 28, 30, 0.45);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 0.5px rgba(255, 255, 255, 0.15);
-    --primary-text: #FFFFFF;
-    --secondary-label: rgba(235, 235, 245, 0.55);
-    --blue-accent: #0A84FF;
+    --smooth-flow: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1B : Base Reset & Haptic Visuals --- */
+/* --- Block 1B : Base Reset & Spatial Reset --- */
 /* --------------------------------------------------------------------- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
-    font-smoothing: antialiased;
-    -webkit-font-smoothing: antialiased;
 }
 
 html, body {
     width: 100%;
     height: 100%;
-    overflow: hidden;
-    background-color: #D1D1D6; /* Base under glass */
+    overflow: hidden; /* Scroll handled in content-viewport */
+    background-color: var(--system-bg) !important; /* Force Pure Theme */
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-    color: var(--primary-text);
-    transition: background-color 0.6s var(--smooth-ease);
+    color: var(--p-text);
+    transition: background-color 0.6s var(--smooth-flow);
 }
 
-/* Rule: Active Touch Reality (Haptic simulation) */
+/* Active Touch Reality: Rule-based physical feedback */
 .haptic-touch {
-    transition: transform 0.25s var(--spring-ease), opacity 0.2s ease;
+    transition: transform 0.2s var(--spring-ease), opacity 0.2s ease;
     cursor: pointer;
     user-select: none;
 }
 
 .haptic-touch:active {
-    transform: scale(0.94) !important; /* Slight physical press */
-    opacity: 0.75;
+    transform: scale(0.94) !important;
+    opacity: 0.8;
 }
 
-/* Rule: Zero-Jerk Global Entrance */
-body {
-    opacity: 0;
-    transition: opacity 0.8s ease-in-out;
-}
-body.loaded {
-    opacity: 1;
-}
-
-/* Utility Helpers (Blue Rule) */
-.blue-accent { color: var(--blue-accent); }
-.secondary-label { color: var(--secondary-label); font-size: 0.9rem; font-weight: 500; }
-.spatial-depth { box-shadow: var(--glass-shadow); }
+/* Zero-Jerk Entrance Animation */
+body { opacity: 0; transition: opacity 0.8s ease-in-out; }
+body.loaded { opacity: 1; }
 
 /* --------------------------------------------------------------------- */
-/* --- End Block 1B file : Dashboard.css --- */ 
+/* --- End Block 1B file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 1 file : Dashboard.css <<=== */
+/* ===>> END OF BLOCK CSS 1 file : 3-Dashboard/Dashboard.css <<=== */
 /* ===================================================================== */
 
 
-
-
 /* ===================================================================== */
-/* ===>> BLOCK CSS 2: Sidebar & Top Navigation (Slim Spatial Floating) <<=== */
+/* ===>> BLOCK CSS 2: Sidebar OS Strip & Floating Azad Header <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : Spatial Side Strip (Sleek Sidebar) --- */
+/* --- Block 2A : Sidebar OS (The Minimalist Power Strip) --- */
 /* --------------------------------------------------------------------- */
-.sidebar {
+/**
+ * Sidebar OS:
+ * Screen ke bilkul left mein chipka hua (No gaps).
+ * Full height spatial glass strip jo system apps ko control karti hai.
+ */
+.sidebar-os {
     position: fixed;
-    top: 1rem;
-    left: 1rem;
-    bottom: 1rem;
+    top: 0;
+    left: 0;
+    bottom: 0;
     width: var(--sidebar-w);
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-squircle);
-    box-shadow: var(--glass-shadow);
+    border-right: 1px solid var(--glass-border);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem 0;
+    padding: 2rem 0;
     z-index: 1000;
-    transition: all 0.5s var(--smooth-ease);
+    transition: transform 0.5s var(--smooth-flow);
 }
 
-/* Profile Pill (Super Squircle 14-30px Rule) */
+/* Profile Pill (The Master Identity Access) */
 .profile-pill {
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
     background: linear-gradient(135deg, var(--blue-accent), #5856D6);
-    border-radius: 14px; /* Squircle */
+    border-radius: 14px; /* Super Squircle */
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #FFF;
-    font-weight: 700;
-    font-size: 0.9rem;
-    border: 1.5px solid rgba(255,255,255,0.4);
-    box-shadow: 0 5px 15px rgba(0, 122, 255, 0.2);
+    color: #FFFFFF;
+    font-weight: 800;
+    font-size: 1rem;
+    box-shadow: 0 8px 16px rgba(0, 113, 227, 0.3);
+    border: 1.5px solid rgba(255,255,255,0.3);
 }
 
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 1.8rem;
+    gap: 2rem;
+    margin-top: 4rem;
     flex: 1;
-    margin-top: 3rem;
 }
 
-/* Navigation Items (Thin Icon Rule) */
 .nav-item {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    color: var(--secondary-label);
-    font-size: 1.3rem;
-    background: transparent;
-    border: none;
-    transition: all 0.3s var(--smooth-ease);
-}
-
-.nav-item:hover {
-    color: var(--blue-accent);
-    background: rgba(0, 122, 255, 0.08);
+    color: var(--s-text);
+    font-size: 1.4rem;
+    transition: all 0.3s var(--smooth-flow);
 }
 
 .nav-item.active {
-    background: var(--blue-accent);
-    color: #FFFFFF;
-    box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+    color: var(--blue-accent);
+    background: rgba(0, 122, 255, 0.1);
 }
 
+/* --------------------------------------------------------------------- */
+/* --- Block 2B : Sidebar Bottom (System Tools & Status) --- */
+/* --------------------------------------------------------------------- */
 .sidebar-bottom {
-    margin-top: auto;
-}
-
-.logout-trigger {
-    color: var(--destructive-red);
-    opacity: 0.8;
-}
-
-/* --------------------------------------------------------------------- */
-/* --- Block 2B : Floating Top Navbar (iOS Status Pill) --- */
-/* --------------------------------------------------------------------- */
-.top-navbar {
-    position: fixed;
-    top: 1rem;
-    left: calc(var(--sidebar-w) + 2rem);
-    right: 1rem;
-    height: var(--navbar-h);
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-squircle);
-    box-shadow: var(--glass-shadow);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 1.5rem;
-    z-index: 999;
-    transition: all 0.5s var(--smooth-ease);
+    gap: 1.5rem;
 }
 
-.nav-left { display: flex; flex-direction: column; }
-.app-brand { font-size: 0.7rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; letter-spacing: 1px; }
-.page-indicator { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; }
+/* Notification Capsule in Sidebar */
+.notif-pill-btn {
+    position: relative;
+    font-size: 1.2rem;
+    color: var(--s-text);
+}
 
-/* Status Pill - Compact iPadOS Look */
-.ios-status-pill {
+.notif-dot {
+    position: absolute;
+    top: -2px; right: -2px;
+    width: 8px; height: 8px;
+    background: var(--destructive-red);
+    border-radius: 50%;
+    border: 2px solid var(--glass-bg);
+}
+
+.system-controls {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.8rem;
-    background: rgba(0, 0, 0, 0.04);
-    padding: 0.4rem 1rem;
-    border-radius: var(--radius-pill);
-    border: 0.5px solid var(--glass-border);
+    gap: 1.2rem;
 }
 
-.status-time { font-size: 0.85rem; font-weight: 700; color: var(--primary-text); }
-.status-divider { width: 1px; height: 10px; background: var(--glass-border); }
+.nav-util-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--s-text);
+}
 
-.status-icons {
+/* Vertical Status Display (Time, Wi-Fi, Battery) */
+.sidebar-status-pill {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 0.6rem;
-    font-size: 0.8rem;
+    padding: 0.8rem 0;
+}
+
+.status-time {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--p-text);
+    writing-mode: vertical-lr; /* Vertically elegant */
+    transform: rotate(180deg);
+}
+
+.status-icons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--s-text);
 }
 
 .ios-battery-pill {
-    width: 20px;
-    height: 10px;
-    border: 1px solid var(--primary-text);
+    width: 18px; height: 10px;
+    border: 1.2px solid var(--p-text);
     border-radius: 3px;
     position: relative;
 }
 
 .ios-battery-pill::after {
-    content: '';
-    position: absolute;
-    top: 1px; left: 1px; bottom: 1px;
-    width: 60%; background: var(--success-green);
-    border-radius: 1px;
+    content: ''; position: absolute;
+    top: 1px; left: 1px; bottom: 1px; width: 65%;
+    background: var(--success-green); border-radius: 1px;
 }
 
-/* Mobile Responsiveness for Sidebar/Navbar */
+.logout-trigger { color: var(--destructive-red) !important; opacity: 0.7; }
+/* --------------------------------------------------------------------- */
+/* --- End Block 2B file : 3-Dashboard/Dashboard.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 2C : Azad Floating Header (Blue Indicator) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * Azad Header:
+ * Bina kisi capsule ke hawa mein tairta hua Page Title.
+ * Blue Text rule applied.
+ */
+.floating-page-header {
+    position: fixed;
+    top: 2rem;
+    left: calc(var(--sidebar-w) + 2rem);
+    z-index: 999;
+    pointer-events: none;
+}
+
+.page-indicator {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--blue-accent);
+    text-transform: capitalize;
+    /* Subtle glow for "Azad" feel */
+    text-shadow: 0 0 20px rgba(0, 122, 255, 0.2);
+}
+
+/* Mobile Adaptation for Sidebar & Header */
 @media (max-width: 768px) {
-    .sidebar { left: -100px; } /* Hide sidebar on mobile */
-    .top-navbar { left: 1rem; }
+    .sidebar-os { transform: translateX(-100%); } /* Hide Sidebar on Phone */
+    .floating-page-header { left: 1.5rem; top: 1.5rem; }
+    .page-indicator { font-size: 1.5rem; }
 }
-
 /* --------------------------------------------------------------------- */
-/* --- End Block 2B file : Dashboard.css --- */ 
+/* --- End Block 2C file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 2 file : Dashboard.css <<=== */
+/* ===>> END OF BLOCK CSS 2 file : 3-Dashboard/Dashboard.css <<=== */
 /* ===================================================================== */
 
 
-
 /* ===================================================================== */
-/* ===>> BLOCK CSS 3: Content Area & Adaptive Widgets (Spatial Glass) <<=== */
+/* ===>> BLOCK CSS 3: Content Viewport & Normalized Widgets <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3A : Spatial Content Wrapper (Adaptive Layout) --- */
+/* --- Block 3A : Spatial Content Viewport (The OS Stage) --- */
 /* --------------------------------------------------------------------- */
-.content-wrapper {
-    margin-left: calc(var(--sidebar-w) + 2.5rem);
-    padding-top: calc(var(--navbar-h) + 2.5rem);
-    padding-right: 1.5rem;
+/**
+ * Content Viewport:
+ * Sidebar ke baad bachi hui poori screen ko handle karta hai.
+ * Rule: 0.8s smooth entrance animation.
+ */
+.content-viewport {
+    margin-left: var(--sidebar-w);
+    padding-top: 6rem; /* Header ke liye safe space */
+    padding-right: 2rem;
+    padding-left: 2.5rem;
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
-    box-sizing: border-box;
-    -webkit-overflow-scrolling: touch;
 }
 
-/* Zero-Jerk View Transition Logic (The Flow Rule) */
+/* Hide scrollbar logic (iPadOS Feel) */
+.content-viewport::-webkit-scrollbar { width: 0; background: transparent; }
+
+/* Zero-Jerk View Transition Logic */
 .dashboard-view {
     display: none;
     opacity: 0;
-    transform: scale(0.98) translateY(15px);
-    transition: opacity 0.5s var(--smooth-ease), transform 0.6s var(--spring-ease);
+    transform: translateY(20px);
+    transition: opacity 0.6s var(--smooth-flow), transform 0.6s var(--spring-ease);
 }
 
 .dashboard-view.active {
     display: block;
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
 }
-
-/* Hide scrollbar but keep functionality */
-.content-wrapper::-webkit-scrollbar { width: 0; background: transparent; }
+/* --------------------------------------------------------------------- */
+/* --- End Block 3A file : 3-Dashboard/Dashboard.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3B : Adaptive Widget Cards (Sleek Spatial) --- */
+/* --- Block 3B : Normalized Spatial Widgets (Compact 2x2 Style) --- */
 /* --------------------------------------------------------------------- */
+/**
+ * Home Header Row:
+ * Widgets ko ek sleek line mein align karta hai.
+ */
 .home-header-row {
     display: flex;
     gap: 1.5rem;
-    margin-bottom: 2.5rem;
-    flex-wrap: wrap;
+    margin-bottom: 3rem;
 }
 
 .home-widget-card {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: var(--radius-squircle); /* iPadOS 18 Squircle */
+    border-radius: var(--radius-squircle);
     border: 1px solid var(--glass-border);
-    padding: 2rem;
+    padding: 1.8rem;
     flex: 1;
-    min-width: 290px;
+    max-width: 320px; /* Normalized Size Rule */
+    min-height: 160px;
     box-shadow: var(--glass-shadow);
     display: flex;
     flex-direction: column;
     justify-content: center;
     position: relative;
     overflow: hidden;
-    transition: transform 0.3s var(--spring-ease), box-shadow 0.3s ease;
+    transition: transform 0.3s var(--spring-ease);
 }
 
-.home-widget-card:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-}
-
-/* Typography Rules (Premium SF Style) */
+/* Greeting Widget Specifics */
 .greeting-text {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 500;
-    color: var(--secondary-label);
+    color: var(--s-text);
     margin: 0;
-    letter-spacing: -0.3px;
 }
 
 .greeting-name {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 800;
-    margin: 0.2rem 0 0.8rem 0;
+    margin: 0.2rem 0 0.5rem 0;
     letter-spacing: -1px;
-    line-height: 1.1;
+    color: var(--p-text);
 }
 
 .date-text {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--blue-accent);
 }
+/* --------------------------------------------------------------------- */
+/* --- End Block 3B file : 3-Dashboard/Dashboard.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3C : Weather Intelligence (Floating Logic) --- */
+/* --- Block 3C : Weather Widget Intelligence --- */
 /* --------------------------------------------------------------------- */
 .weather-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
 }
 
-.weather-info h2 { font-size: 1.4rem; font-weight: 700; margin: 0; }
-.weather-info p { font-size: 2.2rem; font-weight: 800; margin: 0.3rem 0; color: var(--blue-accent); }
+.weather-info h2 { font-size: 1.1rem; font-weight: 700; color: var(--p-text); margin: 0; }
+.weather-info p { font-size: 1.8rem; font-weight: 800; color: var(--blue-accent); margin: 0.2rem 0; }
+.weather-info span { font-size: 0.75rem; font-weight: 600; color: var(--s-text); }
 
 .weather-icon-box {
-    font-size: 3.5rem;
+    font-size: 2.8rem;
     color: var(--blue-accent);
-    filter: drop-shadow(0 0 10px rgba(0, 122, 255, 0.3));
-    animation: spatialFloat 6s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 12px rgba(0, 122, 255, 0.3));
+    animation: weatherFloat 4s ease-in-out infinite alternate;
 }
 
-@keyframes spatialFloat {
-    0% { transform: translateY(0) rotate(0); }
-    100% { transform: translateY(-12px) rotate(4deg); }
+@keyframes weatherFloat {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px) rotate(3deg); }
 }
 
-/* Mobile Responsiveness for Content */
+/* Mobile Content Refinement */
 @media (max-width: 768px) {
-    .content-wrapper { margin-left: 0; padding: 5.5rem 1.2rem 2rem 1.2rem; }
-    .home-header-row { flex-direction: column; gap: 1.2rem; }
-    .greeting-name { font-size: 2.2rem; }
+    .content-viewport {
+        margin-left: 0;
+        padding: 5rem 1.2rem 2rem 1.2rem;
+    }
+    .home-header-row {
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+    .home-widget-card {
+        max-width: 100%;
+        min-height: 140px;
+    }
 }
-
 /* --------------------------------------------------------------------- */
-/* --- End Block 3C file : Dashboard.css --- */ 
+/* --- End Block 3C file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 3 file : Dashboard.css <<=== */
+/* ===>> END OF BLOCK CSS 3 file : 3-Dashboard/Dashboard.css <<=== */
 /* ===================================================================== */
-
-
 
 
 /* ===================================================================== */
@@ -413,18 +437,21 @@ body.loaded {
 /* --------------------------------------------------------------------- */
 /* --- Block 4A : Spatial Grid Architecture (Responsive) --- */
 /* --------------------------------------------------------------------- */
+/**
+ * App Library Section:
+ * Widgets ke niche ka Grid layout.
+ */
 .app-library-section {
     margin-top: 1rem;
     width: 100%;
-    animation: spatialEntry 0.8s var(--smooth-ease);
 }
 
 .section-label {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--secondary-label);
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--s-text);
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     margin-bottom: 1.8rem;
     padding-left: 0.5rem;
 }
@@ -432,27 +459,30 @@ body.loaded {
 .home-app-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 1.8rem;
+    gap: 2rem;
     justify-items: center;
 }
 
-/* Tablet & Mobile Grid Refinement */
+/* Tablet & Mobile Grid Optimization */
 @media (max-width: 768px) {
-    .home-app-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.2rem;
-    }
+    .home-app-grid { grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
 }
 
 @media (max-width: 480px) {
-    .home-app-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    .home-app-grid { grid-template-columns: repeat(3, 1fr); }
 }
+/* --------------------------------------------------------------------- */
+/* --- End Block 4A file : 3-Dashboard/Dashboard.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
 /* --- Block 4B : High-Fidelity Squircle Icons --- */
 /* --------------------------------------------------------------------- */
+/**
+ * App Icon Box:
+ * iPadOS 18 Perfect Squircle (28px radius).
+ * Glossy overlay for spatial depth.
+ */
 .app-grid-item {
     display: flex;
     flex-direction: column;
@@ -462,40 +492,52 @@ body.loaded {
 }
 
 .app-icon-box {
-    width: 64px; /* Reduced for elegance */
+    width: 64px;
     height: 64px;
-    border-radius: 19px; /* iPadOS 18 Perfect Squircle */
+    border-radius: 20px; /* Super Squircle Vibe */
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.8rem;
     color: #FFFFFF;
     position: relative;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
     overflow: hidden;
+    transition: transform 0.3s var(--spring-ease);
 }
 
-/* Refined Glass Gloss Effect */
+/* Glass Gloss Reflection Rule */
 .app-icon-box::after {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 100%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, transparent 55%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%);
     pointer-events: none;
+}
+
+.app-grid-item:hover .app-icon-box {
+    transform: scale(1.08) translateY(-4px);
 }
 
 .app-name {
     font-size: 0.78rem;
     font-weight: 600;
-    color: var(--primary-text);
-    letter-spacing: -0.1px;
-    opacity: 0.85;
+    color: var(--p-text);
     text-align: center;
+    letter-spacing: -0.1px;
+    opacity: 0.9;
 }
+/* --------------------------------------------------------------------- */
+/* --- End Block 4B file : 3-Dashboard/Dashboard.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 4C : Premium Gradient Presets (SF Palette) --- */
+/* --- Block 4C : Premium Icon Palette (SF Palette) --- */
 /* --------------------------------------------------------------------- */
+/**
+ * Gradient Presets:
+ * Inhe SF Symbols ke official rangon se sync kiya gaya hai.
+ */
 .icon-blue   { background: linear-gradient(145deg, #00C6FF, #007AFF); }
 .icon-green  { background: linear-gradient(145deg, #30D158, #34C759); }
 .icon-red    { background: linear-gradient(145deg, #FF3B30, #FF2D55); }
@@ -503,170 +545,32 @@ body.loaded {
 .icon-indigo { background: linear-gradient(145deg, #5E5CE6, #5856D6); }
 .icon-gray   { background: linear-gradient(145deg, #8E8E93, #636366); }
 
+/* App View Entrance Animation */
+@keyframes spatialAppEntry {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
 /* --------------------------------------------------------------------- */
-/* --- Block 4D : Full-Screen App Reveal (Zero-Jerk) --- */
-/* --------------------------------------------------------------------- */
-.spatial-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--system-bg);
-    z-index: 9999;
-    display: none;
-    opacity: 0;
-    transform: scale(1.08); /* Arriving effect */
-    transition: all 0.5s var(--smooth-ease);
-}
-
-.spatial-overlay.active {
-    display: flex;
-    opacity: 1;
-    transform: scale(1);
-}
-
-.app-view-topbar {
-    padding: 1.2rem 2rem;
-    display: flex;
-    align-items: center;
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    border-bottom: 0.5px solid var(--glass-border);
-}
-
-@keyframes spatialEntry {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* --------------------------------------------------------------------- */
-/* --- End Block 4D file : Dashboard.css --- */ 
+/* --- End Block 4C file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 4 file : Dashboard.css <<=== */
+/* ===>> END OF BLOCK CSS 4 file : 3-Dashboard/Dashboard.css <<=== */
 /* ===================================================================== */
 
 
 
-
 /* ===================================================================== */
-/* ===>> BLOCK CSS 5: System Overlays (Island, Action Sheet, AT & Loader) <<=== */
+/* ===>> BLOCK CSS 5: System Overlays (AT, Action Sheets & Full-Views) <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 5A : Universal Dynamic Island (Spatial Notch) --- */
+/* --- Block 5A : Assistive Touch (Master Floating Controller) --- */
 /* --------------------------------------------------------------------- */
-.dynamic-island-container {
-    position: fixed;
-    top: 1.5rem; /* Floating from top */
-    left: 50%;
-    transform: translateX(-50%) translateY(-150%) scale(0.8);
-    z-index: 10001;
-    transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring Physics */
-}
-
-.dynamic-island-container.active {
-    transform: translateX(-50%) translateY(0) scale(1);
-}
-
-.dynamic-island-pill {
-    background: #000000;
-    color: #FFFFFF;
-    min-width: 220px;
-    padding: 10px 22px;
-    border-radius: var(--radius-pill);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 0 0 0.5px rgba(255,255,255,0.2);
-}
-
-.island-icon-box {
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.island-msg-text {
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: 600;
-    white-space: nowrap;
-    letter-spacing: -0.2px;
-}
-
-/* --------------------------------------------------------------------- */
-/* --- Block 5B : Spatial Action Sheet (Bottom Identity Sheet) --- */
-/* --------------------------------------------------------------------- */
-.action-sheet-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(10px);
-    z-index: 11000;
-    display: none; /* Controlled by JS active class */
-    align-items: flex-end;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.4s var(--smooth-ease);
-}
-
-.action-sheet-overlay.active {
-    display: flex;
-    opacity: 1;
-}
-
-.action-sheet-container {
-    width: 100%;
-    max-width: 420px;
-    margin: 1.5rem;
-    transform: translateY(110%);
-    transition: transform 0.5s var(--spring-ease);
-}
-
-.action-sheet-overlay.active .action-sheet-container {
-    transform: translateY(0);
-}
-
-.action-sheet-header {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    padding: 1.2rem;
-    text-align: center;
-    border-radius: var(--radius-squircle) var(--radius-squircle) 0 0;
-    border: 1px solid var(--glass-border);
-    border-bottom: none;
-}
-
-.action-sheet-group {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    border-radius: 0 0 var(--radius-squircle) var(--radius-squircle);
-    overflow: hidden;
-    border: 1px solid var(--glass-border);
-}
-
-.cancel-group {
-    margin-top: 1rem;
-    border-radius: var(--radius-squircle);
-}
-
-.action-sheet-btn {
-    width: 100%;
-    padding: 1.1rem;
-    background: transparent;
-    border: none;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--blue-accent);
-    border-top: 0.5px solid var(--glass-border);
-}
-
-.action-sheet-btn.destructive-text { color: var(--destructive-red); }
-
-/* --------------------------------------------------------------------- */
-/* --- Block 5C : Assistive Touch (Spatial Menu) --- */
-/* --------------------------------------------------------------------- */
+/**
+ * Assistive Touch Container:
+ * Screen ke niche right corner mein tairta hua.
+ */
 .at-container {
     position: fixed;
     bottom: 2rem;
@@ -675,37 +579,39 @@ body.loaded {
 }
 
 .at-trigger {
-    width: 54px;
-    height: 54px;
-    background: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(8px);
-    border-radius: 16px; /* Squircle rule */
+    width: 56px;
+    height: 56px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 16px; /* Squircle Rule */
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1);
-    opacity: 0.7;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.1);
+    opacity: 0.8;
+    transition: all 0.3s var(--spring-ease);
 }
 
 .at-inner-circle {
-    width: 34px;
-    height: 34px;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2.5px solid rgba(255, 255, 255, 0.6);
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.25);
+    border: 2.5px solid rgba(255, 255, 255, 0.7);
     border-radius: 50%;
 }
 
+/* AT Menu Grid Overlay */
 .at-menu-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.15);
+    background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(25px);
-    display: none;
+    display: none; /* Controlled by JS */
     align-items: center;
     justify-content: center;
     z-index: 12001;
     opacity: 0;
-    transition: opacity 0.4s var(--smooth-ease);
+    transition: opacity 0.4s var(--smooth-flow);
 }
 
 .at-menu-overlay.active { display: flex; opacity: 1; }
@@ -713,10 +619,10 @@ body.loaded {
 .at-menu-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
+    gap: 2.5rem;
     background: var(--glass-bg);
-    padding: 2.5rem;
-    border-radius: 35px;
+    padding: 3rem;
+    border-radius: 38px;
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
     transform: scale(0.9);
@@ -730,65 +636,156 @@ body.loaded {
     flex-direction: column;
     align-items: center;
     gap: 0.8rem;
-    color: var(--primary-text);
-    font-size: 0.8rem;
+    color: var(--p-text);
+    font-size: 0.85rem;
     font-weight: 700;
 }
 
 .at-icon-box {
-    width: 60px;
-    height: 60px;
-    background: rgba(0, 0, 0, 0.75);
+    width: 64px;
+    height: 64px;
+    background: rgba(0, 0, 0, 0.8);
     color: #FFF;
     border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+    font-size: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
 }
+/* --------------------------------------------------------------------- */
+/* --- End Block 5A file : 3-Dashboard/Dashboard.css --- */ 
+/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 5D : Full Screen Loader (visionOS Vibe) --- */
+/* --- Block 5B : Spatial Action Sheet (The System Drawer) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * Action Sheet:
+ * Bottom se slide hokar aane wala premium confirmation panel.
+ */
+.action-sheet-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
+    z-index: 11000;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s var(--smooth-flow);
+}
+
+.action-sheet-overlay.active { display: flex; opacity: 1; }
+
+.action-sheet-container {
+    width: 95%;
+    max-width: 400px;
+    margin-bottom: 2rem;
+    transform: translateY(110%);
+    transition: transform 0.5s var(--spring-ease);
+}
+
+.action-sheet-overlay.active .action-sheet-container { transform: translateY(0); }
+
+.action-sheet-header {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    padding: 1.5rem;
+    text-align: center;
+    border-radius: 24px 24px 0 0;
+    border: 1px solid var(--glass-border);
+    border-bottom: 0.5px solid var(--glass-border);
+}
+
+.action-sheet-group {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border-radius: 0 0 24px 24px;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    border-top: none;
+}
+
+.cancel-group { margin-top: 0.8rem; border-radius: 24px; border-top: 1px solid var(--glass-border); }
+
+.action-sheet-btn {
+    width: 100%; padding: 1.2rem;
+    background: transparent; border: none;
+    font-size: 1.1rem; font-weight: 600;
+    color: var(--blue-accent);
+    border-top: 0.5px solid var(--glass-border);
+}
+
+.action-sheet-btn.destructive-text { color: var(--destructive-red); }
+/* --------------------------------------------------------------------- */
+/* --- End Block 5B file : 3-Dashboard/Dashboard.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 5C : Full-Screen Spatial Overlay (Zero-Jerk Transition) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * Spatial Overlay:
+ * Apps ya Identity Modules ko slide karke fullscreen mein dikhata hai.
+ */
+.spatial-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--system-bg) !important;
+    z-index: 9999;
+    display: none;
+    opacity: 0;
+    transform: scale(1.05); /* Arrival effect */
+    transition: all 0.5s var(--smooth-flow);
+    flex-direction: column;
+}
+
+.spatial-overlay.active { display: flex; opacity: 1; transform: scale(1); }
+
+.app-view-topbar {
+    padding: 1.2rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.app-view-back-btn {
+    background: transparent; border: none;
+    color: var(--blue-accent); font-size: 1.1rem;
+    display: flex; align-items: center; gap: 8px; font-weight: 600;
+}
+/* --------------------------------------------------------------------- */
+/* --- End Block 5C file : 3-Dashboard/Dashboard.css --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 5D : Spatial OS Loader (visionOS Feel) --- */
 /* --------------------------------------------------------------------- */
 .fullscreen-loader {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: var(--system-bg);
-    z-index: 20000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.6s var(--smooth-ease);
+    inset: 0; background: var(--system-bg);
+    z-index: 99999; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.6s var(--smooth-flow);
 }
 
-.fullscreen-loader.active {
-    opacity: 1;
-    pointer-events: auto;
-}
+.fullscreen-loader.active { opacity: 1; pointer-events: auto; }
 
-.loader-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-}
+.loader-content { display: flex; flex-direction: column; align-items: center; gap: 1.8rem; }
 
-/* Spinner is handled by FontAwesome/Library in HTML, 
-   styling common text here */
 #loader-text {
-    font-size: 0.95rem;
-    font-weight: 600;
-    letter-spacing: -0.2px;
+    font-size: 1rem; font-weight: 700;
+    letter-spacing: -0.2px; color: var(--s-text);
 }
 
 /* --------------------------------------------------------------------- */
-/* --- End Block 5D file : Dashboard.css --- */ 
+/* --- End Block 5D file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */
-/* ===>> END OF BLOCK CSS 5 file : Dashboard.css <<=== */
+/* ===>> END OF BLOCK CSS 5 file : 3-Dashboard/Dashboard.css <<=== */
 /* ===================================================================== */
