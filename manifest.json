@@ -1,6 +1,6 @@
 {
   "name": "R-ight Person",
-  "short_name": "R-ight ID",
+  "short_name": "R-ight Person",
   "start_url": "./1-login/login.html",
   "display": "standalone",
   "background_color": "#000000",
