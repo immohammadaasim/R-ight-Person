@@ -112,28 +112,35 @@ document.addEventListener('DOMContentLoaded', () => {
 /**
  * checkUserSession: 
  * Dashboard khulne se pehle memory bridge check karta hai.
+ * Rule: No access without valid session data (RP_Temp_Email).
  */
 async function checkUserSession() {
-    if (typeof window.showLoader === 'function') window.showLoader('Securing Session...');
+    if (typeof window.showLoader === 'function') window.showLoader('Verifying Identity...');
 
-    // 1. Memory Bridge check (Verification page se aaya hua data)
+    // Memory Bridge se email nikaalo (Set by Verification Module)
     const activeEmail = sessionStorage.getItem('RP_Temp_Email');
 
     if (!activeEmail) {
-        console.error("OS: Memory Bridge Broken. Returning to Login.");
+        console.error("OS Security: No session found. Redirecting to Entry.");
         window.location.href = '../1-login/login.html';
         return;
     }
 
     try {
-        // 2. Database Lookup Engine (Using naye columns)
+        // Database lookup trigger
         await fetchUserProfile(activeEmail);
     } catch (err) {
-        console.error("OS: Identity Fetch Failed:", err);
-        if (typeof showIsland === 'function') showIsland("Identity verification failed.", "error");
+        console.error("OS Security: Session verification failed ->", err);
+        if (typeof showIsland === 'function') showIsland("Identity validation failed.", "error");
         setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
     }
 }
+
+// OS activation check engine
+document.addEventListener('DOMContentLoaded', () => {
+    // Small delay to ensure core modules are initialized
+    setTimeout(checkUserSession, 150);
+});
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 2A file : 3-Dashboard/Dashboard.js --- */ 
 /* --------------------------------------------------------------------- */
@@ -144,9 +151,10 @@ async function checkUserSession() {
 /**
  * fetchUserProfile: 
  * Supabase 'users' table se user ka verified record nikalta hai.
- * UPDATE: Ab 'login_email' column ka use ho raha hai.
+ * UPDATE: Ab 'login_email' column ka use ho raha hai (Master Sync).
  */
 async function fetchUserProfile(email) {
+    // Perform secure database lookup
     const { data: user, error } = await _sb
         .from('users')
         .select('*')
@@ -154,17 +162,17 @@ async function fetchUserProfile(email) {
         .maybeSingle();
 
     if (error || !user) {
-        throw new Error("Identity record not found.");
+        throw new Error("Identity record not found in system.");
     }
 
-    // Global variable mein save karo taaki baki apps (Identity Card) use kar sakein
+    // Global memory sync for other OS apps
     window.currentUserData = user;
 
-    // Dashboard UI ko data se bharo
+    // Populate Dashboard UI with fetched data
     populateDashboardUI(user);
 
     if (typeof window.hideLoader === 'function') window.hideLoader();
-    if (typeof showIsland === 'function') showIsland(`Secure Session Active`, `success`);
+    if (typeof showIsland === 'function') showIsland(`Identity Secured: ${email}`, `success`);
 }
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 2B file : 3-Dashboard/Dashboard.js --- */ 
@@ -175,40 +183,35 @@ async function fetchUserProfile(email) {
 /* --------------------------------------------------------------------- */
 /**
  * populateDashboardUI: 
- * Database se mile data ko Greeting aur Profile sections mein set karta hai.
+ * Database se mile data ko Greeting aur Profile sections mein makkhan
+ * ki tarah set karta hai.
  */
 function populateDashboardUI(data) {
     const userDisplayName = document.getElementById('user-display-name');
     const userAvatar      = document.getElementById('user-avatar-initial');
-    const lockDisplayName = document.getElementById('lock-display-name'); // For Security Module
     
     /**
-     * Identity Logic Hierarchy:
-     * 1. Official Verified Name (From Dashboard Form)
-     * 2. Provider Name (From Google/Yahoo Sync)
-     * 3. Telegram Name (From Bot Capture)
-     * 4. Email Prefix (Fallback)
+     * Identity Logic Hierarchy (Rules based selection):
+     * 1. verified_name (Asli official naam)
+     * 2. provider_name (Google/Yahoo se sync hua naam)
+     * 3. telegram_name (Bot se capture kiya naam)
+     * 4. login_email prefix (Last fallback)
      */
     const nameToDisplay = data.verified_name || data.provider_name || data.telegram_name || data.login_email.split('@')[0];
     const initial       = nameToDisplay.charAt(0).toUpperCase();
 
-    // Greeting Update
+    // 1. Dashboard Greeting Widget update
     if (userDisplayName) {
         userDisplayName.textContent = nameToDisplay;
         userDisplayName.style.textTransform = 'capitalize';
     }
     
-    // Avatar Identity Update
+    // 2. Sidebar Profile Pill Identity update
     if (userAvatar) {
         userAvatar.textContent = initial;
     }
 
-    // Security Lock Name Update
-    if (lockDisplayName) {
-        lockDisplayName.textContent = nameToDisplay;
-    }
-
-    console.log("Spatial OS: Identity Sync Complete for", nameToDisplay);
+    console.log("Spatial OS: Dashboard identity synced for", nameToDisplay);
 }
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 2C file : 3-Dashboard/Dashboard.js --- */ 
@@ -228,7 +231,8 @@ function populateDashboardUI(data) {
 /* --------------------------------------------------------------------- */
 /**
  * startClockEngine: 
- * Sidebar mein vertical time aur status indicators ko update karta hai.
+ * Sidebar mein vertical time aur Greeting Widget mein date update karta hai.
+ * Rule: 1-second precision updates.
  */
 function startClockEngine() {
     const clockDisplay    = document.getElementById('dash-clock');
@@ -238,7 +242,7 @@ function startClockEngine() {
     function updateOSStatus() {
         const now = new Date();
         
-        // 1. Vertical Time Update (Sidebar)
+        // 1. Sidebar Vertical Time (12-hour format with AM/PM)
         if (clockDisplay) {
             clockDisplay.textContent = now.toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
@@ -247,7 +251,7 @@ function startClockEngine() {
             });
         }
 
-        // 2. Dynamic Greeting Logic
+        // 2. Greeting Widget: Morning/Afternoon/Evening Logic
         const hour = now.getHours();
         let period = "Morning";
         if (hour >= 12 && hour < 17) period = "Afternoon";
@@ -255,7 +259,7 @@ function startClockEngine() {
 
         if (greetingTime) greetingTime.textContent = period;
 
-        // 3. Full Date Update (Greeting Widget)
+        // 3. Greeting Widget: Official Full Date Display
         if (currentFullDate) {
             currentFullDate.textContent = now.toLocaleDateString('en-US', { 
                 weekday: 'long', 
@@ -265,12 +269,12 @@ function startClockEngine() {
         }
     }
 
-    // Interval: Har 1 second mein update karo
+    // Har ek second mein clock aur greeting refresh karo
     setInterval(updateOSStatus, 1000);
     updateOSStatus();
 }
 
-// OS Status initialization
+// OS Environment trigger on load
 document.addEventListener('DOMContentLoaded', startClockEngine);
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 3A file : 3-Dashboard/Dashboard.js --- */ 
@@ -281,23 +285,24 @@ document.addEventListener('DOMContentLoaded', startClockEngine);
 /* --------------------------------------------------------------------- */
 /**
  * monitorSystemHealth: 
- * Device ki battery aur Wi-Fi status ko sidebar mein reflect karta hai.
+ * Device ki asli battery level aur internet connection ko sidebar mein dikhata hai.
  */
 function monitorSystemHealth() {
     const batteryPill = document.querySelector('.ios-battery-pill');
 
-    // Battery Logic (If API supported)
+    // 1. Battery Status Logic (Using Browser API)
     if (navigator.getBattery) {
         navigator.getBattery().then(battery => {
             function updateBatteryUI() {
                 const level = battery.level * 100;
                 if (batteryPill) {
-                    // CSS custom property update for battery percentage
+                    // CSS variable update for dynamic fill
+                    batteryPill.style.width = '18px'; // Base width
                     batteryPill.style.setProperty('--battery-level', `${level}%`);
                     
-                    // Battery color rule
-                    if (level <= 20) batteryPill.classList.add('low-power');
-                    else batteryPill.classList.remove('low-power');
+                    // Low Power Mode Visual (Red color if < 20%)
+                    if (level <= 20) batteryPill.style.borderColor = '#FF3B30';
+                    else batteryPill.style.borderColor = 'var(--p-text)';
                 }
             }
             updateBatteryUI();
@@ -305,9 +310,9 @@ function monitorSystemHealth() {
         });
     }
 
-    // Connectivity Logic
+    // 2. Online/Offline Notifications (Universal Island Sync)
     window.addEventListener('online', () => {
-        if (typeof showIsland === 'function') showIsland("Back Online", "success");
+        if (typeof showIsland === 'function') showIsland("System Online", "success");
     });
     window.addEventListener('offline', () => {
         if (typeof showIsland === 'function') showIsland("Connection Lost", "error");
@@ -320,23 +325,21 @@ monitorSystemHealth();
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 3C : Weather Intelligence (Placeholder) --- */
+/* --- Sub-Block 3C : Weather Widget (Placeholder Logic) --- */
 /* --------------------------------------------------------------------- */
 /**
- * updateWeatherUI: 
- * Dummy weather data trigger karta hai (Actual API integration logic here).
+ * updateWeatherWidget: 
+ * Dashboard widget par temperature aur status update karta hai.
  */
-function updateWeatherUI() {
+function updateWeatherWidget() {
     const tempDisplay = document.getElementById('weather-temp');
     const descDisplay = document.getElementById('weather-desc');
-    const cityDisplay = document.getElementById('weather-city');
 
     if (tempDisplay) tempDisplay.textContent = "24°";
     if (descDisplay) descDisplay.textContent = "Partly Cloudy";
-    if (cityDisplay) cityDisplay.textContent = "My Location";
 }
 
-updateWeatherUI();
+updateWeatherWidget();
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 3C file : 3-Dashboard/Dashboard.js --- */ 
 /* --------------------------------------------------------------------- */
@@ -351,39 +354,35 @@ updateWeatherUI();
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4A : Sidebar Navigation Logic (View Switcher) --- */
+/* --- Sub-Block 4A : Sidebar Navigation Engine (View Switcher) --- */
 /* --------------------------------------------------------------------- */
 /**
  * handleNavigation: 
- * Sidebar ke main navigation items ko handle karta hai.
+ * Sidebar ke main navigation icons (Home) ko control karta hai.
+ * Rule: 0.6s smooth transition between views.
  */
-const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
-const homeView = document.getElementById('home-dashboard-view');
-const pageIndicator = document.getElementById('current-page-title');
+const navHomeBtn = document.getElementById('nav-home');
+const homeView   = document.getElementById('home-dashboard-view');
+const pageHeader = document.getElementById('current-page-title');
 
-if (navItems) {
-    navItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
+if (navHomeBtn) {
+    navHomeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
 
-            const target = item.id;
+        // 1. Navigation State Update
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        navHomeBtn.classList.add('active');
 
-            // 1. Home View Toggle
-            if (target === 'nav-home') {
-                // Remove active from all, add to home
-                navItems.forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-
-                // Switch Visibility
-                if (homeView) {
-                    homeView.style.display = 'block';
-                    setTimeout(() => homeView.classList.add('active'), 50);
-                }
-                
-                if (pageIndicator) pageIndicator.textContent = 'Home';
-            }
-        });
+        // 2. View Restoration
+        if (homeView) {
+            homeView.style.display = 'block';
+            setTimeout(() => homeView.classList.add('active'), 50);
+        }
+        
+        if (pageHeader) pageHeader.textContent = 'Home';
+        
+        if (typeof showIsland === 'function') showIsland("Navigated to Home", "info");
     });
 }
 /* --------------------------------------------------------------------- */
@@ -391,90 +390,85 @@ if (navItems) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4B : Smart Tool Launcher (Multitasking Engine) --- */
+/* --- Sub-Block 4B : OS Multitasking Engine (Tool Launcher) --- */
 /* --------------------------------------------------------------------- */
 /**
- * launchTool: 
- * Calculator aur Notes jaise tools ko bina background app band kiye 
- * ek floating glass card mein load karta hai.
+ * launchSpatialTool: 
+ * Calculator, Notes aur Identity modules ko bina dashboard bnd kiye 
+ * 'universal-module-portal' mein inject karke "Float" karwata hai.
  */
-const toolCalc  = document.getElementById('tool-calc');
-const toolNotes = document.getElementById('tool-notes');
-const masterAvatar = document.getElementById('master-avatar-trigger');
+const toolCalcBtn   = document.getElementById('tool-calc');
+const toolNotesBtn  = document.getElementById('tool-notes');
+const avatarTrigger = document.getElementById('master-avatar-trigger');
 
-const modulePortal = document.getElementById('universal-module-portal');
-
-async function launchTool(toolName) {
+async function launchSpatialTool(toolID, displayName) {
     if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
     
-    if (typeof showIsland === 'function') {
-        showIsland(`Opening ${toolName.charAt(0).toUpperCase() + toolName.slice(1)}...`, "info");
-    }
+    const portal = document.getElementById('universal-module-portal');
+    const windowID = `spatial-window-${toolID}`;
 
-    /**
-     * Multitasking Rule: 
-     * Hum naye tool ko 'universal-module-portal' mein inject karenge. 
-     * Isse dashboard chalta rahega aur tool uske upar float karega.
-     */
-    const toolID = `tool-window-${toolName}`;
-    
-    // Agar tool pehle se khula hai, toh usey focus karo (Shake effect)
-    if (document.getElementById(toolID)) {
-        const existingTool = document.getElementById(toolID);
-        existingTool.style.animation = 'none';
-        void existingTool.offsetWidth; // Reflow
-        existingTool.style.animation = 'spatialArrival 0.5s var(--spring-ease)';
+    // Rule: Agar tool pehle se khula hai, toh usey focus (pop) karo
+    if (document.getElementById(windowID)) {
+        const existingWin = document.getElementById(windowID);
+        existingWin.classList.remove('active');
+        void existingWin.offsetWidth; // Reflow for animation restart
+        existingWin.classList.add('active');
         return;
     }
 
-    // Yahan hum future mein 'identity.html' ya 'calc.html' fetch karenge
-    // Abhi ke liye hum placeholder structure inject kar rahe hain
+    if (typeof showIsland === 'function') {
+        showIsland(`Opening ${displayName}...`, "info");
+    }
+
+    // Modular HTML Structure for Floating Tools
     const toolHTML = `
-        <div id="${toolID}" class="spatial-overlay active" style="display:flex;">
-            <div class="app-view-topbar">
-                <span class="page-indicator blue-accent">${toolName.toUpperCase()}</span>
+        <div id="${windowID}" class="spatial-overlay active" style="display:flex;">
+            <div class="app-view-topbar spatial-glass">
+                <span class="page-indicator blue-accent">${displayName.toUpperCase()}</span>
                 <button class="nav-util-btn haptic-touch" onclick="this.closest('.spatial-overlay').remove()">
                     <i class="fa-light fa-times"></i>
                 </button>
             </div>
-            <div class="app-view-content" style="padding:2rem; text-align:center;">
-                <p class="secondary-label">Loading ${toolName} Module...</p>
-                <!-- Actual module logic will be injected here -->
+            <div class="app-view-content" id="content-${toolID}">
+                <div style="padding:4rem; text-align:center;">
+                    <i class="fa-light fa-spinner-third fa-spin" style="font-size:3rem; color:var(--blue-accent);"></i>
+                    <p class="secondary-label" style="margin-top:1.5rem;">Syncing ${displayName} Module...</p>
+                </div>
             </div>
         </div>
     `;
 
-    if (modulePortal) {
-        modulePortal.insertAdjacentHTML('beforeend', toolHTML);
+    if (portal) {
+        portal.insertAdjacentHTML('beforeend', toolHTML);
     }
 }
 
-// Click Listeners for Tools
-if (toolCalc) toolCalc.onclick = () => launchTool('calculator');
-if (toolNotes) toolNotes.onclick = () => launchTool('notes');
-if (masterAvatar) masterAvatar.onclick = () => launchTool('identity card');
+// Sidebar Tool Listeners
+if (toolCalcBtn)   toolCalcBtn.onclick   = () => launchSpatialTool('calculator', 'Calculator');
+if (toolNotesBtn)  toolNotesBtn.onclick  = () => launchSpatialTool('notes', 'Notes');
+if (avatarTrigger) avatarTrigger.onclick = () => launchSpatialTool('identity-card', 'Identity Card');
 
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 4B file : 3-Dashboard/Dashboard.js --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4C : App Grid Launcher (The Hub) --- */
+/* --- Sub-Block 4C : App Grid Launcher (The Identity Ecosystem) --- */
 /* --------------------------------------------------------------------- */
 /**
- * loadAppGrid: 
- * Grid ke icons par click karne ka logic.
+ * loadAppLibrary: 
+ * Grid ke icons par click karne ka logic. 
+ * Hum event delegation use karte hain taaki memory load kam ho.
  */
-const appGrid = document.getElementById('main-app-grid');
+const mainAppGrid = document.getElementById('main-app-grid');
 
-if (appGrid) {
-    // Ye event delegation use karta hai (Memory efficient)
-    appGrid.addEventListener('click', (e) => {
-        const item = e.target.closest('.app-grid-item');
-        if (item) {
-            const appName = item.querySelector('.app-name').textContent;
+if (mainAppGrid) {
+    mainAppGrid.addEventListener('click', (e) => {
+        const appItem = e.target.closest('.app-grid-item');
+        if (appItem) {
+            const appName = appItem.querySelector('.app-name').textContent;
             if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
-            if (typeof showIsland === 'function') showIsland(`${appName} module is coming soon`, "info");
+            if (typeof showIsland === 'function') showIsland(`${appName} coming soon to OS`, "info");
         }
     });
 }
@@ -484,6 +478,141 @@ if (appGrid) {
 
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 4 file : 3-Dashboard/Dashboard.js <<=== */
+/* ===================================================================== */
+
+
+/* ===================================================================== */
+/* ===>> BLOCK JS 5: System Overlays & Portal Finalization <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 5A : Assistive Touch (Master Menu Logic) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * handleAssistiveTouch: 
+ * Floating circle menu ko control karta hai aur quick actions provide karta hai.
+ * Rule: 0.4s smooth scale transition for menu grid.
+ */
+const atTriggerBtn   = document.getElementById('at-trigger');
+const atMenuGrid     = document.getElementById('at-menu-overlay');
+const atHomeAction   = document.getElementById('at-home-trigger');
+const atLockAction   = document.getElementById('at-lock-trigger');
+const atLogoutAction = document.getElementById('at-logout-trigger');
+
+if (atTriggerBtn) {
+    atTriggerBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
+        if (atMenuGrid) atMenuGrid.classList.toggle('active');
+    };
+}
+
+// AT Menu: Home Shortcut (Sync with Sidebar)
+if (atHomeAction) {
+    atHomeAction.onclick = () => {
+        const homeNav = document.getElementById('nav-home');
+        if (homeNav) homeNav.click();
+        if (atMenuGrid) atMenuGrid.classList.remove('active');
+    };
+}
+
+// AT Menu: Manual Lock Trigger
+if (atLockAction) {
+    atLockAction.onclick = () => {
+        if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
+        if (typeof showIsland === 'function') showIsland("Identity Locked Manually", "info");
+        if (atMenuGrid) atMenuGrid.classList.remove('active');
+        // Logic for re-triggering Secondary Lock module
+    };
+}
+
+// Global Click listener to close AT menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (atMenuGrid && atMenuGrid.classList.contains('active')) {
+        if (!atMenuGrid.contains(e.target) && e.target !== atTriggerBtn) {
+            atMenuGrid.classList.remove('active');
+        }
+    }
+});
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 5A file : 3-Dashboard/Dashboard.js --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 5B : Spatial Logout Engine (Action Sheet) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * handleLogoutFlow: 
+ * Confirmation drawer dikhata hai aur session clear karke user ko 
+ * wapas login raste par bhejta hai.
+ */
+const logoutRequestBtn  = document.getElementById('logout-btn-trigger');
+const logoutSheet       = document.getElementById('logout-action-sheet');
+const confirmLogoutBtn  = document.getElementById('confirm-logout-btn');
+const cancelLogoutBtn   = document.getElementById('cancel-logout-btn');
+
+function showLogoutConfirmation() {
+    if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
+    if (logoutSheet) logoutSheet.classList.add('active');
+    if (atMenuGrid) atMenuGrid.classList.remove('active');
+}
+
+// Trigger Points: Sidebar & AT Menu
+if (logoutRequestBtn) logoutRequestBtn.onclick = showLogoutConfirmation;
+if (atLogoutAction) atLogoutAction.onclick = showLogoutConfirmation;
+
+// Cancel Action Sheet
+if (cancelLogoutBtn) {
+    cancelLogoutBtn.onclick = () => {
+        if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
+        if (logoutSheet) logoutSheet.classList.remove('active');
+    };
+}
+
+// Confirm Logout (Nuclear Wipe)
+if (confirmLogoutBtn) {
+    confirmLogoutBtn.onclick = () => {
+        if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
+        if (typeof window.showLoader === 'function') window.showLoader('Ending Identity Session...');
+        
+        // 1. Clear Memory Bridge
+        sessionStorage.clear();
+        
+        // 2. Redirect to Login Portal
+        setTimeout(() => {
+            window.location.href = '../1-login/login.html';
+        }, 1500);
+    };
+}
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 5B file : 3-Dashboard/Dashboard.js --- */ 
+/* --------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 5C : Spatial OS Entrance Reveal --- */
+/* --------------------------------------------------------------------- */
+/**
+ * revealDashboardOS: 
+ * Ensures all components are hidden until session is fully secured.
+ */
+function revealDashboardOS() {
+    console.log("Spatial OS Dashboard: Environment Fully Connected.");
+    
+    // Fallback: Hide initial loader if it hangs
+    setTimeout(() => {
+        if (typeof window.hideLoader === 'function') window.hideLoader();
+    }, 2500);
+}
+
+// Main entrance listener
+window.addEventListener('load', revealDashboardOS);
+
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 5C file : 3-Dashboard/Dashboard.js --- */ 
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK JS 5 file : 3-Dashboard/Dashboard.js <<=== */
 /* ===================================================================== */
 
 
