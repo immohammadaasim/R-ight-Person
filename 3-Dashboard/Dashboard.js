@@ -484,7 +484,7 @@ if (mainAppGrid) {
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 5: System Overlays & Portal Finalization <<=== */
+/* ===>> BLOCK JS 5: System Overlays & OS Entrance Reveal <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
@@ -492,8 +492,7 @@ if (mainAppGrid) {
 /* --------------------------------------------------------------------- */
 /**
  * handleAssistiveTouch: 
- * Floating circle menu ko control karta hai aur quick actions provide karta hai.
- * Rule: 0.4s smooth scale transition for menu grid.
+ * Floating circle menu ko toggle karta hai aur quick shortcuts manage karta hai.
  */
 const atTriggerBtn   = document.getElementById('at-trigger');
 const atMenuGrid     = document.getElementById('at-menu-overlay');
@@ -509,7 +508,7 @@ if (atTriggerBtn) {
     };
 }
 
-// AT Menu: Home Shortcut (Sync with Sidebar)
+// AT Menu: Home Shortcut
 if (atHomeAction) {
     atHomeAction.onclick = () => {
         const homeNav = document.getElementById('nav-home');
@@ -518,17 +517,16 @@ if (atHomeAction) {
     };
 }
 
-// AT Menu: Manual Lock Trigger
+// AT Menu: Manual Lock (Trigger for Identity Lock Module)
 if (atLockAction) {
     atLockAction.onclick = () => {
         if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
-        if (typeof showIsland === 'function') showIsland("Identity Locked Manually", "info");
+        if (typeof showIsland === 'function') showIsland("System Locked Manually", "info");
         if (atMenuGrid) atMenuGrid.classList.remove('active');
-        // Logic for re-triggering Secondary Lock module
     };
 }
 
-// Global Click listener to close AT menu when clicking outside
+// Global Click listener: Close menu when clicking outside
 document.addEventListener('click', (e) => {
     if (atMenuGrid && atMenuGrid.classList.contains('active')) {
         if (!atMenuGrid.contains(e.target) && e.target !== atTriggerBtn) {
@@ -545,8 +543,7 @@ document.addEventListener('click', (e) => {
 /* --------------------------------------------------------------------- */
 /**
  * handleLogoutFlow: 
- * Confirmation drawer dikhata hai aur session clear karke user ko 
- * wapas login raste par bhejta hai.
+ * Sign-out confirm karne ke liye premium drawer dikhata hai.
  */
 const logoutRequestBtn  = document.getElementById('logout-btn-trigger');
 const logoutSheet       = document.getElementById('logout-action-sheet');
@@ -559,31 +556,22 @@ function showLogoutConfirmation() {
     if (atMenuGrid) atMenuGrid.classList.remove('active');
 }
 
-// Trigger Points: Sidebar & AT Menu
 if (logoutRequestBtn) logoutRequestBtn.onclick = showLogoutConfirmation;
 if (atLogoutAction) atLogoutAction.onclick = showLogoutConfirmation;
 
-// Cancel Action Sheet
 if (cancelLogoutBtn) {
     cancelLogoutBtn.onclick = () => {
         if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
-        if (logoutSheet) logoutSheet.classList.remove('active');
+        logoutSheet.classList.remove('active');
     };
 }
 
-// Confirm Logout (Nuclear Wipe)
 if (confirmLogoutBtn) {
     confirmLogoutBtn.onclick = () => {
         if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
         if (typeof window.showLoader === 'function') window.showLoader('Ending Identity Session...');
-        
-        // 1. Clear Memory Bridge
         sessionStorage.clear();
-        
-        // 2. Redirect to Login Portal
-        setTimeout(() => {
-            window.location.href = '../1-login/login.html';
-        }, 1500);
+        setTimeout(() => { window.location.href = '../1-login/login.html'; }, 1500);
     };
 }
 /* --------------------------------------------------------------------- */
@@ -591,22 +579,36 @@ if (confirmLogoutBtn) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 5C : Spatial OS Entrance Reveal --- */
+/* --- Sub-Block 5C : OS Entrance Reveal (The Magic Trigger) --- */
 /* --------------------------------------------------------------------- */
 /**
  * revealDashboardOS: 
- * Ensures all components are hidden until session is fully secured.
+ * Page load par system ko detect karta hai aur views ko zinda karta hai.
+ * Fix: Ensures Home View is visible immediately after identity sync.
  */
 function revealDashboardOS() {
-    console.log("Spatial OS Dashboard: Environment Fully Connected.");
+    console.log("Spatial OS: Environment Fully Connected.");
     
-    // Fallback: Hide initial loader if it hangs
+    // 1. Force Activate Home View on Entrance
+    const homeView = document.getElementById('home-dashboard-view');
+    const navHome  = document.getElementById('nav-home');
+    
+    if (homeView) {
+        homeView.style.display = 'block';
+        setTimeout(() => {
+            homeView.classList.add('active');
+        }, 100);
+    }
+
+    if (navHome) navHome.classList.add('active');
+
+    // 2. Hide Loader after entrance is ready
     setTimeout(() => {
         if (typeof window.hideLoader === 'function') window.hideLoader();
-    }, 2500);
+    }, 2000);
 }
 
-// Main entrance listener
+// Main OS Entrance trigger
 window.addEventListener('load', revealDashboardOS);
 
 /* --------------------------------------------------------------------- */
@@ -616,5 +618,3 @@ window.addEventListener('load', revealDashboardOS);
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 5 file : 3-Dashboard/Dashboard.js <<=== */
 /* ===================================================================== */
-
-
