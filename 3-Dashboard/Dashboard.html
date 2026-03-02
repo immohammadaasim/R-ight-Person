@@ -42,6 +42,7 @@
 <!-- ===================================================================== -->
 
 
+
 <!-- ===================================================================== -->
 <!-- ===>> BLOCK HTML 2: Sidebar OS Architecture (The Central Hub) <<=== -->
 <!-- ===================================================================== -->
@@ -61,11 +62,11 @@
             <a href="#" class="nav-item active haptic-touch" title="Home" id="nav-home">
                 <i class="fa-light fa-grid-2"></i>
             </a>
-            <!-- Smart Tool: Calculator (Injected Module) -->
+            <!-- Smart Tool: Calculator (Floating Popup) -->
             <a href="#" class="nav-item haptic-touch" title="Calculator" id="tool-calc">
                 <i class="fa-light fa-calculator"></i>
             </a>
-            <!-- Smart Tool: Notes (Injected Module) -->
+            <!-- Smart Tool: Notes (Floating Popup) -->
             <a href="#" class="nav-item haptic-touch" title="Notes" id="tool-notes">
                 <i class="fa-light fa-notebook"></i>
             </a>
@@ -80,7 +81,7 @@
             </div>
 
             <div class="system-controls">
-                <!-- Theme Controller -->
+                <!-- Theme Controller (Universal OS Sync) -->
                 <button class="nav-util-btn haptic-touch" id="global-theme-toggle">
                     <i id="theme-icon" class="fa-light fa-moon"></i>
                 </button>
@@ -102,7 +103,8 @@
         </div>
     </aside>
 
-    <!-- 2. Floating Page Title (The "Azad" Header) -->
+    <!-- 2. Floating Page Title (The Azad Header) -->
+    <!-- Blue Text rule applied as per vision -->
     <header class="floating-page-header">
         <span class="page-indicator blue-accent" id="current-page-title">Home</span>
     </header>
@@ -110,7 +112,7 @@
     <!-- 3. Main Content Container -->
     <main class="content-viewport" id="main-content">
         <div id="contentArea" class="spatial-entry-animation">
-            <!-- Content will be injected here via JS -->
+            <!-- Widgets and App Library will be injected here -->
         </div>
     </main>
 
@@ -119,22 +121,23 @@
 <!-- ===================================================================== -->
 
 
+
 <!-- ===================================================================== -->
 <!-- ===>> BLOCK HTML 3: Home Dashboard Content (Spatial Views) <<=== -->
 <!-- ===================================================================== -->
 <!-- 
     VIEWPORT LOGIC:
-    - ContentArea: Yahan hamare Widgets aur Grid rahenge.
-    - Normalized Size: Widgets ab compact honge (iPadOS 18 Widget Standard).
+    - ContentArea: Yahan hamare Normalized Widgets aur App Grid rahenge.
+    - Rule: iPadOS 18 Spatial Glass design.
 -->
 
-<!-- 1. Home Dashboard View -->
+<!-- 1. Home Dashboard View (Default Active) -->
 <div id="home-dashboard-view" class="dashboard-view active">
 
     <!-- Top Row: Normalized Spatial Widgets -->
     <div class="home-header-row">
 
-        <!-- Greeting Widget (Compact Glass) -->
+        <!-- Greeting Widget (Sleek Glass Card) -->
         <div class="home-widget-card spatial-glass haptic-touch" id="greeting-widget">
             <div class="greeting-content">
                 <h1 class="greeting-text">Good <span id="greeting-time" class="blue-accent">Day</span>,</h1>
@@ -143,7 +146,7 @@
             </div>
         </div>
 
-        <!-- Weather Widget (Compact Glass) -->
+        <!-- Weather Widget (Sleek Glass Card) -->
         <div class="home-widget-card spatial-glass haptic-touch" id="weather-widget">
             <div class="weather-row">
                 <div class="weather-info">
@@ -159,207 +162,38 @@
 
     </div>
 
-    <!-- 2. App Library Section (The Identity Ecosystem) -->
+    <!-- 2. App Library Section (Identity Ecosystem) -->
     <div class="app-library-section">
         <h3 class="section-label">Your Secure Ecosystem</h3>
         <div class="home-app-grid" id="main-app-grid">
-            <!-- App Icons (Squircles) will be injected here via JS -->
+            <!-- App Icons (Squircles) will be injected here via Dashboard.js -->
         </div>
     </div>
 
 </div>
+
+<!-- 3. Universal Module Portal (Multitasking Container) -->
+<!-- Calculator, Notes aur popups isi portal mein inject honge -->
+<div id="universal-module-portal"></div>
+
 <!-- ===================================================================== -->
 <!-- ===>> END OF BLOCK HTML 3 file : 3-Dashboard/Dashboard.html <<=== -->
 <!-- ===================================================================== -->
 
 
-<!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 1: Global System OS Setup (Head Section) <<=== -->
-<!-- ===================================================================== -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>R-ight Person | Spatial OS Dashboard</title>
-
-    <!-- [ PWA MANIFEST LINK ] -->
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#000000">
-
-    <!-- [ GLOBAL UI MODULES - CSS ] -->
-    <link rel="stylesheet" href="../0-Theme/Theme.css?v=1.5">
-    <link rel="stylesheet" href="../0.1-Notification/Notification.css?v=1.5">
-    <link rel="stylesheet" href="../0.2-Install/Install.css?v=1.5">
-    
-    <!-- [ LOCAL PAGE STYLE ] -->
-    <link rel="stylesheet" href="Dashboard.css?v=1.5">
-
-    <!-- [ EXTERNAL LIBRARIES ] -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- SF Symbols Vibe Logic -->
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
-    <!-- [ CORE SYSTEM LIBRARIES ] -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-
-    <style>
-        /* Spatial OS Entrance Rule */
-        body { opacity: 0; transition: opacity 0.8s ease-in-out; background-color: #000; }
-        body.loaded { opacity: 1; }
-    </style>
-</head>
-<!-- ===================================================================== -->
-<!-- ===>> END OF BLOCK HTML 1 file : 3-Dashboard/Dashboard.html <<=== -->
-<!-- ===================================================================== -->
-
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 2: Sidebar OS Architecture (The Central Hub) <<=== -->
-<!-- ===================================================================== -->
-<body class="spatial-dashboard">
-
-    <!-- 1. Side Spatial Power Strip (Left-Aligned Control Hub) -->
-    <aside class="sidebar-os spatial-glass" id="sidebar">
-        <!-- Top: Primary Identity Avatar -->
-        <div class="sidebar-top">
-            <div class="profile-pill haptic-touch" id="master-avatar-trigger" title="Digital Identity">
-                <div class="profile-avatar" id="user-avatar-initial">U</div>
-            </div>
-        </div>
-
-        <!-- Middle: Primary & Utility Apps -->
-        <nav class="sidebar-nav">
-            <a href="#" class="nav-item active haptic-touch" title="Home" id="nav-home">
-                <i class="fa-light fa-grid-2"></i>
-            </a>
-            <!-- Smart Tool: Calculator (Injected Module) -->
-            <a href="#" class="nav-item haptic-touch" title="Calculator" id="tool-calc">
-                <i class="fa-light fa-calculator"></i>
-            </a>
-            <!-- Smart Tool: Notes (Injected Module) -->
-            <a href="#" class="nav-item haptic-touch" title="Notes" id="tool-notes">
-                <i class="fa-light fa-notebook"></i>
-            </a>
-        </nav>
-
-        <!-- Bottom: System Status & Control -->
-        <div class="sidebar-bottom">
-            <!-- Notification Capsule Pill -->
-            <div class="notif-pill-btn haptic-touch" id="notif-capsule-trigger" title="Notifications">
-                <i class="fa-light fa-bell"></i>
-                <span class="notif-dot"></span>
-            </div>
-
-            <div class="system-controls">
-                <!-- Theme Controller -->
-                <button class="nav-util-btn haptic-touch" id="global-theme-toggle">
-                    <i id="theme-icon" class="fa-light fa-moon"></i>
-                </button>
-
-                <!-- iOS Status Indicators (Vertical List) -->
-                <div class="sidebar-status-pill">
-                    <div class="status-time" id="dash-clock">--:--</div>
-                    <div class="status-icons-list">
-                        <i class="fa-solid fa-wifi"></i>
-                        <div class="ios-battery-pill"></div>
-                    </div>
-                </div>
-
-                <!-- Global Sign Out -->
-                <button class="nav-item logout-trigger haptic-touch" id="logout-btn-trigger" title="Logout">
-                    <i class="fa-light fa-power-off"></i>
-                </button>
-            </div>
-        </div>
-    </aside>
-
-    <!-- 2. Floating Page Title (The "Azad" Header) -->
-    <header class="floating-page-header">
-        <span class="page-indicator blue-accent" id="current-page-title">Home</span>
-    </header>
-
-    <!-- 3. Main Content Container -->
-    <main class="content-viewport" id="main-content">
-        <div id="contentArea" class="spatial-entry-animation">
-            <!-- Content will be injected here via JS -->
-        </div>
-    </main>
-
-<!-- ===================================================================== -->
-<!-- ===>> END OF BLOCK HTML 2 file : 3-Dashboard/Dashboard.html <<=== -->
-<!-- ===================================================================== -->
-
-
-<!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 3: Home Dashboard Content (Spatial Views) <<=== -->
+<!-- ===>> BLOCK HTML 4: Universal Overlays & System Controllers <<=== -->
 <!-- ===================================================================== -->
 <!-- 
-    VIEWPORT LOGIC:
-    - ContentArea: Yahan hamare Widgets aur Grid rahenge.
-    - Normalized Size: Widgets ab compact honge (iPadOS 18 Widget Standard).
--->
-
-<!-- 1. Home Dashboard View -->
-<div id="home-dashboard-view" class="dashboard-view active">
-
-    <!-- Top Row: Normalized Spatial Widgets -->
-    <div class="home-header-row">
-
-        <!-- Greeting Widget (Compact Glass) -->
-        <div class="home-widget-card spatial-glass haptic-touch" id="greeting-widget">
-            <div class="greeting-content">
-                <h1 class="greeting-text">Good <span id="greeting-time" class="blue-accent">Day</span>,</h1>
-                <h2 class="greeting-name" id="user-display-name">Guest</h2>
-                <p class="date-text secondary-label" id="current-full-date">LOADING DATE...</p>
-            </div>
-        </div>
-
-        <!-- Weather Widget (Compact Glass) -->
-        <div class="home-widget-card spatial-glass haptic-touch" id="weather-widget">
-            <div class="weather-row">
-                <div class="weather-info">
-                    <h2 id="weather-city" class="primary-text">Location</h2>
-                    <p id="weather-temp" class="blue-accent">--°</p>
-                    <span id="weather-desc" class="secondary-label">Updating Weather...</span>
-                </div>
-                <div class="weather-icon-box">
-                    <i class="fa-light fa-cloud-sun-bright" id="main-weather-icon"></i>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- 2. App Library Section (The Identity Ecosystem) -->
-    <div class="app-library-section">
-        <h3 class="section-label">Your Secure Ecosystem</h3>
-        <div class="home-app-grid" id="main-app-grid">
-            <!-- App Icons (Squircles) will be injected here via JS -->
-        </div>
-    </div>
-
-</div>
-<!-- ===================================================================== -->
-<!-- ===>> END OF BLOCK HTML 3 file : 3-Dashboard/Dashboard.html <<=== -->
-<!-- ===================================================================== -->
-
-
-<!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 4: Universal Overlays & Modular Portals <<=== -->
-<!-- ===================================================================== -->
-<!-- 
-    MODULAR SYNC:
-    - Assistive Touch: Master floating menu.
-    - Action Sheet: Premium confirmation drawer (Logout).
-    - Module Portal: Rasta jahan Lock Screen aur Apps inject hongi.
+    MODULAR OVERLAYS:
+    1. Dynamic Island: Central Notification Hub.
+    2. Assistive Touch: Master Floating Controller.
+    3. Action Sheet: System confirmation drawers.
 -->
 
 <!-- 1. Universal Notification Slot (Dynamic Island Sync) -->
-<!-- Note: Ye Notch hamare Global Notification.js engine se link hai -->
+<!-- Ye notch global Notification.js se control hota hai -->
 <div id="showIsland" class="dynamic-island-wrapper">
     <div class="dynamic-island-pill">
         <div id="island-icon" class="island-icon-box"></div>
@@ -367,7 +201,7 @@
     </div>
 </div>
 
-<!-- 2. Assistive Touch (Master Floating Controller) -->
+<!-- 2. Assistive Touch (Master Floating Button) -->
 <div id="assistive-touch-container" class="at-container">
     <div id="at-trigger" class="at-trigger haptic-touch">
         <div class="at-inner-circle"></div>
@@ -396,7 +230,7 @@
     </div>
 </div>
 
-<!-- 3. Spatial Action Sheet (System Confirmation Drawer) -->
+<!-- 3. Spatial Action Sheet (System Drawer) -->
 <div id="logout-action-sheet" class="action-sheet-overlay">
     <div class="action-sheet-container spatial-glass">
         <div class="action-sheet-header">
@@ -411,13 +245,10 @@
     </div>
 </div>
 
-<!-- 4. Universal Module Portal (The Injection Slot) -->
-<!-- Yahan hum Calculator, Notes, aur Security Lock ko dynamically load karenge -->
-<div id="universal-module-portal"></div>
-
-<!-- 5. Spatial Page Loader (Apple OS Feel) -->
+<!-- 4. Spatial Page Loader (Entrance System) -->
 <div id="fullscreen-loader" class="fullscreen-loader spatial-glass">
     <div class="loader-content">
+        <!-- Official Apple-style loading dots will be handled via CSS -->
         <div class="apple-spinner-large">
             <div></div><div></div><div></div><div></div><div></div><div></div>
             <div></div><div></div><div></div><div></div><div></div><div></div>
@@ -431,51 +262,64 @@
 <!-- ===================================================================== -->
 
 
-<!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 5 & 6: Global Engine Integration & Logic Hub <<=== -->
-<!-- ===================================================================== -->
 
-<!-- 1. Supabase Core Library -->
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 5: Global Engine Integration & System Reveal <<=== -->
+<!-- ===================================================================== -->
+<!-- 
+    OS LOGIC HUB:
+    - Supabase Client is globally initialized here.
+    - Modular JS Engines handle theme, notifications and OS behavior.
+-->
+
+<!-- 1. Supabase Foundation (v2) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
     /* --------------------------------------------------------------------- */
-    /* --- Sub-Block 6A : Nuclear Supabase Initialization --- */
+    /* --- Sub-Block 5A : Supabase System Initialization --- */
     /* --------------------------------------------------------------------- */
     (function() {
         const SB_URL = "https://xtzdlepgpqvllwzjfrsh.supabase.co";
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emRsZXBncHF2bGx3empmcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5OTI2MzcsImV4cCI6MjA4NzU2ODYzN30.NxX8BPCK_HNQYmn0-7YkdPv12gO8wKgOS5oP2R0OYZc";
 
-        // Global Instance (Window Level for Zero Errors)
+        // Master Instance (Window level for zero collision)
         window._sb = supabase.createClient(SB_URL, SB_KEY);
-        console.log("OS: Supabase Global Client Ready.");
+        console.log("Spatial OS: Database Engine Synchronized.");
     })();
 </script>
 
-<!-- 2. Universal Modules (Sirf EK EK baar) -->
+<!-- 2. Universal Global Modules (Sirf EK EK baar) -->
 <script src="../0-Theme/Theme.js?v=1.5" defer></script>
 <script src="../0.1-Notification/Notification.js?v=1.5" defer></script>
 <script src="../0.2-Install/Install.js?v=1.5" defer></script>
 
-<!-- 3. Local Dashboard Logic -->
+<!-- 3. Local Dashboard OS Logic Engine -->
 <script src="Dashboard.js?v=1.5" defer></script>
 
 <script>
     /* --------------------------------------------------------------------- */
-    /* --- Sub-Block 6B : Page Reveal & PWA Setup --- */
+    /* --- Sub-Block 5B : Page Reveal & PWA Injection --- */
     /* --------------------------------------------------------------------- */
+    /**
+     * revealOS: 
+     * Sabhi elements aur modules load hone ke baad system reveal karta hai.
+     */
     window.addEventListener('load', () => {
-        // Reveal OS Environment
-        setTimeout(() => { document.body.classList.add('loaded'); }, 150);
+        // Smooth Body Reveal (Opacity 0 -> 1)
+        setTimeout(() => {
+            document.body.classList.add('loaded');
+        }, 150);
 
-        // Modular PWA Injection
+        // PWA Install Capsule Injection (Dynamic Loader)
         if (typeof fetch === 'function') {
             fetch('../0.2-Install/Install.html')
                 .then(res => res.text())
                 .then(html => {
                     const portal = document.getElementById('universal-module-portal');
                     if (portal) portal.insertAdjacentHTML('beforeend', html);
-                }).catch(e => console.warn("OS: PWA skip."));
+                })
+                .catch(err => console.warn("OS: PWA Module injection skipped."));
         }
     });
 </script>
@@ -483,5 +327,5 @@
 </body>
 </html>
 <!-- ===================================================================== -->
-<!-- ===>> END OF FINAL CLEANUP file : 3-Dashboard/Dashboard.html <<=== -->
+<!-- ===>> END OF BLOCK HTML 5 file : 3-Dashboard/Dashboard.html <<=== -->
 <!-- ===================================================================== -->
