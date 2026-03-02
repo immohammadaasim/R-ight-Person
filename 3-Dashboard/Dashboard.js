@@ -111,36 +111,29 @@ document.addEventListener('DOMContentLoaded', () => {
 /* --------------------------------------------------------------------- */
 /**
  * checkUserSession: 
- * Ensure karta hai ki valid user hi dashboard par hai.
- * Rule: Agar RP_Temp_Email memory mein nahi hai, toh access blocked.
+ * Dashboard khulne se pehle memory bridge check karta hai.
  */
 async function checkUserSession() {
-    if (typeof window.showLoader === 'function') window.showLoader('Verifying Identity...');
+    if (typeof window.showLoader === 'function') window.showLoader('Securing Session...');
 
-    // Memory Bridge se email nikaalo (Set by Verification Module)
+    // 1. Memory Bridge check (Verification page se aaya hua data)
     const activeEmail = sessionStorage.getItem('RP_Temp_Email');
 
     if (!activeEmail) {
-        // Bina session data ke dashboard access mana hai
+        console.error("OS: Memory Bridge Broken. Returning to Login.");
         window.location.href = '../1-login/login.html';
         return;
     }
 
     try {
-        // Database se profile fetch engine trigger karo
+        // 2. Database Lookup Engine (Using naye columns)
         await fetchUserProfile(activeEmail);
     } catch (err) {
-        console.error("Session Error:", err);
+        console.error("OS: Identity Fetch Failed:", err);
         if (typeof showIsland === 'function') showIsland("Identity verification failed.", "error");
         setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
     }
 }
-
-// OS activation check
-document.addEventListener('DOMContentLoaded', () => {
-    // Thoda sa delay taaki Block 1 ke modules initialize ho jayein
-    setTimeout(checkUserSession, 150);
-});
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 2A file : 3-Dashboard/Dashboard.js --- */ 
 /* --------------------------------------------------------------------- */
