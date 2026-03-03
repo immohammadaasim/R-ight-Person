@@ -398,25 +398,25 @@ body.loaded { opacity: 1; }
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 4A : Spatial Grid Architecture (Responsive Logic) --- */
+/* --- Block 4A : Spatial Grid Architecture (The Ecosystem Hub) --- */
 /* --------------------------------------------------------------------- */
 /**
  * App Library Section:
- * Widgets ke niche ka Grid area jo apps ko organise karta hai.
+ * Widgets ke niche ka grid jo hamari verified apps ko hold karta hai.
  */
 .app-library-section {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     width: 100%;
 }
 
 .section-label {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: 800;
     color: var(--s-text);
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 2rem;
-    padding-left: 0.4rem;
+    padding-left: 0.5rem;
 }
 
 .home-app-grid {
@@ -424,46 +424,46 @@ body.loaded { opacity: 1; }
     grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
     gap: 2.2rem;
     justify-items: center;
+    animation: spatialGridEntry 0.8s var(--smooth-flow) forwards;
 }
 
-/* Tablet & Mobile Grid Optimization */
+/* Tablet & Mobile Grid Refinement */
 @media (max-width: 768px) {
-    .home-app-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-    }
+    .home-app-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
 }
 
 @media (max-width: 480px) {
-    .home-app-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.2rem;
-    }
+    .home-app-grid { grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+}
+
+@keyframes spatialGridEntry {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 4A file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 4B : High-Fidelity Squircle Icons (Apple Standard) --- */
+/* --- Block 4B : High-Fidelity Squircle Icons (Spatial Mastery) --- */
 /* --------------------------------------------------------------------- */
 /**
  * App Icon Box:
- * 64px size with 20px-22px border radius for the perfect squircle look.
- * Refined Glossy overlay for the Spatial 'Vision Pro' feel.
+ * iPadOS 18 standard 64px icon with heavy squircle radius.
+ * Refined glass gloss reflection for elite depth.
  */
 .app-grid-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.8rem;
+    gap: 0.85rem;
     width: 100%;
 }
 
 .app-icon-box {
     width: 64px;
     height: 64px;
-    border-radius: 20px; /* God-level Squircle radius */
+    border-radius: 20px; /* Perfect Super Squircle */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -475,7 +475,7 @@ body.loaded { opacity: 1; }
     transition: transform 0.4s var(--spring-ease);
 }
 
-/* Elite Glass Gloss Reflection */
+/* Elite Glass Reflection (The Shine) */
 .app-icon-box::after {
     content: '';
     position: absolute;
@@ -485,28 +485,30 @@ body.loaded { opacity: 1; }
 }
 
 .app-grid-item:hover .app-icon-box {
-    transform: scale(1.1) translateY(-5px);
+    transform: scale(1.1) translateY(-6px);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
 .app-name {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: var(--p-text);
     text-align: center;
     letter-spacing: -0.1px;
     opacity: 0.9;
+    max-width: 90px;
+    word-wrap: break-word;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 4B file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 4C : Premium Gradient Palette (SF Icons) --- */
+/* --- Block 4C : Premium Gradient Palette (SF Icons Sync) --- */
 /* --------------------------------------------------------------------- */
 /**
- * Gradient Presets:
- * Official SF Symbol colors for high-end consistency.
+ * Ecosystem Gradients:
+ * High-end vibrant colors for distinct app identities.
  */
 .icon-blue   { background: linear-gradient(145deg, #00C6FF, #007AFF); }
 .icon-green  { background: linear-gradient(145deg, #30D158, #34C759); }
@@ -514,16 +516,6 @@ body.loaded { opacity: 1; }
 .icon-orange { background: linear-gradient(145deg, #FF9500, #FFCC00); }
 .icon-indigo { background: linear-gradient(145deg, #5E5CE6, #5856D6); }
 .icon-gray   { background: linear-gradient(145deg, #8E8E93, #636366); }
-
-/* Animation for Smooth Grid Entrance */
-.home-app-grid {
-    animation: spatialGridEntry 0.8s var(--smooth-flow) forwards;
-}
-
-@keyframes spatialGridEntry {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
 /* --------------------------------------------------------------------- */
 /* --- End Block 4C file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
@@ -684,11 +676,12 @@ body.loaded { opacity: 1; }
 /**
  * Spatial Overlay:
  * Apps (Calculator/Notes) ko dashboard ke upar tairte huye dikhata hai.
+ * Rule: Zero-Jerk Arriving animation.
  */
 .spatial-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--system-bg);
+    background: var(--system-bg) !important;
     z-index: 9999; display: none;
     opacity: 0; transform: scale(1.05);
     transition: all 0.5s var(--smooth-flow);
@@ -726,8 +719,7 @@ body.loaded { opacity: 1; }
 
 .loader-content { display: flex; flex-direction: column; align-items: center; gap: 2rem; }
 
-/* Apple-style Spinner handled via Fa-Spin in JS, 
-   common text style here */
+/* Apple-style Spinner styling */
 #loader-text {
     font-size: 1.1rem; font-weight: 700;
     color: var(--s-text); letter-spacing: -0.2px;

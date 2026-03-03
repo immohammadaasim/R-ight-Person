@@ -1,5 +1,5 @@
 /* ===================================================================== */
-/* ===>> BLOCK JS 1: Spatial OS Initialization & Conflict Fix <<=== */
+/* ===>> BLOCK JS 1: Spatial OS Initialization & Theme Sync Fix <<=== */
 /* ===================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,9 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --- Sub-Block 1A : OS Element Selection (Local Scope Sync) --- */
     /* --------------------------------------------------------------------- */
     /**
-     * Elements Mapping:
-     * Variables ko local scope mein rakha gaya hai taaki global modules
-     * (Theme.js/Notification.js) ke sath 'Already Declared' error na aaye.
+     * dashElements: 
+     * Dashboard ke main containers aur controls ki mapping.
      */
     const dashElements = {
         mainContent:      document.getElementById('main-content'),
@@ -21,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggle:      document.getElementById('global-theme-toggle')
     };
     
-    // Sidebar Primary Tools
+    // Sidebar Tools & Actions
     const toolCalc      = document.getElementById('tool-calc');
     const toolNotes     = document.getElementById('tool-notes');
     const masterAvatar  = document.getElementById('master-avatar-trigger');
@@ -32,20 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --------------------------------------------------------------------- */
 
     /* --------------------------------------------------------------------- */
-    /* --- Sub-Block 1B : OS UI Feedback Helpers (No Collisions) --- */
+    /* --- Sub-Block 1B : OS UI Feedback Helpers (Haptics) --- */
     /* --------------------------------------------------------------------- */
     /**
-     * triggerHaptic: Active Touch Reality Rule.
+     * triggerHaptic: Active Touch Reality rule.
      */
     function triggerHaptic() {
         if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
     }
     window.triggerHaptic = triggerHaptic;
-
-    /**
-     * NOTE: 'showIsland' aur 'islandContainer' variables ab global hain.
-     * Hum yahan unhe dobara declare nahi karenge taaki error na aaye.
-     */
 
     /* --------------------------------------------------------------------- */
     /* --- End Sub-Block 1B file : 3-Dashboard/Dashboard.js --- */ 
@@ -54,6 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --------------------------------------------------------------------- */
     /* --- Sub-Block 1C : OS Loader Controls (Zero-Jerk Arrival) --- */
     /* --------------------------------------------------------------------- */
+    /**
+     * showLoader / hideLoader: 
+     * Spatial entrance animations ko manage karta hai.
+     */
     window.showLoader = (text = 'Securing Identity...') => {
         if (!dashElements.fullscreenLoader) return;
         const loaderText = document.getElementById('loader-text');
@@ -75,20 +73,29 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --------------------------------------------------------------------- */
 
     /* --------------------------------------------------------------------- */
-    /* --- Sub-Block 1D : OS Theme Sync (Safe Recovery) --- */
+    /* --- Sub-Block 1D : OS Theme Engine (Icon Persistence Fix) --- */
     /* --------------------------------------------------------------------- */
     /**
-     * syncDashboardState: 
-     * Theme icons ko initial load par sahi state mein rakhta hai.
+     * syncDashboardTheme: 
+     * Page load hote hi turant sahi icon (Sun/Moon) set karta hai.
+     * Rule: White means White, Black means Black.
      */
-    function syncDashboardState() {
+    function syncDashboardTheme() {
         const savedTheme = localStorage.getItem('RP_System_Theme') || 'light';
-        const icon = document.getElementById('theme-icon');
-        if (icon) {
-            icon.className = (savedTheme === 'dark') ? 'fa-light fa-sun' : 'fa-light fa-moon';
+        const themeIcon = document.getElementById('theme-icon');
+        
+        // 1. Initial State Sync
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            if (themeIcon) themeIcon.className = 'fa-solid fa-sun'; // Solid for visibility
+        } else {
+            document.body.classList.remove('dark-mode');
+            if (themeIcon) themeIcon.className = 'fa-solid fa-moon'; // Solid for visibility
         }
     }
-    syncDashboardState();
+
+    // Theme recovery trigger
+    syncDashboardTheme();
 
     /* --------------------------------------------------------------------- */
     /* --- End Sub-Block 1D file : 3-Dashboard/Dashboard.js --- */ 
@@ -352,7 +359,7 @@ updateWeatherWidget();
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 4: Sidebar Navigation & Multitasking Engine <<=== */
+/* ===>> BLOCK JS 4: Sidebar Navigation & Ecosystem Hub Engine <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
@@ -360,8 +367,7 @@ updateWeatherWidget();
 /* --------------------------------------------------------------------- */
 /**
  * handleNavigation: 
- * Sidebar ke main navigation icons (Home) ko control karta hai.
- * Rule: 0.6s smooth transition between views.
+ * Sidebar ke main navigation icons ko control karta hai.
  */
 const navHomeBtn = document.getElementById('nav-home');
 const homeView   = document.getElementById('home-dashboard-view');
@@ -372,18 +378,17 @@ if (navHomeBtn) {
         e.preventDefault();
         if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
 
-        // 1. Navigation State Update
+        // Active State Update
         document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
         navHomeBtn.classList.add('active');
 
-        // 2. View Restoration
+        // View Restoration Logic
         if (homeView) {
             homeView.style.display = 'block';
             setTimeout(() => homeView.classList.add('active'), 50);
         }
         
         if (pageHeader) pageHeader.textContent = 'Home';
-        
         if (typeof showIsland === 'function') showIsland("Navigated to Home", "info");
     });
 }
@@ -392,60 +397,61 @@ if (navHomeBtn) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4B : OS Multitasking Engine (Tool Launcher) --- */
+/* --- Sub-Block 4B : OS Multitasking Engine (Spatial Popup Launcher) --- */
 /* --------------------------------------------------------------------- */
 /**
  * launchSpatialTool: 
- * Calculator, Notes aur Identity modules ko bina dashboard bnd kiye 
- * 'universal-module-portal' mein inject karke "Float" karwata hai.
+ * Ye hamare OS ka "Global Launcher" hai. 
+ * Kisi bhi app (Sidebar ya Grid) ko ye Dashboard ke upar float karwata hai.
  */
 const toolCalcBtn   = document.getElementById('tool-calc');
 const toolNotesBtn  = document.getElementById('tool-notes');
 const avatarTrigger = document.getElementById('master-avatar-trigger');
+const modulePortal  = document.getElementById('universal-module-portal');
 
 async function launchSpatialTool(toolID, displayName) {
     if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
     
-    const portal = document.getElementById('universal-module-portal');
+    if (!modulePortal) return;
     const windowID = `spatial-window-${toolID}`;
 
-    // Rule: Agar tool pehle se khula hai, toh usey focus (pop) karo
+    // Rule: Agar tool pehle se khula hai, toh usey focus (pop-out) karo
     if (document.getElementById(windowID)) {
         const existingWin = document.getElementById(windowID);
         existingWin.classList.remove('active');
-        void existingWin.offsetWidth; // Reflow for animation restart
+        void existingWin.offsetWidth; // Restart animation
         existingWin.classList.add('active');
         return;
     }
 
     if (typeof showIsland === 'function') {
-        showIsland(`Opening ${displayName}...`, "info");
+        showIsland(`Launching ${displayName}...`, "info");
     }
 
-    // Modular HTML Structure for Floating Tools
+    // Modular Popup Structure (iPadOS 18 Glass Material)
     const toolHTML = `
         <div id="${windowID}" class="spatial-overlay active" style="display:flex;">
             <div class="app-view-topbar spatial-glass">
                 <span class="page-indicator blue-accent">${displayName.toUpperCase()}</span>
                 <button class="nav-util-btn haptic-touch" onclick="this.closest('.spatial-overlay').remove()">
-                    <i class="fa-light fa-times"></i>
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="app-view-content" id="content-${toolID}">
                 <div style="padding:4rem; text-align:center;">
-                    <i class="fa-light fa-spinner-third fa-spin" style="font-size:3rem; color:var(--blue-accent);"></i>
-                    <p class="secondary-label" style="margin-top:1.5rem;">Syncing ${displayName} Module...</p>
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size:3rem; color:var(--blue-accent);"></i>
+                    <p class="secondary-label" style="margin-top:1.5rem; font-weight:600;">
+                        ${displayName} Module coming soon to Identity OS.
+                    </p>
                 </div>
             </div>
         </div>
     `;
 
-    if (portal) {
-        portal.insertAdjacentHTML('beforeend', toolHTML);
-    }
+    modulePortal.insertAdjacentHTML('beforeend', toolHTML);
 }
 
-// Sidebar Tool Listeners
+// Sidebar Tool Listeners (Using Global Launcher)
 if (toolCalcBtn)   toolCalcBtn.onclick   = () => launchSpatialTool('calculator', 'Calculator');
 if (toolNotesBtn)  toolNotesBtn.onclick  = () => launchSpatialTool('notes', 'Notes');
 if (avatarTrigger) avatarTrigger.onclick = () => launchSpatialTool('identity-card', 'Identity Card');
@@ -455,25 +461,52 @@ if (avatarTrigger) avatarTrigger.onclick = () => launchSpatialTool('identity-car
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4C : App Grid Launcher (The Identity Ecosystem) --- */
+/* --- Sub-Block 4C : Ecosystem Registry & Grid Launcher --- */
 /* --------------------------------------------------------------------- */
 /**
- * loadAppLibrary: 
- * Grid ke icons par click karne ka logic. 
- * Hum event delegation use karte hain taaki memory load kam ho.
+ * appRegistry: 
+ * Saari 8 Ecosystem Apps ki list unique IDs ke sath.
  */
-const mainAppGrid = document.getElementById('main-app-grid');
+const appRegistry = [
+    { id: "thought", name: "True Thought",   icon: "fa-brain",         color: "icon-indigo" },
+    { id: "text",    name: "True Tell Text", icon: "fa-comment-dots",  color: "icon-green"  },
+    { id: "call",    name: "Right-Call",     icon: "fa-phone-volume",  color: "icon-blue"   },
+    { id: "moments", name: "Real Moments",   icon: "fa-camera-retro",  color: "icon-red"    },
+    { id: "storage", name: "Safe Storage",   icon: "fa-vault",         color: "icon-gray"   },
+    { id: "pay",     name: "PayTime",        icon: "fa-wallet",        color: "icon-orange" },
+    { id: "news",    name: "Verify News",    icon: "fa-newspaper",     color: "icon-indigo" },
+    { id: "jobs",    name: "Correct Jobs",   icon: "fa-briefcase",     color: "icon-blue"   }
+];
 
-if (mainAppGrid) {
-    mainAppGrid.addEventListener('click', (e) => {
-        const appItem = e.target.closest('.app-grid-item');
-        if (appItem) {
-            const appName = appItem.querySelector('.app-name').textContent;
-            if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
-            if (typeof showIsland === 'function') showIsland(`${appName} coming soon to OS`, "info");
-        }
+/**
+ * loadEcosystemGrid: 
+ * Grid banata hai aur har app par 'launchSpatialTool' connect karta hai.
+ */
+function loadEcosystemGrid() {
+    const appGrid = document.getElementById('main-app-grid');
+    if (!appGrid) return;
+
+    appGrid.innerHTML = '';
+    appRegistry.forEach(app => {
+        const appItem = document.createElement('div');
+        appItem.className = 'app-grid-item haptic-touch';
+        appItem.innerHTML = `
+            <div class="app-icon-box ${app.color}">
+                <i class="fa-solid ${app.icon}"></i>
+            </div>
+            <span class="app-name">${app.name}</span>
+        `;
+        
+        // Popup Trigger Logic (Same as Sidebar Tools)
+        appItem.onclick = () => launchSpatialTool(app.id, app.name);
+        
+        appGrid.appendChild(appItem);
     });
 }
+
+// OS Start: Load apps into the ecosystem stage
+setTimeout(loadEcosystemGrid, 500);
+
 /* --------------------------------------------------------------------- */
 /* --- End Sub-Block 4C file : 3-Dashboard/Dashboard.js --- */ 
 /* --------------------------------------------------------------------- */

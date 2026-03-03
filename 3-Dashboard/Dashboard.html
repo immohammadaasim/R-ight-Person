@@ -42,101 +42,140 @@
 <!-- ===================================================================== -->
 
 
-
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 2 & 3: Sidebar OS & Main Content (Linear Fix) <<=== -->
+<!-- ===>> BLOCK HTML 2: Sidebar OS Architecture (The Central Hub) <<=== -->
 <!-- ===================================================================== -->
 <body class="spatial-dashboard">
 
-    <!-- 1. Sidebar OS: The Central Control Strip -->
+    <!-- 1. Side Spatial Power Strip (Left-Aligned Control Hub) -->
     <aside class="sidebar-os spatial-glass" id="sidebar">
+        <!-- Top: Primary Identity Avatar -->
         <div class="sidebar-top">
-            <div class="profile-pill haptic-touch" id="master-avatar-trigger">
+            <div class="profile-pill haptic-touch" id="master-avatar-trigger" title="Digital Identity">
                 <div class="profile-avatar" id="user-avatar-initial">U</div>
             </div>
         </div>
 
+        <!-- Middle: Primary & Utility Apps (Using Free Solid Icons) -->
         <nav class="sidebar-nav">
-            <a href="#" class="nav-item active haptic-touch" id="nav-home" title="Home">
+            <a href="#" class="nav-item active haptic-touch" title="Home" id="nav-home">
                 <i class="fa-solid fa-house"></i>
             </a>
-            <a href="#" class="nav-item haptic-touch" id="tool-calc" title="Calculator">
+            <!-- Smart Tool: Calculator (Injected Module) -->
+            <a href="#" class="nav-item haptic-touch" title="Calculator" id="tool-calc">
                 <i class="fa-solid fa-calculator"></i>
             </a>
-            <a href="#" class="nav-item haptic-touch" id="tool-notes" title="Notes">
-                <i class="fa-solid fa-note-sticky"></i>
+            <!-- Smart Tool: Notes (Injected Module) -->
+            <a href="#" class="nav-item haptic-touch" title="Notes" id="tool-notes">
+                <i class="fa-solid fa-file-pen"></i>
             </a>
         </nav>
 
+        <!-- Bottom: System Status & Control -->
         <div class="sidebar-bottom">
+            <!-- Notification Capsule Pill -->
+            <div class="notif-pill-btn haptic-touch" id="notif-capsule-trigger" title="Notifications">
+                <i class="fa-solid fa-bell"></i>
+                <span class="notif-dot"></span>
+            </div>
+
             <div class="system-controls">
+                <!-- Theme Controller -->
                 <button class="nav-util-btn haptic-touch" id="global-theme-toggle">
                     <i id="theme-icon" class="fa-solid fa-moon"></i>
                 </button>
-                
+
+                <!-- iOS Status Indicators (Vertical List) -->
                 <div class="sidebar-status-pill">
-                    <div class="status-time" id="dash-clock">00:00</div>
+                    <div class="status-time" id="dash-clock">--:--</div>
                     <div class="status-icons-list">
                         <i class="fa-solid fa-wifi"></i>
                         <div class="ios-battery-pill"></div>
                     </div>
                 </div>
 
-                <button class="nav-item logout-trigger haptic-touch" id="logout-btn-trigger">
+                <!-- Global Sign Out -->
+                <button class="nav-item logout-trigger haptic-touch" id="logout-btn-trigger" title="Logout">
                     <i class="fa-solid fa-power-off"></i>
                 </button>
             </div>
         </div>
     </aside>
 
-    <!-- 2. Azad Header -->
+    <!-- 2. Floating Page Title (The "Azad" Header) -->
     <header class="floating-page-header">
         <span class="page-indicator blue-accent" id="current-page-title">Home</span>
     </header>
 
-    <!-- 3. Main Content Stage -->
+    <!-- 3. Main Content Container -->
     <main class="content-viewport" id="main-content">
         <div id="contentArea" class="spatial-entry-animation">
-            
-            <!-- Home Dashboard View (Now inside the stage) -->
-            <div id="home-dashboard-view" class="dashboard-view active">
-                <div class="home-header-row">
-                    <!-- Greeting Widget -->
-                    <div class="home-widget-card spatial-glass haptic-touch" id="greeting-widget">
-                        <div class="greeting-content">
-                            <p class="greeting-text">Good <span id="greeting-time" class="blue-accent">Day</span>,</p>
-                            <h2 class="greeting-name" id="user-display-name">Guest</h2>
-                            <p class="date-text secondary-label" id="current-full-date">LOADING...</p>
-                        </div>
-                    </div>
-                    <!-- Weather Widget -->
-                    <div class="home-widget-card spatial-glass haptic-touch" id="weather-widget">
-                        <div class="weather-row">
-                            <div class="weather-info">
-                                <h2 id="weather-city">Location</h2>
-                                <p id="weather-temp" class="blue-accent">24°</p>
-                                <span id="weather-desc" class="secondary-label">Clear Sky</span>
-                            </div>
-                            <div class="weather-icon-box">
-                                <i class="fa-solid fa-cloud-sun"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- App Grid -->
-                <div class="app-library-section">
-                    <h3 class="section-label">Your Ecosystem</h3>
-                    <div class="home-app-grid" id="main-app-grid">
-                        <!-- Apps will be injected by JS -->
-                    </div>
-                </div>
-            </div>
-
+            <!-- Content will be injected here via JS -->
         </div>
     </main>
+
 <!-- ===================================================================== -->
-<!-- ===>> END OF BLOCK HTML 2 & 3 file : Dashboard.html <<=== -->
+<!-- ===>> END OF BLOCK HTML 2 file : 3-Dashboard/Dashboard.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 3: Home Dashboard Content (Spatial Stage) <<=== -->
+<!-- ===================================================================== -->
+<!-- 
+    STAGE LOGIC:
+    - ContentArea: Central container for all active OS views.
+    - Normalized Widgets: Sleek, compact iPadOS 18 widget cards.
+-->
+
+<!-- 1. Home Dashboard View (The Default Ecosystem View) -->
+<div id="home-dashboard-view" class="dashboard-view active">
+
+    <!-- Top Section: Dynamic Spatial Widgets -->
+    <div class="home-header-row">
+
+        <!-- Greeting Widget: Personalized Welcome -->
+        <div class="home-widget-card spatial-glass haptic-touch" id="greeting-widget">
+            <div class="greeting-content">
+                <p class="greeting-text">Good <span id="greeting-time" class="blue-accent">Day</span>,</p>
+                <h2 class="greeting-name" id="user-display-name">Guest</h2>
+                <p class="date-text secondary-label" id="current-full-date">LOADING DATE...</p>
+            </div>
+        </div>
+
+        <!-- Weather Widget: Real-time Environmental Sync -->
+        <div class="home-widget-card spatial-glass haptic-touch" id="weather-widget">
+            <div class="weather-row">
+                <div class="weather-info">
+                    <h2 id="weather-city" class="primary-text">Location</h2>
+                    <p id="weather-temp" class="blue-accent">24°</p>
+                    <span id="weather-desc" class="secondary-label">Clearing Skies</span>
+                </div>
+                <div class="weather-icon-box">
+                    <i class="fa-solid fa-cloud-sun-bright"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 2. App Library: The Identity Ecosystem Grid -->
+    <!-- Note: Apps will be injected here dynamically via Dashboard.js BLOCK JS 4C -->
+    <div class="app-library-section">
+        <h3 class="section-label">Your Secure Ecosystem</h3>
+        <div class="home-app-grid" id="main-app-grid">
+            <!-- Squircle icons (True Thought, PayTime, etc.) arrive here -->
+        </div>
+    </div>
+
+</div>
+
+<!-- 3. Universal Module Portal (Multitasking Overlay Slot) -->
+<!-- Calculator, Notes aur baaki Apps ke popups isi portal mein "Float" honge -->
+<div id="universal-module-portal"></div>
+
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 3 file : 3-Dashboard/Dashboard.html <<=== -->
 <!-- ===================================================================== -->
 
 
