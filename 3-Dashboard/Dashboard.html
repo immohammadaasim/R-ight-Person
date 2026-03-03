@@ -174,13 +174,15 @@
 <!-- ===================================================================== -->
 <!-- 
     MODULAR OVERLAYS:
-    1. Dynamic Island: Central Notification Hub.
-    2. Assistive Touch: Master Floating Controller.
-    3. Action Sheet: System confirmation drawers.
+    1. Universal Portal: For loading Identity, Calculator, Notes etc.
+    2. Dynamic Island: Central Notification Hub.
+    3. Assistive Touch: Master Floating Controller.
 -->
 
+<!-- 0. Universal Module Portal (The Master Door for Overlays) -->
+<div id="universal-module-portal"></div>
+
 <!-- 1. Universal Notification Slot (Dynamic Island Sync) -->
-<!-- Ye notch global Notification.js se control hota hai -->
 <div id="showIsland" class="dynamic-island-wrapper">
     <div class="dynamic-island-pill">
         <div id="island-icon" class="island-icon-box"></div>
@@ -198,19 +200,19 @@
     <div id="at-menu-overlay" class="at-menu-overlay">
         <div class="at-menu-grid spatial-glass">
             <div class="at-menu-item haptic-touch" id="at-home-trigger">
-                <div class="at-icon-box"><i class="fa-light fa-house"></i></div>
+                <div class="at-icon-box"><i class="fa-solid fa-house"></i></div>
                 <span>Home</span>
             </div>
             <div class="at-menu-item haptic-touch" id="at-lock-trigger">
-                <div class="at-icon-box"><i class="fa-light fa-lock"></i></div>
+                <div class="at-icon-box"><i class="fa-solid fa-lock"></i></div>
                 <span>Lock</span>
             </div>
             <div class="at-menu-item haptic-touch" onclick="location.reload()">
-                <div class="at-icon-box"><i class="fa-light fa-rotate"></i></div>
+                <div class="at-icon-box"><i class="fa-solid fa-rotate"></i></div>
                 <span>Refresh</span>
             </div>
             <div class="at-menu-item destructive-text haptic-touch" id="at-logout-trigger">
-                <div class="at-icon-box"><i class="fa-light fa-power-off"></i></div>
+                <div class="at-icon-box"><i class="fa-solid fa-power-off"></i></div>
                 <span>Logout</span>
             </div>
         </div>
@@ -235,7 +237,6 @@
 <!-- 4. Spatial Page Loader (Entrance System) -->
 <div id="fullscreen-loader" class="fullscreen-loader spatial-glass">
     <div class="loader-content">
-        <!-- Official Apple-style loading dots will be handled via CSS -->
         <div class="apple-spinner-large">
             <div></div><div></div><div></div><div></div><div></div><div></div>
             <div></div><div></div><div></div><div></div><div></div><div></div>
