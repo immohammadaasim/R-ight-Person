@@ -1,27 +1,36 @@
 /* ===================================================================== */
-/* ===>> BLOCK CSS 1: Identity OS Core Engine & Layout <<=== */
+/* ===>> BLOCK CSS 1: Identity OS Core Engine & Global Styling <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1A : Spatial Identity Variables --- */
+/* --- Block 1A : Adaptive Spatial Variables (iPadOS 18) --- */
 /* --------------------------------------------------------------------- */
 :root {
-    --identity-card-w: 440px;
+    /* Layout */
+    --identity-card-w: 460px;
+    --radius-card: 32px; /* Super Squircle */
+    --radius-control: 15px;
+    
+    /* visionOS 2.0 Glass Material */
     --glass-bg: rgba(255, 255, 255, 0.72);
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --radius-card: 30px; /* Super Squircle */
-    --radius-control: 14px;
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-blur: blur(40px) saturate(210%);
+    --glass-shadow: 0 25px 55px rgba(0, 0, 0, 0.1), inset 0 0 0 0.5px rgba(255, 255, 255, 0.3);
+    
+    /* Typography */
     --blue-accent: #007AFF;
     --spring-ease: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* Pure Dark Appearance Rule */
 body.dark-mode {
     --glass-bg: rgba(28, 28, 30, 0.75);
     --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 30px 70px rgba(0, 0, 0, 0.5), inset 0 0 0 0.5px rgba(255, 255, 255, 0.05);
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 1B : Base Reset & Haptic Visuals --- */
+/* --- Block 1B : Base Reset & Spatial Stage --- */
 /* --------------------------------------------------------------------- */
 * {
     margin: 0; padding: 0; box-sizing: border-box;
@@ -29,22 +38,23 @@ body.dark-mode {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-    background-color: var(--system-bg);
-    height: 100vh;
-    width: 100%;
+    width: 100%; height: 100vh;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background-color: var(--system-bg); /* Pure Apple Background */
+    display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    color: var(--p-text);
 }
 
+/* Active Touch Reality: Physical feedback for all clickable elements */
 .haptic-touch {
-    transition: transform 0.2s var(--spring-ease);
+    transition: transform 0.2s var(--spring-ease), opacity 0.2s ease;
+    cursor: pointer;
 }
 
 .haptic-touch:active {
-    transform: scale(0.96);
+    transform: scale(0.95) !important;
+    opacity: 0.85;
 }
 
 /* --------------------------------------------------------------------- */
@@ -57,45 +67,46 @@ body {
 
 
 /* ===================================================================== */
-/* ===>> BLOCK CSS 2: Identity Stage & Spatial Card Design <<=== */
+/* ===>> BLOCK CSS 2: Spatial Card Architecture & Entrance <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2A : The Identity Stage (Viewport) --- */
+/* --- Block 2A : The Identity Stage Container --- */
 /* --------------------------------------------------------------------- */
 .identity-stage {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    perspective: 1000px;
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    perspective: 1200px;
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2B : Spatial Identity Card (iPad Widget Style) --- */
+/* --- Block 2B : The Spatial Identity Card --- */
 /* --------------------------------------------------------------------- */
 .identity-card {
     width: 100%;
     max-width: var(--identity-card-w);
     background: var(--glass-bg);
-    backdrop-filter: blur(40px) saturate(190%);
-    -webkit-backdrop-filter: blur(40px) saturate(190%);
-    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     border-radius: var(--radius-card);
-    padding: 2.5rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
-    transform: translateY(30px);
+    border: 1px solid var(--glass-border);
+    padding: 2.8rem;
+    box-shadow: var(--glass-shadow);
+    
+    /* Initial State for "Arrive" Transition */
     opacity: 0;
-    display: none; /* Controlled by Engine */
-    transition: all 0.8s var(--spring-ease);
+    display: none;
+    transform: translateY(40px) scale(0.96) rotateX(5deg);
+    transition: opacity 0.8s var(--smooth-flow), 
+                transform 0.8s var(--spring-ease);
 }
 
+/* Zero-Jerk Reveal Logic */
 .identity-card.active {
     display: block;
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1) rotateX(0deg);
 }
 
 /* --------------------------------------------------------------------- */
@@ -108,58 +119,51 @@ body {
 
 
 /* ===================================================================== */
-/* ===>> BLOCK CSS 3: Card Typography & Header Components <<=== */
+/* ===>> BLOCK CSS 3: Typography, Progress & Header Systems <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3A : Card Header & Progress Ring --- */
+/* --- Block 3A : Card Header Layout --- */
 /* --------------------------------------------------------------------- */
 .card-header {
-    margin-bottom: 2.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    margin-bottom: 2.8rem;
+    display: flex; justify-content: space-between; align-items: flex-start;
 }
 
 .step-indicator {
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 0.5rem;
+    font-size: 0.72rem; font-weight: 800;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    display: block; margin-bottom: 0.6rem;
 }
 
 .card-header h1 {
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1;
+    font-size: 2.2rem; font-weight: 800;
+    letter-spacing: -1.2px; line-height: 1;
+    margin: 0;
 }
 
 .card-header p {
-    margin-top: 0.4rem;
-    font-size: 1rem;
-    font-weight: 500;
+    margin-top: 0.5rem; font-size: 1.05rem;
+    font-weight: 500; color: var(--s-text);
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3B : Modern Progress Pill --- */
+/* --- Block 3B : Apple-style Circular Progress --- */
 /* --------------------------------------------------------------------- */
-.identity-progress-bar {
-    width: 44px; height: 44px;
+.circular-progress {
+    width: 48px; height: 48px;
     border-radius: 50%;
-    background: conic-gradient(var(--blue-accent) var(--p), rgba(142, 142, 147, 0.2) 0);
+    background: conic-gradient(var(--blue-accent) calc(var(--p) * 1%), rgba(142,142,147,0.2) 0);
     display: flex; align-items: center; justify-content: center;
     position: relative;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.1);
 }
 
-.identity-progress-bar::after {
-    content: '';
-    width: 34px; height: 34px;
+.circular-progress::after {
+    content: ''; position: absolute;
+    width: 38px; height: 38px;
     background: var(--glass-bg);
     border-radius: 50%;
-    position: absolute;
 }
 
 /* --------------------------------------------------------------------- */
@@ -172,95 +176,73 @@ body {
 
 
 /* ===================================================================== */
-/* ===>> BLOCK CSS 4: Spatial Form Elements (Inputs & Controls) <<=== */
+/* ===>> BLOCK CSS 4: Spatial UI Components (Forms & Controls) <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 4A : Input Grouping & Labels --- */
+/* --- Block 4A : Form Body & Input Grouping --- */
 /* --------------------------------------------------------------------- */
 .identity-form-body {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    display: flex; flex-direction: column; gap: 1.6rem;
 }
 
 .input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
+    display: flex; flex-direction: column; gap: 0.6rem;
 }
 
 .field-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: var(--s-text);
-    text-transform: uppercase;
-    padding-left: 4px;
+    font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.5px; color: var(--s-text);
+    text-transform: uppercase; padding-left: 4px;
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 4B : iPadOS Style Spatial Input --- */
+/* --- Block 4B : Spatial VisionOS Inputs --- */
 /* --------------------------------------------------------------------- */
 .spatial-input {
-    width: 100%;
-    height: 54px;
+    width: 100%; height: 56px;
     background: rgba(142, 142, 147, 0.12);
-    border: 1px solid transparent;
+    border: 1.5px solid transparent;
     border-radius: var(--radius-control);
-    padding: 0 1.2rem;
-    font-size: 1.1rem;
-    font-weight: 600;
+    padding: 0 1.25rem;
+    font-size: 1.15rem; font-weight: 600;
     color: var(--p-text);
+    transition: all 0.3s var(--smooth-flow);
     outline: none;
-    transition: all 0.3s ease;
 }
 
+.area-style { height: 100px; padding: 1.2rem; resize: none; }
+
 .spatial-input:focus {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.12);
     border-color: var(--blue-accent);
     box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
 }
 
-/* Select Style Override */
-.select-style {
-    appearance: none;
-    cursor: pointer;
-}
+.select-style { appearance: none; cursor: pointer; }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 4C : iPad Segmented Control (Gender) --- */
+/* --- Block 4C : iPad Segmented Control (Gender Selector) --- */
 /* --------------------------------------------------------------------- */
 .segmented-control {
-    display: flex;
-    background: rgba(142, 142, 147, 0.12);
-    padding: 3px;
-    border-radius: 12px;
-    gap: 2px;
+    display: flex; background: rgba(142, 142, 147, 0.15);
+    padding: 4px; border-radius: 14px; gap: 4px;
 }
 
 .seg-btn {
-    flex: 1;
-    height: 38px;
-    border: none;
-    background: transparent;
-    border-radius: 9px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--s-text);
-    cursor: pointer;
-    transition: all 0.25s ease;
+    flex: 1; height: 40px; border: none;
+    background: transparent; border-radius: 11px;
+    font-size: 0.95rem; font-weight: 600;
+    color: var(--s-text); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .seg-btn.active {
-    background: #FFFFFF;
-    color: #000000;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    background: #FFFFFF; color: #000000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 body.dark-mode .seg-btn.active {
-    background: rgba(255, 255, 255, 0.2);
-    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.25); color: #FFFFFF;
 }
 
 /* --------------------------------------------------------------------- */
@@ -273,63 +255,41 @@ body.dark-mode .seg-btn.active {
 
 
 /* ===================================================================== */
-/* ===>> BLOCK CSS 5: Action Buttons & Footer Systems <<=== */
+/* ===>> BLOCK CSS 5: Action Systems & Footer Status <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 5A : Master Action Button --- */
+/* --- Block 5A : Master Identity Action Button --- */
 /* --------------------------------------------------------------------- */
 .card-footer {
-    margin-top: 3rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    margin-top: 3.2rem;
+    display: flex; flex-direction: column; gap: 1.5rem;
 }
 
 .master-action-btn {
-    width: 100%;
-    height: 58px;
+    width: 100%; height: 62px;
     background: var(--blue-accent);
-    color: #FFFFFF;
-    border: none;
+    color: #FFFFFF; border: none;
     border-radius: var(--radius-control);
-    font-size: 1.2rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    cursor: pointer;
-    box-shadow: 0 8px 25px rgba(0, 122, 255, 0.3);
+    font-size: 1.25rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px; box-shadow: 0 10px 28px rgba(0, 122, 255, 0.35);
 }
 
-.master-action-btn i {
-    font-size: 1rem;
-    transition: transform 0.3s var(--spring-ease);
-}
-
-.master-action-btn:hover i {
-    transform: translateX(5px);
-}
+.master-action-btn i { font-size: 1.1rem; transition: transform 0.3s var(--spring-ease); }
+.master-action-btn:hover i { transform: translateX(6px); }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 5B : Security Note --- */
+/* --- Block 5B : Security Status Note --- */
 /* --------------------------------------------------------------------- */
 .security-note {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--s-text);
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    opacity: 0.8;
+    font-size: 0.78rem; font-weight: 600;
+    color: var(--s-text); text-align: center;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    opacity: 0.85;
 }
 
-.security-note i {
-    color: #34C759; /* Apple Success Green */
-}
+.security-note i { color: #34C759; /* Apple Success Green */ font-size: 0.9rem; }
 
 /* --------------------------------------------------------------------- */
 /* --- End Block 5B file : 4-identity/identity.html --- */ 

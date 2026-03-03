@@ -18,14 +18,15 @@
     <!-- [ EXTERNAL LIBRARIES ] -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- SF Symbols Vibe Logic -->
+    <!-- SF Symbols Vibe Logic (Premium Icons) -->
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
     <!-- [ CORE SYSTEM LIBRARIES ] -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* Identity OS Entrance Rule */
+        /* Spatial OS Entrance Rule */
         body { opacity: 0; transition: opacity 0.8s ease-in-out; background-color: var(--system-bg); }
         body.loaded { opacity: 1; }
     </style>
@@ -36,45 +37,38 @@
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 2: Identity Stage & Day 1 Form Structure <<=== -->
+<!-- ===>> BLOCK HTML 2: The Identity Stage (7-Day Journey) <<=== -->
 <!-- ===================================================================== -->
 <body class="spatial-identity-os">
 
-    <!-- 1. Spatial Identity Canvas (Main Container) -->
     <main class="identity-stage">
         
-        <!-- Day 1 Card: The Roots (Basic Identity) -->
+        <!-- --------------------------------------------------------------- -->
+        <!-- [ START : BLOCK HTML 2A - DAY 1: BASIC IDENTITY ] -->
+        <!-- --------------------------------------------------------------- -->
         <div id="identity-day-1" class="identity-card active spatial-glass">
-            
-            <!-- [ START : BLOCK HTML 2A - Header & Progress ] -->
             <header class="card-header">
-                <div class="header-content">
+                <div class="header-left">
                     <span class="step-indicator blue-accent">DAY 01 / 07</span>
                     <h1 class="primary-text">Basic Identity</h1>
                     <p class="secondary-label">Let's start with your official roots.</p>
                 </div>
-                <div class="progress-ring-box">
-                    <div class="identity-progress-bar" style="--p: 15%;"></div>
+                <div class="progress-box">
+                    <div class="circular-progress" style="--p: 15%;"></div>
                 </div>
             </header>
-            <!-- [ END : BLOCK HTML 2A - file : 4-identity/identity.html ] -->
 
-            <!-- [ START : BLOCK HTML 2B - Identity Input Fields ] -->
             <section class="identity-form-body">
-                
-                <!-- Full Name Field -->
                 <div class="input-group">
                     <label class="field-label">FULL NAME (AS PER GOVT ID)</label>
                     <input type="text" id="id-full-name" class="spatial-input" placeholder="e.g. Rahul Sharma" autocomplete="off">
                 </div>
 
-                <!-- DOB Field -->
                 <div class="input-group">
                     <label class="field-label">DATE OF BIRTH</label>
                     <input type="date" id="id-dob" class="spatial-input">
                 </div>
 
-                <!-- Gender Selection (iPad Segmented Control style) -->
                 <div class="input-group">
                     <label class="field-label">GENDER</label>
                     <div class="segmented-control" id="gender-selector">
@@ -84,7 +78,6 @@
                     </div>
                 </div>
 
-                <!-- Marital Status Field -->
                 <div class="input-group">
                     <label class="field-label">MARITAL STATUS</label>
                     <select id="id-marital-status" class="spatial-input select-style">
@@ -95,24 +88,64 @@
                         <option value="Widowed">Widowed</option>
                     </select>
                 </div>
-
             </section>
-            <!-- [ END : BLOCK HTML 2B - file : 4-identity/identity.html ] -->
 
-            <!-- [ START : BLOCK HTML 2C - Action Footer ] -->
             <footer class="card-footer">
-                <button id="save-identity-day-1" class="master-action-btn haptic-touch">
+                <button id="save-day-1" class="master-action-btn haptic-touch">
                     <span>Continue to Day 2</span>
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
-                <p class="security-note"><i class="fa-solid fa-shield-halved"></i> Data is verified by R-ight Person Identity Protocol.</p>
+                <p class="security-note"><i class="fa-solid fa-shield-check"></i> Verified by R-ight Identity Protocol</p>
             </footer>
-            <!-- [ END : BLOCK HTML 2C - file : 4-identity/identity.html ] -->
+        </div>
+        <!-- --------------------------------------------------------------- -->
+        <!-- [ END : BLOCK HTML 2A - file : 4-identity/identity.html ] -->
+        <!-- --------------------------------------------------------------- -->
 
-        </div> <!-- End identity-day-1 -->
 
-        <!-- Dynamic Slots for Day 2-7 will be handled by Engine -->
-        <div id="identity-future-slots"></div>
+        <!-- --------------------------------------------------------------- -->
+        <!-- [ START : BLOCK HTML 2B - DAY 2: CONTACT & ROOTS ] -->
+        <!-- --------------------------------------------------------------- -->
+        <div id="identity-day-2" class="identity-card spatial-glass" style="display:none;">
+            <header class="card-header">
+                <div class="header-left">
+                    <span class="step-indicator blue-accent">DAY 02 / 07</span>
+                    <h1 class="primary-text">Contact & Roots</h1>
+                    <p class="secondary-label">Where do you belong in the world?</p>
+                </div>
+                <div class="progress-box">
+                    <div class="circular-progress" style="--p: 30%;"></div>
+                </div>
+            </header>
+
+            <section class="identity-form-body">
+                <div class="input-group">
+                    <label class="field-label">CURRENT ADDRESS</label>
+                    <textarea id="id-address" class="spatial-input area-style" placeholder="House No, Street, City..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label class="field-label">PINCODE</label>
+                    <input type="number" id="id-pincode" class="spatial-input" placeholder="000000">
+                </div>
+                <div class="input-group">
+                    <label class="field-label">EMERGENCY CONTACT NAME</label>
+                    <input type="text" id="id-emergency-name" class="spatial-input" placeholder="Name of Person">
+                </div>
+                <div class="input-group">
+                    <label class="field-label">EMERGENCY CONTACT PHONE</label>
+                    <input type="tel" id="id-emergency-phone" class="spatial-input" placeholder="+91 XXXX-XXXXXX">
+                </div>
+            </section>
+
+            <footer class="card-footer">
+                <button id="save-day-2" class="master-action-btn haptic-touch">Continue to Day 3</button>
+            </footer>
+        </div>
+        <!-- --------------------------------------------------------------- -->
+        <!-- [ END : BLOCK HTML 2B - file : 4-identity/identity.html ] -->
+        <!-- --------------------------------------------------------------- -->
+
+        <!-- Day 3 to Day 7 ke blocks isi stage mein engine ke zariye arrive honge -->
 
     </main>
 
@@ -125,7 +158,7 @@
 <!-- ===>> BLOCK HTML 3: Universal System Overlays <<=== -->
 <!-- ===================================================================== -->
 
-    <!-- 1. Universal Notification Slot (Dynamic Island) -->
+    <!-- 1. Universal Notification Slot (Dynamic Island Sync) -->
     <div id="showIsland" class="dynamic-island-wrapper">
         <div class="dynamic-island-pill">
             <div id="island-icon" class="island-icon-box"></div>
@@ -133,12 +166,12 @@
         </div>
     </div>
 
-    <!-- 2. Universal Theme Slot (Hidden Manager) -->
+    <!-- 2. Universal Theme Slot (Portal) -->
     <div id="theme-manager-portal" style="display:none;">
         <button id="global-theme-toggle"><i id="theme-icon"></i></button>
     </div>
 
-    <!-- 3. Spatial Page Loader -->
+    <!-- 3. Spatial OS Loader -->
     <div id="fullscreen-loader" class="fullscreen-loader spatial-glass">
         <div class="loader-content">
             <div class="apple-spinner-large">
@@ -155,29 +188,39 @@
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 4: Identity Module Integration <<=== -->
+<!-- ===>> BLOCK HTML 4: Identity OS Engine Integration <<=== -->
 <!-- ===================================================================== -->
 
-    <!-- Supabase Engine -->
+    <!-- [ SYSTEM SCRIPTS ] -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
+        /* --------------------------------------------------------------------- */
+        /* --- Sub-Block 4A : Supabase Global Instance --- */
+        /* --------------------------------------------------------------------- */
         (function() {
             const SB_URL = "https://xtzdlepgpqvllwzjfrsh.supabase.co";
             const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emRsZXBncHF2bGx3empmcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5OTI2MzcsImV4cCI6MjA4NzU2ODYzN30.NxX8BPCK_HNQYmn0-7YkdPv12gO8wKgOS5oP2R0OYZc";
             window._sb = supabase.createClient(SB_URL, SB_KEY);
+            console.log("Identity OS: Database Ready.");
         })();
     </script>
 
-    <!-- Global Modules -->
+    <!-- [ MODULAR ENGINES ] -->
     <script src="../0-Theme/Theme.js?v=1.5" defer></script>
     <script src="../0.1-Notification/Notification.js?v=1.5" defer></script>
-
-    <!-- Local Identity Logic -->
+    
+    <!-- [ LOCAL MODULE LOGIC ] -->
     <script src="identity.js?v=1.5" defer></script>
 
     <script>
+        /* --------------------------------------------------------------------- */
+        /* --- Sub-Block 4B : OS Entrance Signal --- */
+        /* --------------------------------------------------------------------- */
         window.addEventListener('load', () => {
-            setTimeout(() => { document.body.classList.add('loaded'); }, 150);
+            setTimeout(() => { 
+                document.body.classList.add('loaded'); 
+            }, 150);
         });
     </script>
 
