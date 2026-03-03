@@ -460,6 +460,70 @@ if (avatarTrigger) avatarTrigger.onclick = () => launchSpatialTool('identity-car
 /* --- End Sub-Block 4B file : 3-Dashboard/Dashboard.js --- */ 
 /* --------------------------------------------------------------------- */
 
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 4D : Identity OS Auto-Launcher (The 3-Sec Rule) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * checkIdentityStatus: 
+ * Dashboard load hone ke 3 second baad check karta hai ki kya Identity 
+ * setup pending hai. Agar pending hai, toh usey makkhan ki tarah launch karta hai.
+ */
+function checkIdentityStatus() {
+    setTimeout(async () => {
+        const user = window.currentUserData;
+
+        // Rule: Agar identity_step 7 se kam hai, toh setup launch karo
+        if (user && (!user.identity_step || user.identity_step < 7)) {
+            console.log("Spatial OS: Identity pending. Launching Module...");
+            
+            if (typeof window.showIsland === 'function') {
+                showIsland("Identity Setup Required", "info");
+            }
+
+            // Identity module ko Dashboard ke upar Spatial Overlay mein kholna
+            launchIdentityOverlay();
+        }
+    }, 3000); // The 3-Second Rule
+}
+
+/**
+ * launchIdentityOverlay: 
+ * identity.html ko Dashboard ke 'universal-module-portal' mein load karta hai.
+ */
+function launchIdentityOverlay() {
+    const portal = document.getElementById('universal-module-portal');
+    if (!portal) return;
+
+    const overlayID = 'spatial-window-identity';
+    
+    // Check if already open
+    if (document.getElementById(overlayID)) return;
+
+    const identityHTML = `
+        <div id="${overlayID}" class="spatial-overlay active" style="display:flex;">
+            <iframe src="../4-identity/identity.html" 
+                    style="width:100%; height:100%; border:none; border-radius:inherit;"
+                    id="identity-iframe">
+            </iframe>
+        </div>
+    `;
+
+    portal.insertAdjacentHTML('beforeend', identityHTML);
+}
+
+// OS Start Check: Dashboard reveal hone ke baad identity status check karo
+window.addEventListener('load', () => {
+    // Thoda delay taaki Dashboard load animation poori ho jaye
+    setTimeout(checkIdentityStatus, 2000); 
+});
+
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 4D file : 3-Dashboard/Dashboard.js --- */ 
+/* --------------------------------------------------------------------- */
+
+
+
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 4C : Ecosystem Registry & Grid Launcher --- */
 /* --------------------------------------------------------------------- */
