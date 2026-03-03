@@ -91,59 +91,79 @@ body.loaded { opacity: 1; }
 /* --------------------------------------------------------------------- */
 /**
  * Sidebar OS:
- * Centering Fix: Icons aur status ko ek seedhi vertical line mein rakhta hai.
+ * Ab isme proper breathing room hai. 
+ * Icons ek dusre par chadhenge nahi.
  */
 .sidebar-os {
     position: fixed;
     top: 0; left: 0; bottom: 0;
     width: var(--sidebar-w);
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border-right: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.65); /* Light Translucent Glass */
+    backdrop-filter: blur(50px) saturate(180%);
+    -webkit-backdrop-filter: blur(50px) saturate(180%);
+    border-right: 1px solid rgba(255, 255, 255, 0.4);
     display: flex;
     flex-direction: column;
-    align-items: center; /* All elements centered horizontally */
+    align-items: center;
     justify-content: space-between;
-    padding: 2.5rem 0;
+    padding: 2.5rem 0 2rem 0; /* Balanced Vertical Padding */
     z-index: 1000;
-    transition: transform 0.5s var(--smooth-flow);
+    transition: transform 0.5s var(--smooth-flow), background 0.3s ease;
+    box-shadow: 6px 0 25px rgba(0, 0, 0, 0.04); /* Subtle Depth */
 }
 
-/* Profile Identity Pill */
+/* Dark Mode Support for Sidebar */
+body.dark-mode .sidebar-os {
+    background: rgba(28, 28, 30, 0.65);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Profile Identity Pill (The 3D Pop) */
 .profile-pill {
     width: 48px; height: 48px;
-    background: linear-gradient(135deg, var(--blue-accent), #5856D6);
-    border-radius: 14px; /* Squircle */
+    background: linear-gradient(135deg, #007AFF, #5856D6);
+    border-radius: 16px; /* Super Squircle */
     display: flex; align-items: center; justify-content: center;
-    color: #FFFFFF; font-weight: 800; font-size: 1.1rem;
-    box-shadow: 0 8px 20px rgba(0, 113, 227, 0.3);
-    border: 1.5px solid rgba(255,255,255,0.3);
-    margin-bottom: 1.5rem;
+    color: #FFFFFF; font-weight: 700; font-size: 1.2rem;
+    box-shadow: 0 8px 16px rgba(0, 122, 255, 0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
 }
 
 .sidebar-nav {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.8rem;
+    gap: 2rem; /* Increased Gap for Comfort */
     flex: 1;
+    padding-top: 1rem;
 }
 
 .nav-item {
-    width: 46px; height: 46px;
+    width: 44px; height: 44px;
     display: flex; align-items: center; justify-content: center;
     border-radius: 14px;
     color: var(--s-text);
-    font-size: 1.4rem;
-    transition: all 0.3s var(--smooth-flow);
+    font-size: 1.3rem;
+    transition: all 0.3s var(--spring-ease);
     background: transparent;
     border: none;
+    position: relative;
 }
 
+.nav-item:hover {
+    color: var(--p-text);
+    background: rgba(0, 0, 0, 0.04);
+}
+
+body.dark-mode .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
+
 .nav-item.active {
-    color: var(--blue-accent);
-    background: rgba(0, 122, 255, 0.1);
+    color: #FFFFFF;
+    background: var(--blue-accent);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2A file : 3-Dashboard/Dashboard.css --- */ 
@@ -156,85 +176,122 @@ body.loaded { opacity: 1; }
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.8rem; /* More space at bottom */
     width: 100%;
+}
+
+/* Notification Pill */
+.notif-pill-btn {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--p-text);
+    font-size: 1.1rem;
+    background: rgba(142, 142, 147, 0.12);
+    border-radius: 50%;
+    position: relative;
+}
+
+.notif-dot {
+    position: absolute; top: 10px; right: 10px;
+    width: 8px; height: 8px;
+    background: #FF3B30; border-radius: 50%;
+    border: 1.5px solid var(--card-bg);
+    display: none; /* JS will toggle */
 }
 
 .system-controls {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.2rem;
+    gap: 1.5rem;
 }
 
-/* Elegant Vertical Time */
+/* Elegant Vertical Time (Fixed Spacing) */
 .status-time {
-    font-size: 0.72rem;
-    font-weight: 800;
+    font-size: 0.85rem; /* Bigger Font */
+    font-weight: 700;
     color: var(--p-text);
-    writing-mode: vertical-lr; /* Vertically Aligned */
-    letter-spacing: 1px;
+    writing-mode: vertical-lr;
+    transform: rotate(180deg); /* Reading direction fix */
+    letter-spacing: 1.5px;
     margin-bottom: 0.5rem;
+    opacity: 0.8;
 }
 
 .status-icons-list {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.8rem;
+    gap: 1rem;
     color: var(--s-text);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
 }
 
-/* iOS Style Battery Capsule */
+/* iOS Style Battery Capsule (Clearer) */
 .ios-battery-pill {
-    width: 20px; height: 10px;
-    border: 1.5px solid var(--p-text);
-    border-radius: 3px;
+    width: 22px; height: 11px; /* Slightly Larger */
+    border: 1.5px solid var(--s-text);
+    border-radius: 4px;
     position: relative;
+    opacity: 0.7;
 }
 
 .ios-battery-pill::after {
     content: ''; position: absolute;
     top: 1px; left: 1px; bottom: 1px;
     width: var(--battery-level, 60%);
-    background: var(--success-green);
-    border-radius: 1px;
+    background: var(--p-text); /* Matches Theme Text */
+    border-radius: 2px;
 }
 
-.logout-trigger { color: var(--destructive-red) !important; opacity: 0.8; }
+/* Theme Toggle Button */
+.nav-util-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(142, 142, 147, 0.1);
+    color: var(--p-text);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.logout-trigger { color: #FF3B30 !important; opacity: 1; }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2B file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2C : Floating Azad Header (Blue Title) --- */
+/* --- Block 2C : Floating Azad Header (Position Fix) --- */
 /* --------------------------------------------------------------------- */
 /**
  * Page Header:
- * Top-left mein azad blue text indicator.
+ * Ab ye Sidebar se chipka nahi rahega.
+ * Left Margin: Sidebar Width + 3.5rem Gap.
  */
 .floating-page-header {
     position: fixed;
-    top: 2.2rem;
-    left: calc(var(--sidebar-w) + 3rem);
+    top: 2.5rem; /* Aligned with Profile Pill */
+    left: calc(var(--sidebar-w) + 3.5rem);
     z-index: 999;
     pointer-events: none;
+    transition: left 0.5s var(--smooth-flow);
 }
 
 .page-indicator {
-    font-size: 1.8rem;
+    font-size: 2.2rem; /* Large Bold Title */
     font-weight: 800;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
     color: var(--blue-accent);
     text-transform: capitalize;
+    text-shadow: 0 10px 30px rgba(0, 122, 255, 0.15); /* Soft Glow */
 }
 
-/* Mobile Responsiveness for Navigation */
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
-    .sidebar-os { transform: translateX(-100%); } /* Slide out sidebar on mobile */
+    .sidebar-os { transform: translateX(-100%); }
     .floating-page-header { left: 1.5rem; top: 1.5rem; }
-    .page-indicator { font-size: 1.5rem; }
+    .page-indicator { font-size: 1.8rem; }
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 2C file : 3-Dashboard/Dashboard.css --- */ 
@@ -244,9 +301,7 @@ body.loaded { opacity: 1; }
 /* ===>> END OF BLOCK CSS 2 file : 3-Dashboard/Dashboard.css <<=== */
 /* ===================================================================== */
 
-/* ===================================================================== */
-/* ===>> END OF BLOCK CSS 2 file : 3-Dashboard/Dashboard.css <<=== */
-/* ===================================================================== */
+
 
 
 /* ===================================================================== */
@@ -259,32 +314,38 @@ body.loaded { opacity: 1; }
 /**
  * Content Viewport:
  * Sidebar ke baad bachi hui screen ko handle karta hai.
+ * Fix: Ab ye display ko forcefully manage karega.
  */
 .content-viewport {
     margin-left: var(--sidebar-w);
-    padding-top: 7rem; /* Top header ke liye jagah */
-    padding-right: 2.5rem;
-    padding-left: 3rem;
+    padding-top: 8rem; /* Space for Floating Header */
+    padding-right: 3rem;
+    padding-left: 3.5rem;
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
     transition: all 0.6s var(--smooth-flow);
+    position: relative;
+    z-index: 1;
 }
 
-/* Visibility Guard: Ensure active view is visible */
+/* Visibility Guard: Rule-based entrance */
 .dashboard-view {
-    display: none; /* Default hidden */
+    display: none; /* Default state */
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s var(--smooth-flow), transform 0.6s var(--spring-ease);
+    transform: translateY(30px) scale(0.98);
+    transition: opacity 0.8s var(--smooth-flow), 
+                transform 0.8s var(--spring-ease);
+    width: 100%;
+    max-width: 1200px;
 }
 
-/* Jab JS '.active' class degi toh content makkhan jaise aayega */
+/* Jab JS '.active' class degi toh content forcefully show hoga */
 .dashboard-view.active {
     display: block !important;
     opacity: 1 !important;
-    transform: translateY(0) !important;
+    transform: translateY(0) scale(1) !important;
 }
 
 .content-viewport::-webkit-scrollbar { width: 0; background: transparent; }
@@ -297,55 +358,69 @@ body.loaded { opacity: 1; }
 /* --------------------------------------------------------------------- */
 /**
  * Home Widgets:
- * Inka size ab balanced hai (Neither too big, nor too small).
+ * Spatial Glass Cards with Deep Squircle (28px).
  */
 .home-header-row {
     display: flex;
-    gap: 1.8rem;
-    margin-bottom: 3.5rem;
+    gap: 2rem;
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
 }
 
 .home-widget-card {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: var(--radius-squircle);
-    border: 1.2px solid var(--glass-border);
-    padding: 2.2rem;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(40px) saturate(190%);
+    -webkit-backdrop-filter: blur(40px) saturate(190%);
+    border-radius: 30px; /* Super Squircle */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 2.5rem;
     flex: 1;
-    max-width: 360px; /* God-level Proportion */
-    min-height: 180px;
-    box-shadow: var(--glass-shadow);
+    min-width: 320px;
+    max-width: 420px;
+    min-height: 200px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
     justify-content: center;
     position: relative;
     overflow: hidden;
+    transition: transform 0.4s var(--spring-ease), box-shadow 0.4s ease;
+}
+
+body.dark-mode .home-widget-card {
+    background: rgba(28, 28, 30, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.home-widget-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
 }
 
 /* Greeting Typography */
 .greeting-text {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     font-weight: 500;
     color: var(--s-text);
     margin: 0;
 }
 
 .greeting-name {
-    font-size: 2.4rem;
+    font-size: 2.8rem;
     font-weight: 800;
-    margin: 0.3rem 0 0.8rem 0;
-    letter-spacing: -1px;
+    margin: 0.4rem 0 1rem 0;
+    letter-spacing: -1.5px;
     color: var(--p-text);
-    line-height: 1;
+    line-height: 1.1;
 }
 
 .date-text {
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 2px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--blue-accent);
+    opacity: 0.9;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 3B file : 3-Dashboard/Dashboard.css --- */ 
@@ -361,28 +436,48 @@ body.loaded { opacity: 1; }
     width: 100%;
 }
 
-.weather-info h2 { font-size: 1.1rem; font-weight: 700; color: var(--p-text); margin: 0; }
-.weather-info p { font-size: 2.2rem; font-weight: 800; color: var(--blue-accent); margin: 0.2rem 0; }
-.weather-info span { font-size: 0.8rem; font-weight: 600; color: var(--s-text); }
+.weather-info h2 { 
+    font-size: 1.2rem; 
+    font-weight: 700; 
+    color: var(--p-text); 
+    margin: 0; 
+    opacity: 0.8;
+}
+
+.weather-info p { 
+    font-size: 3rem; 
+    font-weight: 800; 
+    color: var(--blue-accent); 
+    margin: 0.3rem 0; 
+}
+
+.weather-info span { 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    color: var(--s-text); 
+}
 
 .weather-icon-box {
-    font-size: 3.2rem;
+    font-size: 3.8rem;
     color: var(--blue-accent);
-    filter: drop-shadow(0 0 15px rgba(0, 122, 255, 0.4));
-    animation: spatialFloat 5s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 20px rgba(0, 122, 255, 0.3));
+    animation: spatialFloat 6s ease-in-out infinite alternate;
 }
 
 @keyframes spatialFloat {
     0% { transform: translateY(0) rotate(0); }
-    100% { transform: translateY(-10px) rotate(4deg); }
+    100% { transform: translateY(-12px) rotate(5deg); }
 }
 
 /* Mobile Responsiveness Content Refinement */
 @media (max-width: 768px) {
-    .content-viewport { margin-left: 0; padding: 6rem 1.2rem 2rem 1.2rem; }
-    .home-header-row { flex-direction: column; gap: 1.2rem; }
-    .home-widget-card { max-width: 100%; min-height: 150px; padding: 1.8rem; }
-    .greeting-name { font-size: 2rem; }
+    .content-viewport { 
+        margin-left: 0; 
+        padding: 7rem 1.5rem 2rem 1.5rem; 
+    }
+    .home-header-row { flex-direction: column; gap: 1.5rem; }
+    .home-widget-card { max-width: 100%; min-height: 180px; padding: 2rem; }
+    .greeting-name { font-size: 2.2rem; }
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 3C file : 3-Dashboard/Dashboard.css --- */ 
@@ -391,6 +486,8 @@ body.loaded { opacity: 1; }
 /* ===================================================================== */
 /* ===>> END OF BLOCK CSS 3 file : 3-Dashboard/Dashboard.css <<=== */
 /* ===================================================================== */
+
+
 
 
 /* ===================================================================== */
@@ -535,44 +632,50 @@ body.loaded { opacity: 1; }
 /* --------------------------------------------------------------------- */
 /**
  * Assistive Touch:
- * Screen ke niche right corner mein tairta hua system controller.
+ * Size adjusted for iPadOS 18 standard.
+ * Background ab zyada clear aur premium hai.
  */
 .at-container {
     position: fixed;
-    bottom: 2.5rem;
-    right: 3rem;
+    bottom: 2rem;
+    right: 2.5rem;
     z-index: 12000;
 }
 
 .at-trigger {
-    width: 58px; height: 58px;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(12px);
-    border-radius: 16px; /* Squircle Rule */
+    width: 52px; height: 52px; /* Compact & Precise */
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 14px; /* Squircle Rule */
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.1);
-    opacity: 0.8;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25), inset 0 0 0 0.5px rgba(255,255,255,0.15);
+    opacity: 0.7;
     transition: all 0.3s var(--smooth-flow);
+    border: 0.5px solid rgba(255,255,255,0.1);
 }
+
+.at-trigger:hover { opacity: 1; transform: scale(1.05); }
 
 .at-inner-circle {
-    width: 38px; height: 38px;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2.5px solid rgba(255, 255, 255, 0.6);
+    width: 34px; height: 34px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.6);
     border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255,255,255,0.1);
 }
 
-/* AT Menu Grid Overlay (visionOS Style) */
+/* AT Menu Overlay (visionOS Style Grid) */
 .at-menu-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(25px);
-    display: none; /* Controlled by JS '.active' */
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(30px) saturate(150%);
+    display: none;
     align-items: center; justify-content: center;
     z-index: 12001;
     opacity: 0;
-    transition: opacity 0.4s var(--smooth-flow);
+    transition: opacity 0.5s var(--smooth-flow);
 }
 
 .at-menu-overlay.active { display: flex; opacity: 1; }
@@ -580,31 +683,36 @@ body.loaded { opacity: 1; }
 .at-menu-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem;
-    background: var(--glass-bg);
-    padding: 3.5rem;
-    border-radius: 40px;
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    transform: scale(0.9);
-    transition: transform 0.4s var(--spring-ease);
+    gap: 2rem;
+    background: rgba(255, 255, 255, 0.75);
+    padding: 3rem;
+    border-radius: 40px; /* Deep Squircle */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+    transform: scale(0.8);
+    transition: transform 0.5s var(--spring-ease);
+}
+
+body.dark-mode .at-menu-grid {
+    background: rgba(28, 28, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .at-menu-overlay.active .at-menu-grid { transform: scale(1); }
 
 .at-menu-item {
     display: flex; flex-direction: column;
-    align-items: center; gap: 1rem;
+    align-items: center; gap: 0.8rem;
     color: var(--p-text); font-size: 0.85rem; font-weight: 700;
 }
 
 .at-icon-box {
-    width: 68px; height: 68px;
-    background: rgba(0, 0, 0, 0.8);
+    width: 64px; height: 64px;
+    background: rgba(0, 0, 0, 0.85);
     color: #FFFFFF; border-radius: 18px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.6rem;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    font-size: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 5A file : 3-Dashboard/Dashboard.css --- */ 
@@ -613,14 +721,10 @@ body.loaded { opacity: 1; }
 /* --------------------------------------------------------------------- */
 /* --- Block 5B : Spatial Action Sheet (The System Drawer) --- */
 /* --------------------------------------------------------------------- */
-/**
- * Action Sheet:
- * Bottom se slide hokar aane wala confirmation panel.
- */
 .action-sheet-overlay {
     position: fixed; inset: 0;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(15px);
     z-index: 11000; display: none;
     align-items: flex-end; justify-content: center;
     opacity: 0; transition: opacity 0.4s var(--smooth-flow);
@@ -629,43 +733,50 @@ body.loaded { opacity: 1; }
 .action-sheet-overlay.active { display: flex; opacity: 1; }
 
 .action-sheet-container {
-    width: 95%; max-width: 400px;
-    margin-bottom: 2.5rem;
+    width: 92%; max-width: 400px;
+    margin-bottom: 2rem;
     transform: translateY(110%);
-    transition: transform 0.5s var(--spring-ease);
+    transition: transform 0.6s var(--spring-ease);
 }
 
 .action-sheet-overlay.active .action-sheet-container { transform: translateY(0); }
 
 .action-sheet-header {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(30px);
     padding: 1.5rem; text-align: center;
     border-radius: 24px 24px 0 0;
-    border: 1px solid var(--glass-border);
-    border-bottom: 0.5px solid var(--glass-border);
+    border: 1px solid rgba(255,255,255,0.4);
 }
 
 .action-sheet-group {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(30px);
     border-radius: 0 0 24px 24px;
     overflow: hidden;
-    border: 1px solid var(--glass-border);
-    border-top: none;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-top: 0.5px solid rgba(0,0,0,0.05);
 }
 
-.cancel-group { margin-top: 1rem; border-radius: 24px; border: 1px solid var(--glass-border); }
+body.dark-mode .action-sheet-header, 
+body.dark-mode .action-sheet-group {
+    background: rgba(28, 28, 30, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cancel-group { 
+    margin-top: 0.8rem; 
+    border-radius: 20px; 
+}
 
 .action-sheet-btn {
     width: 100%; padding: 1.2rem;
     background: transparent; border: none;
     font-size: 1.15rem; font-weight: 600;
     color: var(--blue-accent);
-    border-top: 0.5px solid var(--glass-border);
 }
 
-.action-sheet-btn.destructive-text { color: var(--destructive-red); }
+.action-sheet-btn.destructive-text { color: #FF3B30; }
 /* --------------------------------------------------------------------- */
 /* --- End Block 5B file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
@@ -673,15 +784,10 @@ body.loaded { opacity: 1; }
 /* --------------------------------------------------------------------- */
 /* --- Block 5C : Full-Screen Spatial Overlay (Multitasking Logic) --- */
 /* --------------------------------------------------------------------- */
-/**
- * Spatial Overlay:
- * Apps (Calculator/Notes) ko dashboard ke upar tairte huye dikhata hai.
- * Rule: Zero-Jerk Arriving animation.
- */
 .spatial-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--system-bg) !important;
+    background: var(--system-bg);
     z-index: 9999; display: none;
     opacity: 0; transform: scale(1.05);
     transition: all 0.5s var(--smooth-flow);
@@ -693,12 +799,15 @@ body.loaded { opacity: 1; }
 .app-view-topbar {
     padding: 1.2rem 2.5rem;
     display: flex; align-items: center; justify-content: space-between;
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    border-bottom: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(40px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.app-view-content { flex: 1; overflow-y: auto; padding: 2rem; }
+body.dark-mode .app-view-topbar {
+    background: rgba(28, 28, 30, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
 /* --------------------------------------------------------------------- */
 /* --- End Block 5C file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
@@ -719,10 +828,10 @@ body.loaded { opacity: 1; }
 
 .loader-content { display: flex; flex-direction: column; align-items: center; gap: 2rem; }
 
-/* Apple-style Spinner styling */
 #loader-text {
-    font-size: 1.1rem; font-weight: 700;
-    color: var(--s-text); letter-spacing: -0.2px;
+    font-size: 1rem; font-weight: 700;
+    color: var(--s-text); letter-spacing: 1px;
+    text-transform: uppercase;
 }
 /* --------------------------------------------------------------------- */
 /* --- End Block 5D file : 3-Dashboard/Dashboard.css --- */ 

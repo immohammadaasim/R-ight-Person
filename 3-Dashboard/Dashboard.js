@@ -526,7 +526,6 @@ setTimeout(loadEcosystemGrid, 500);
 /**
  * handleAssistiveTouch: 
  * Floating circle menu ko toggle karta hai aur navigation shortcuts handle karta hai.
- * Rule: iPadOS 18 multitasking feel.
  */
 const atTriggerBtn   = document.getElementById('at-trigger');
 const atMenuGrid     = document.getElementById('at-menu-overlay');
@@ -560,7 +559,7 @@ if (atLockAction) {
     };
 }
 
-// Global Click listener: Close menu when clicking outside
+// Global Click listener: Menu bahar click karne par band ho jaye
 document.addEventListener('click', (e) => {
     if (atMenuGrid && atMenuGrid.classList.contains('active')) {
         if (!atMenuGrid.contains(e.target) && e.target !== atTriggerBtn) {
@@ -577,7 +576,7 @@ document.addEventListener('click', (e) => {
 /* --------------------------------------------------------------------- */
 /**
  * handleLogoutFlow: 
- * Confirmation drawer dikhata hai aur session clear karke user ko bahar bhejta hai.
+ * Confirmation drawer dikhata hai aur session clear karta hai.
  */
 const logoutRequestBtn  = document.getElementById('logout-btn-trigger');
 const logoutSheet       = document.getElementById('logout-action-sheet');
@@ -605,8 +604,7 @@ if (confirmLogoutBtn) {
         if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
         if (typeof window.showLoader === 'function') window.showLoader('Ending Identity Session...');
         
-        // Clear Memory Bridge
-        sessionStorage.clear();
+        sessionStorage.clear(); // Clear all temp data
         
         setTimeout(() => {
             window.location.href = '../1-login/login.html';
@@ -618,43 +616,45 @@ if (confirmLogoutBtn) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 5C : OS Entrance Reveal (The Visibility Fix) --- */
+/* --- Sub-Block 5C : OS Entrance Reveal (The Force Unlock) --- */
 /* --------------------------------------------------------------------- */
 /**
  * revealDashboardOS: 
- * Ensures dashboard views are unlocked and visible on page load.
- * Fix: Content ko "display: none" se nikaal kar active karta hai.
+ * Ye hamara main engine hai jo load hone par system ko zinda karta hai.
+ * Force Reveal Logic: Home View ko forcefully activate karega.
  */
 function revealDashboardOS() {
     console.log("Spatial OS: Final Entrance Signal Triggered.");
 
-    // 1. Force Activate Home View and Sidebar Link
-    const homeView = document.getElementById('home-dashboard-view');
-    const navHome  = document.getElementById('nav-home');
+    const homeView    = document.getElementById('home-dashboard-view');
+    const navHome     = document.getElementById('nav-home');
     const contentArea = document.getElementById('contentArea');
 
+    // 1. Home View Reveal (Forcefully)
     if (homeView) {
-        // Step A: CSS Layout enable
-        homeView.style.display = 'block';
+        homeView.style.display = 'block'; // Direct display
         
-        // Step B: Animation trigger (Delay for smooth scale-in)
+        // Small delay for entrance scaling animation
         setTimeout(() => {
             homeView.classList.add('active');
             if (contentArea) contentArea.classList.add('active');
-        }, 100);
+            console.log("Spatial OS: Home View Successfully Revealed.");
+        }, 200);
     }
 
+    // 2. Sidebar Link Sync
     if (navHome) {
         navHome.classList.add('active');
     }
 
-    // 2. Clear Entrance Loader
+    // 3. Clear Entrance Loader
     setTimeout(() => {
         if (typeof window.hideLoader === 'function') window.hideLoader();
-    }, 2000);
+        document.body.classList.add('loaded'); // Full opacity trigger
+    }, 1800);
 }
 
-// Trigger reveal after everything is synchronized
+// Window load hote hi reveal engine chalu karo
 window.addEventListener('load', revealDashboardOS);
 
 /* --------------------------------------------------------------------- */
