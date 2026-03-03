@@ -782,35 +782,84 @@ body.dark-mode .action-sheet-group {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 5C : Full-Screen Spatial Overlay (Multitasking Logic) --- */
+/* --- Block 5C : Spatial Window Engine (Multitasking Logic) --- */
 /* --------------------------------------------------------------------- */
+/**
+ * Spatial Overlay:
+ * Ab ye Fullscreen nahi hai. 
+ * Ye ek resizable aur draggable window ki tarah behave karega.
+ */
 .spatial-overlay {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--system-bg);
-    z-index: 9999; display: none;
-    opacity: 0; transform: scale(1.05);
-    transition: all 0.5s var(--smooth-flow);
+    top: 15%; left: 30%; /* Starting Position */
+    width: 480px;  /* Default Width */
+    height: 600px; /* Default Height */
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(30px) saturate(160%);
+    -webkit-backdrop-filter: blur(30px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    z-index: 9999;
+    display: none;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.4s ease, transform 0.4s var(--spring-ease);
     flex-direction: column;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    
+    /* Resizable Rule */
+    resize: both; 
+    overflow: hidden; /* Handle window internals */
+    min-width: 360px;
+    min-height: 400px;
 }
 
-.spatial-overlay.active { display: flex; opacity: 1; transform: scale(1); }
+/* User "Resize" handle design (iPadOS style) */
+.spatial-overlay::-webkit-resizer {
+    background-color: transparent;
+    border-bottom-right-radius: 24px;
+}
 
+.spatial-overlay.active { 
+    display: flex; 
+    opacity: 1; 
+    transform: scale(1); 
+}
+
+/* Topbar for dragging (Window Handle) */
 .app-view-topbar {
-    padding: 1.2rem 2.5rem;
+    padding: 0.8rem 1.5rem;
     display: flex; align-items: center; justify-content: space-between;
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(40px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom: 0.5px solid var(--glass-border);
+    cursor: move; /* Indicates user can drag */
+    user-select: none;
 }
 
-body.dark-mode .app-view-topbar {
-    background: rgba(28, 28, 30, 0.6);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.app-view-content { 
+    flex: 1; 
+    overflow: auto; 
+    padding: 0; /* Identity handles its own padding */
 }
+
+/* Removal of Background Blur Rule: 
+   Dashboard piche ekdum saaf dikhega, sirf window dhundhli hogi. 
+*/
+#universal-module-portal {
+    position: fixed;
+    inset: 0;
+    pointer-events: none; /* Allows clicking dashboard behind windows */
+    z-index: 9998;
+}
+
+#universal-module-portal > * {
+    pointer-events: auto; /* Re-enables interaction inside windows */
+}
+
 /* --------------------------------------------------------------------- */
 /* --- End Block 5C file : 3-Dashboard/Dashboard.css --- */ 
 /* --------------------------------------------------------------------- */
+
 
 /* --------------------------------------------------------------------- */
 /* --- Block 5D : OS Entrance Loader (Spatial Vibe) --- */
