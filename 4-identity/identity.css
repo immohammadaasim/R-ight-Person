@@ -1,0 +1,340 @@
+/* ===================================================================== */
+/* ===>> BLOCK CSS 1: Identity OS Core Engine & Layout <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1A : Spatial Identity Variables --- */
+/* --------------------------------------------------------------------- */
+:root {
+    --identity-card-w: 440px;
+    --glass-bg: rgba(255, 255, 255, 0.72);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --radius-card: 30px; /* Super Squircle */
+    --radius-control: 14px;
+    --blue-accent: #007AFF;
+    --spring-ease: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+body.dark-mode {
+    --glass-bg: rgba(28, 28, 30, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 1B : Base Reset & Haptic Visuals --- */
+/* --------------------------------------------------------------------- */
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    background-color: var(--system-bg);
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.haptic-touch {
+    transition: transform 0.2s var(--spring-ease);
+}
+
+.haptic-touch:active {
+    transform: scale(0.96);
+}
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 1B file : 4-identity/identity.html --- */ 
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 1 file : 4-identity/identity.html <<=== */
+/* ===================================================================== */
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 2: Identity Stage & Spatial Card Design <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 2A : The Identity Stage (Viewport) --- */
+/* --------------------------------------------------------------------- */
+.identity-stage {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    perspective: 1000px;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 2B : Spatial Identity Card (iPad Widget Style) --- */
+/* --------------------------------------------------------------------- */
+.identity-card {
+    width: 100%;
+    max-width: var(--identity-card-w);
+    background: var(--glass-bg);
+    backdrop-filter: blur(40px) saturate(190%);
+    -webkit-backdrop-filter: blur(40px) saturate(190%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-card);
+    padding: 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    transform: translateY(30px);
+    opacity: 0;
+    display: none; /* Controlled by Engine */
+    transition: all 0.8s var(--spring-ease);
+}
+
+.identity-card.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 2B file : 4-identity/identity.html --- */ 
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 2 file : 4-identity/identity.html <<=== */
+/* ===================================================================== */
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 3: Card Typography & Header Components <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 3A : Card Header & Progress Ring --- */
+/* --------------------------------------------------------------------- */
+.card-header {
+    margin-bottom: 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.step-indicator {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.card-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+}
+
+.card-header p {
+    margin-top: 0.4rem;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 3B : Modern Progress Pill --- */
+/* --------------------------------------------------------------------- */
+.identity-progress-bar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: conic-gradient(var(--blue-accent) var(--p), rgba(142, 142, 147, 0.2) 0);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+}
+
+.identity-progress-bar::after {
+    content: '';
+    width: 34px; height: 34px;
+    background: var(--glass-bg);
+    border-radius: 50%;
+    position: absolute;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 3B file : 4-identity/identity.html --- */ 
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 3 file : 4-identity/identity.html <<=== */
+/* ===================================================================== */
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 4: Spatial Form Elements (Inputs & Controls) <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 4A : Input Grouping & Labels --- */
+/* --------------------------------------------------------------------- */
+.identity-form-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.field-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--s-text);
+    text-transform: uppercase;
+    padding-left: 4px;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 4B : iPadOS Style Spatial Input --- */
+/* --------------------------------------------------------------------- */
+.spatial-input {
+    width: 100%;
+    height: 54px;
+    background: rgba(142, 142, 147, 0.12);
+    border: 1px solid transparent;
+    border-radius: var(--radius-control);
+    padding: 0 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--p-text);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.spatial-input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--blue-accent);
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+/* Select Style Override */
+.select-style {
+    appearance: none;
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 4C : iPad Segmented Control (Gender) --- */
+/* --------------------------------------------------------------------- */
+.segmented-control {
+    display: flex;
+    background: rgba(142, 142, 147, 0.12);
+    padding: 3px;
+    border-radius: 12px;
+    gap: 2px;
+}
+
+.seg-btn {
+    flex: 1;
+    height: 38px;
+    border: none;
+    background: transparent;
+    border-radius: 9px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--s-text);
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.seg-btn.active {
+    background: #FFFFFF;
+    color: #000000;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+body.dark-mode .seg-btn.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #FFFFFF;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 4C file : 4-identity/identity.html --- */ 
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 4 file : 4-identity/identity.html <<=== */
+/* ===================================================================== */
+
+
+/* ===================================================================== */
+/* ===>> BLOCK CSS 5: Action Buttons & Footer Systems <<=== */
+/* ===================================================================== */
+
+/* --------------------------------------------------------------------- */
+/* --- Block 5A : Master Action Button --- */
+/* --------------------------------------------------------------------- */
+.card-footer {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.master-action-btn {
+    width: 100%;
+    height: 58px;
+    background: var(--blue-accent);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-control);
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(0, 122, 255, 0.3);
+}
+
+.master-action-btn i {
+    font-size: 1rem;
+    transition: transform 0.3s var(--spring-ease);
+}
+
+.master-action-btn:hover i {
+    transform: translateX(5px);
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 5B : Security Note --- */
+/* --------------------------------------------------------------------- */
+.security-note {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--s-text);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    opacity: 0.8;
+}
+
+.security-note i {
+    color: #34C759; /* Apple Success Green */
+}
+
+/* --------------------------------------------------------------------- */
+/* --- End Block 5B file : 4-identity/identity.html --- */ 
+/* --------------------------------------------------------------------- */
+
+/* ===================================================================== */
+/* ===>> END OF BLOCK CSS 5 file : 4-identity/identity.html <<=== */
+/* ===================================================================== */

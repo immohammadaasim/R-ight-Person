@@ -1,0 +1,188 @@
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 1: Identity Module System Setup (Head Section) <<=== -->
+<!-- ===================================================================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>R-ight Person | Digital Identity Setup</title>
+
+    <!-- [ GLOBAL UI MODULES - CSS ] -->
+    <link rel="stylesheet" href="../0-Theme/Theme.css?v=1.5">
+    <link rel="stylesheet" href="../0.1-Notification/Notification.css?v=1.5">
+    
+    <!-- [ LOCAL MODULE STYLE ] -->
+    <link rel="stylesheet" href="identity.css?v=1.5">
+
+    <!-- [ EXTERNAL LIBRARIES ] -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SF Symbols Vibe Logic -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <!-- [ CORE SYSTEM LIBRARIES ] -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* Identity OS Entrance Rule */
+        body { opacity: 0; transition: opacity 0.8s ease-in-out; background-color: var(--system-bg); }
+        body.loaded { opacity: 1; }
+    </style>
+</head>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 1 file : 4-identity/identity.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 2: Identity Stage & Day 1 Form Structure <<=== -->
+<!-- ===================================================================== -->
+<body class="spatial-identity-os">
+
+    <!-- 1. Spatial Identity Canvas (Main Container) -->
+    <main class="identity-stage">
+        
+        <!-- Day 1 Card: The Roots (Basic Identity) -->
+        <div id="identity-day-1" class="identity-card active spatial-glass">
+            
+            <!-- [ START : BLOCK HTML 2A - Header & Progress ] -->
+            <header class="card-header">
+                <div class="header-content">
+                    <span class="step-indicator blue-accent">DAY 01 / 07</span>
+                    <h1 class="primary-text">Basic Identity</h1>
+                    <p class="secondary-label">Let's start with your official roots.</p>
+                </div>
+                <div class="progress-ring-box">
+                    <div class="identity-progress-bar" style="--p: 15%;"></div>
+                </div>
+            </header>
+            <!-- [ END : BLOCK HTML 2A - file : 4-identity/identity.html ] -->
+
+            <!-- [ START : BLOCK HTML 2B - Identity Input Fields ] -->
+            <section class="identity-form-body">
+                
+                <!-- Full Name Field -->
+                <div class="input-group">
+                    <label class="field-label">FULL NAME (AS PER GOVT ID)</label>
+                    <input type="text" id="id-full-name" class="spatial-input" placeholder="e.g. Rahul Sharma" autocomplete="off">
+                </div>
+
+                <!-- DOB Field -->
+                <div class="input-group">
+                    <label class="field-label">DATE OF BIRTH</label>
+                    <input type="date" id="id-dob" class="spatial-input">
+                </div>
+
+                <!-- Gender Selection (iPad Segmented Control style) -->
+                <div class="input-group">
+                    <label class="field-label">GENDER</label>
+                    <div class="segmented-control" id="gender-selector">
+                        <button class="seg-btn active haptic-touch" data-value="Male">Male</button>
+                        <button class="seg-btn haptic-touch" data-value="Female">Female</button>
+                        <button class="seg-btn haptic-touch" data-value="Other">Other</button>
+                    </div>
+                </div>
+
+                <!-- Marital Status Field -->
+                <div class="input-group">
+                    <label class="field-label">MARITAL STATUS</label>
+                    <select id="id-marital-status" class="spatial-input select-style">
+                        <option value="">Select Status</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Divorced">Divorced</option>
+                        <option value="Widowed">Widowed</option>
+                    </select>
+                </div>
+
+            </section>
+            <!-- [ END : BLOCK HTML 2B - file : 4-identity/identity.html ] -->
+
+            <!-- [ START : BLOCK HTML 2C - Action Footer ] -->
+            <footer class="card-footer">
+                <button id="save-identity-day-1" class="master-action-btn haptic-touch">
+                    <span>Continue to Day 2</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <p class="security-note"><i class="fa-solid fa-shield-halved"></i> Data is verified by R-ight Person Identity Protocol.</p>
+            </footer>
+            <!-- [ END : BLOCK HTML 2C - file : 4-identity/identity.html ] -->
+
+        </div> <!-- End identity-day-1 -->
+
+        <!-- Dynamic Slots for Day 2-7 will be handled by Engine -->
+        <div id="identity-future-slots"></div>
+
+    </main>
+
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 2 file : 4-identity/identity.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 3: Universal System Overlays <<=== -->
+<!-- ===================================================================== -->
+
+    <!-- 1. Universal Notification Slot (Dynamic Island) -->
+    <div id="showIsland" class="dynamic-island-wrapper">
+        <div class="dynamic-island-pill">
+            <div id="island-icon" class="island-icon-box"></div>
+            <p id="island-message" class="island-msg-text"></p>
+        </div>
+    </div>
+
+    <!-- 2. Universal Theme Slot (Hidden Manager) -->
+    <div id="theme-manager-portal" style="display:none;">
+        <button id="global-theme-toggle"><i id="theme-icon"></i></button>
+    </div>
+
+    <!-- 3. Spatial Page Loader -->
+    <div id="fullscreen-loader" class="fullscreen-loader spatial-glass">
+        <div class="loader-content">
+            <div class="apple-spinner-large">
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+            <p id="loader-text" class="secondary-label">Verifying Identity Roots...</p>
+        </div>
+    </div>
+
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 3 file : 4-identity/identity.html <<=== -->
+<!-- ===================================================================== -->
+
+
+<!-- ===================================================================== -->
+<!-- ===>> BLOCK HTML 4: Identity Module Integration <<=== -->
+<!-- ===================================================================== -->
+
+    <!-- Supabase Engine -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        (function() {
+            const SB_URL = "https://xtzdlepgpqvllwzjfrsh.supabase.co";
+            const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emRsZXBncHF2bGx3empmcnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5OTI2MzcsImV4cCI6MjA4NzU2ODYzN30.NxX8BPCK_HNQYmn0-7YkdPv12gO8wKgOS5oP2R0OYZc";
+            window._sb = supabase.createClient(SB_URL, SB_KEY);
+        })();
+    </script>
+
+    <!-- Global Modules -->
+    <script src="../0-Theme/Theme.js?v=1.5" defer></script>
+    <script src="../0.1-Notification/Notification.js?v=1.5" defer></script>
+
+    <!-- Local Identity Logic -->
+    <script src="identity.js?v=1.5" defer></script>
+
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => { document.body.classList.add('loaded'); }, 150);
+        });
+    </script>
+
+</body>
+</html>
+<!-- ===================================================================== -->
+<!-- ===>> END OF BLOCK HTML 4 file : 4-identity/identity.html <<=== -->
+<!-- ===================================================================== -->
