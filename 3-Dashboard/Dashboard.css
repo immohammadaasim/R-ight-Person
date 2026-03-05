@@ -305,7 +305,7 @@ body.dark-mode .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
 
 
 /* ===================================================================== */
-/* ===>> BLOCK CSS 3: Layered Content Viewport & Replace Engine <<=== */
+/* ===>> BLOCK CSS 3: Layered Content Viewport & Unified Header <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
@@ -313,9 +313,6 @@ body.dark-mode .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
 /* --------------------------------------------------------------------- */
 .content-viewport {
     margin-left: var(--sidebar-w);
-    padding-top: 8rem;
-    padding-right: 3rem;
-    padding-left: 3.5rem;
     height: 100vh;
     position: relative;
     overflow: hidden; /* Important for layered transitions */
@@ -324,28 +321,26 @@ body.dark-mode .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
 /* --------------------------------------------------------------------- */
 /* --- Block 3B : Dashboard View System (Layer 1 & 2) --- */
 /* --------------------------------------------------------------------- */
-/**
- * RULE:
- * No display: none
- * Always opacity + transform transitions
- */
-
 .dashboard-view {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 3rem 3rem 3rem 3.5rem; /* Consistent Padding for all views */
     overflow-y: auto;
     overflow-x: hidden;
     
     opacity: 0;
-    transform: translateX(40px);
+    transform: translateX(30px);
     pointer-events: none;
 
     transition: 
-        opacity 0.6s ease,
-        transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Active View */
+/* Active View State */
 .dashboard-view.active {
     opacity: 1;
     transform: translateX(0);
@@ -353,35 +348,65 @@ body.dark-mode .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
     z-index: 2;
 }
 
-/* Previous View (for smooth back animation) */
-.dashboard-view.exiting {
-    opacity: 0;
-    transform: translateX(-40px);
-    pointer-events: none;
-    z-index: 1;
+/* --------------------------------------------------------------------- */
+/* --- Block 3C : Unified Master Header (The Fix) --- */
+/* --------------------------------------------------------------------- */
+.view-header {
+    margin-bottom: 2.5rem;
+    padding-top: 1rem; /* Space from top edge */
+}
+
+.view-header .page-indicator {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -1.2px;
+    color: var(--blue-accent);
+    margin: 0;
+    line-height: 1.1;
+}
+
+.view-header .greeting-text {
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--s-text);
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3C : Scroll Behavior --- */
+/* --- Block 3D : App Library Spacing --- */
 /* --------------------------------------------------------------------- */
-.dashboard-view::-webkit-scrollbar {
-    width: 0;
+.app-library-section {
+    margin-top: 3.5rem; /* Proper space below the header */
+}
+
+.section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--s-text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+}
+
+.home-app-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 2rem;
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3D : Home App Stage Special Handling --- */
+/* --- Block 3E : Home App Stage Wrapper --- */
 /* --------------------------------------------------------------------- */
 #home-app-stage {
-    background: transparent;
+    background: var(--system-bg); /* Match the background */
 }
 
-/* When app stage active, hide home softly */
-#home-dashboard-view.active + #home-app-stage.active {
-    z-index: 3;
+.home-app-wrapper {
+    width: 100%;
+    height: 100%;
 }
-
 /* --------------------------------------------------------------------- */
-/* --- End Block 3D file : 3-Dashboard/Dashboard.css --- */
+/* --- End Block 3E file : 3-Dashboard/Dashboard.css --- */
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */

@@ -43,7 +43,7 @@
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 2: Dashboard Architecture & Layered Content Stage <<=== -->
+<!-- ===>> BLOCK HTML 2: Dashboard Architecture & Unified Header <<=== -->
 <!-- ===================================================================== -->
 
 <!-- --------------------------------------------------------------- -->
@@ -78,20 +78,13 @@
 <!-- [ END : BLOCK HTML 2A - file : 3-Dashboard/Dashboard.html ] -->
 <!-- --------------------------------------------------------------- -->
 
-
 <!-- --------------------------------------------------------------- -->
-<!-- [ START : BLOCK HTML 2B - Floating Header ] -->
-<!-- --------------------------------------------------------------- -->
-<header class="floating-page-header">
-    <span class="page-indicator blue-accent" id="current-page-title">Home</span>
-</header>
-<!-- --------------------------------------------------------------- -->
-<!-- [ END : BLOCK HTML 2B - file : 3-Dashboard/Dashboard.html ] -->
+<!-- [ DEPRECATED : Old floating header has been removed ] -->
 <!-- --------------------------------------------------------------- -->
 
 
 <!-- --------------------------------------------------------------- -->
-<!-- [ START : BLOCK HTML 2C - Layered Content System ] -->
+<!-- [ START : BLOCK HTML 2B - Layered Content System ] -->
 <!-- --------------------------------------------------------------- -->
 <main class="content-viewport" id="main-content">
 
@@ -99,20 +92,21 @@
     <!-- LAYER 1 → HOME DASHBOARD     -->
     <!-- ============================= -->
     <div id="home-dashboard-view" class="dashboard-view active">
-        <div class="home-header-row">
-            <div class="home-widget-card spatial-glass">
-                <p class="greeting-text">
-                    Good <span id="greeting-time" class="blue-accent">Day</span>,
-                </p>
-                <h2 class="greeting-name" id="user-display-name">Guest</h2>
-                <p class="date-text" id="current-full-date">LOADING DATE...</p>
-            </div>
+        
+        <!-- [ NEW : UNIFIED MASTER HEADER ] -->
+        <div class="view-header">
+            <h1 class="page-indicator blue-accent" id="current-page-title">Home</h1>
+            <p class="greeting-text">
+                Good <span id="greeting-time">Day</span>, 
+                <span id="user-display-name" style="font-weight: 700;">Guest</span>
+            </p>
         </div>
 
+        <!-- App Library (Ecosystem Grid) -->
         <div class="app-library-section">
             <h3 class="section-label">Your Secure Ecosystem</h3>
             <div class="home-app-grid" id="main-app-grid">
-                <!-- Home apps injected here -->
+                <!-- Home apps will be injected here -->
             </div>
         </div>
     </div>
@@ -122,8 +116,7 @@
     <!-- LAYER 2 → HOME APP STAGE     -->
     <!-- ============================= -->
     <div id="home-app-stage" class="dashboard-view">
-        <!-- Jab user grid se app kholega
-             to content yahan inject hoga -->
+        <!-- App content will be injected here when launched -->
     </div>
 
 </main>
@@ -135,7 +128,7 @@
 <div id="universal-module-portal"></div>
 
 <!-- --------------------------------------------------------------- -->
-<!-- [ END : BLOCK HTML 2C - file : 3-Dashboard/Dashboard.html ] -->
+<!-- [ END : BLOCK HTML 2B - file : 3-Dashboard/Dashboard.html ] -->
 <!-- --------------------------------------------------------------- -->
 
 <!-- ===================================================================== -->

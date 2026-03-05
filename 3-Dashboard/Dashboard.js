@@ -367,7 +367,7 @@ updateWeatherWidget();
 /* --------------------------------------------------------------------- */
 const homeView        = document.getElementById('home-dashboard-view');
 const homeAppStage    = document.getElementById('home-app-stage');
-const pageHeader      = document.getElementById('current-page-title');
+const pageHeader      = document.getElementById('current-page-title'); // Updated Reference
 const navHomeBtn      = document.getElementById('nav-home');
 const modulePortal    = document.getElementById('universal-module-portal');
 const toolCalcBtn     = document.getElementById('tool-calc');
@@ -389,9 +389,12 @@ function launchHomeReplaceApp(app) {
 
     // 2. Inject App Content into Stage
     homeAppStage.innerHTML = `
-        <div style="padding:3rem; color: var(--p-text);">
-            <h2 style="font-size:2.2rem; font-weight:800;">${app.name}</h2>
-            <p style="margin-top:1rem; opacity:0.7;">This app is running in 'Home Replace Mode'.</p>
+        <div class="view-header">
+            <h1 class="page-indicator blue-accent">${app.name}</h1>
+            <p class="secondary-label">Running in Home Replace Mode</p>
+        </div>
+        <div class="home-app-wrapper" style="color: var(--p-text);">
+            <p>This is the main content area for ${app.name}.</p>
             <button class="haptic-touch" onclick="returnToHomeLayer()"
                     style="margin-top:2rem; padding: 12px 24px; border-radius: 12px; border: none; background: var(--blue-accent); color: white; font-weight: 600;">
                 Back to Home
@@ -399,9 +402,8 @@ function launchHomeReplaceApp(app) {
         </div>
     `;
 
-    // 3. Activate App Stage & Update Header
+    // 3. Activate App Stage
     homeAppStage.classList.add('active');
-    if (pageHeader) pageHeader.textContent = app.name;
 }
 
 /**
@@ -415,25 +417,19 @@ function returnToHomeLayer() {
     homeAppStage.classList.remove('active');
     homeAppStage.innerHTML = '';
 
-    // 2. Restore Home View & Header
+    // 2. Restore Home View
     homeView.classList.add('active');
-    if (pageHeader) pageHeader.textContent = "Home";
 }
 
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 4C : Global Floating Panel Launcher (Sidebar Tools) --- */
 /* --------------------------------------------------------------------- */
-/**
- * launchSpatialTool: 
- * Ye function ab sirf Sidebar tools aur system popups ke liye hai.
- * Grid apps ise use nahi karti.
- */
 async function launchSpatialTool(toolID, displayName) {
     if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
     if (!modulePortal) return;
 
     const windowID = `spatial-window-${toolID}`;
-    if (document.getElementById(windowID)) return; // Prevent duplicates
+    if (document.getElementById(windowID)) return;
 
     if (typeof showIsland === 'function') showIsland(`Launching ${displayName}...`, "info");
 
@@ -457,7 +453,6 @@ async function launchSpatialTool(toolID, displayName) {
     modulePortal.insertAdjacentHTML('beforeend', toolHTML);
 }
 
-// Sidebar Tool bindings remain UNCHANGED
 if (toolCalcBtn)   toolCalcBtn.onclick   = () => launchSpatialTool('calculator', 'Calculator');
 if (toolNotesBtn)  toolNotesBtn.onclick  = () => launchSpatialTool('notes', 'Notes');
 if (avatarTrigger) avatarTrigger.onclick = () => launchSpatialTool('identity-card', 'Identity Card');
@@ -465,7 +460,6 @@ if (avatarTrigger) avatarTrigger.onclick = () => launchSpatialTool('identity-car
 /* --------------------------------------------------------------------- */
 /* --- Sub-Block 4D : Identity Window Bridge & Auto-Launcher --- */
 /* --------------------------------------------------------------------- */
-// Ye poora block bilkul waise hi rahega, untouched
 window.addEventListener('message', (event) => {
     const { type, message, msgType } = event.data;
     if (type === 'NOTIFY_USER' && typeof showIsland === 'function') {
@@ -475,7 +469,6 @@ window.addEventListener('message', (event) => {
 
 function launchIdentityOverlay() {
     const iframeHTML = `<iframe src="../4-identity/identity.html" id="identity-iframe" style="width:100%; height:100%; border:none;"></iframe>`;
-    // launchSpatialTool ab isko handle karega
     launchSpatialTool('identity-setup', 'Identity Setup', iframeHTML);
 }
 
@@ -487,7 +480,7 @@ setTimeout(() => {
 }, 3000);
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4E : Ecosystem Registry & Grid Launcher (Updated Logic) --- */
+/* --- Sub-Block 4E : Ecosystem Registry & Grid Launcher --- */
 /* --------------------------------------------------------------------- */
 const appRegistry = [
     { id: "thought", name: "True Thought",   icon: "fa-brain",         color: "icon-indigo" },
@@ -510,7 +503,6 @@ function loadEcosystemGrid() {
         appItem.className = 'app-grid-item haptic-touch';
         appItem.innerHTML = `<div class="app-icon-box ${app.color}"><i class="fa-solid ${app.icon}"></i></div><span class="app-name">${app.name}</span>`;
         
-        // *** THE MAIN LOGIC CHANGE IS HERE ***
         // Grid apps ab "Home Replace" use karengi
         appItem.onclick = () => launchHomeReplaceApp(app);
         
@@ -518,7 +510,6 @@ function loadEcosystemGrid() {
     });
 }
 
-// OS Start: Load apps into the grid
 setTimeout(loadEcosystemGrid, 500);
 
 /* --------------------------------------------------------------------- */
@@ -527,7 +518,7 @@ setTimeout(loadEcosystemGrid, 500);
 if (navHomeBtn) {
     navHomeBtn.onclick = (e) => {
         e.preventDefault();
-        returnToHomeLayer(); // Ab ye safe reset use karega
+        returnToHomeLayer(); // Safe reset use karega
     };
 }
 /* --------------------------------------------------------------------- */
