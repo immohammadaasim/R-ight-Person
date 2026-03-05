@@ -129,7 +129,8 @@ async function checkUserSession() {
 
     if (!activeEmail) {
         console.error("OS Security: No session found. Redirecting to Entry.");
-        window.location.href = '../1-login/login.html';
+        if (typeof showIsland === 'function') showIsland("Session expired. Please login again.", "error");
+        setTimeout(() => { window.location.href = '../1-login/login.html'; }, 2000);
         return;
     }
 
@@ -145,7 +146,6 @@ async function checkUserSession() {
 
 // OS activation check engine
 document.addEventListener('DOMContentLoaded', () => {
-    // Small delay to ensure core modules are initialized
     setTimeout(checkUserSession, 150);
 });
 /* --------------------------------------------------------------------- */
@@ -160,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
  * Global '_sb' instance ka use karke profile fetch karta hai.
  */
 async function fetchUserProfile(email) {
-    // Safety: Check if global client is ready
     const db = window._sb || (typeof _sb !== 'undefined' ? _sb : null);
     
     if (!db) {
@@ -177,7 +176,10 @@ async function fetchUserProfile(email) {
         throw new Error("Identity record not found in system.");
     }
 
+    // Make user data globally available for other modules
     window.currentUserData = user;
+
+    // Update UI with fetched data
     populateDashboardUI(user);
 
     if (typeof window.hideLoader === 'function') window.hideLoader();
@@ -188,12 +190,12 @@ async function fetchUserProfile(email) {
 /* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 2C : Spatial UI Population (Identity Sync) --- */
+/* --- Sub-Block 2C : Spatial UI Population (The Fix) --- */
 /* --------------------------------------------------------------------- */
 /**
  * populateDashboardUI: 
- * Database se mile data ko Greeting aur Profile sections mein makkhan
- * ki tarah set karta hai.
+ * Database se mile data ko Greeting aur Profile sections mein set karta hai.
+ * FIX: Ab ye naye 'user-display-name' span ko update karega.
  */
 function populateDashboardUI(data) {
     const userDisplayName = document.getElementById('user-display-name');
@@ -209,7 +211,7 @@ function populateDashboardUI(data) {
     const nameToDisplay = data.verified_name || data.provider_name || data.telegram_name || data.login_email.split('@')[0];
     const initial       = nameToDisplay.charAt(0).toUpperCase();
 
-    // 1. Dashboard Greeting Widget update
+    // 1. Greeting Widget update (New target)
     if (userDisplayName) {
         userDisplayName.textContent = nameToDisplay;
         userDisplayName.style.textTransform = 'capitalize';

@@ -43,19 +43,21 @@
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 2: Dashboard Architecture & Unified Header <<=== -->
+<!-- ===>> BLOCK HTML 2: Dashboard Architecture (Premium Widgets Restored) <<=== -->
 <!-- ===================================================================== -->
 
 <!-- --------------------------------------------------------------- -->
-<!-- [ START : BLOCK HTML 2A - Sidebar OS Architecture ] -->
+<!-- [ START : BLOCK HTML 2A - Full Sidebar OS Architecture ] -->
 <!-- --------------------------------------------------------------- -->
 <aside class="sidebar-os spatial-glass" id="sidebar">
+    <!-- Top: Primary Identity Avatar -->
     <div class="sidebar-top">
         <div class="profile-pill haptic-touch" id="master-avatar-trigger">
             <div class="profile-avatar" id="user-avatar-initial">U</div>
         </div>
     </div>
 
+    <!-- Middle: Primary Navigation -->
     <nav class="sidebar-nav">
         <a href="#" class="nav-item active haptic-touch" id="nav-home">
             <i class="fa-solid fa-house"></i>
@@ -68,7 +70,24 @@
         </a>
     </nav>
 
+    <!-- Bottom: System Status & Controls (Restored) -->
     <div class="sidebar-bottom">
+        <div class="notif-pill-btn haptic-touch" id="notif-capsule-trigger" title="Notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notif-dot"></span>
+        </div>
+        <div class="system-controls">
+            <button class="nav-util-btn haptic-touch" id="global-theme-toggle">
+                <i id="theme-icon" class="fa-solid fa-moon"></i>
+            </button>
+            <div class="sidebar-status-pill">
+                <div class="status-time" id="dash-clock">--:--</div>
+                <div class="status-icons-list">
+                    <i class="fa-solid fa-wifi"></i>
+                    <div class="ios-battery-pill"></div>
+                </div>
+            </div>
+        </div>
         <button class="nav-item logout-trigger haptic-touch" id="logout-btn-trigger">
             <i class="fa-solid fa-power-off"></i>
         </button>
@@ -78,13 +97,9 @@
 <!-- [ END : BLOCK HTML 2A - file : 3-Dashboard/Dashboard.html ] -->
 <!-- --------------------------------------------------------------- -->
 
-<!-- --------------------------------------------------------------- -->
-<!-- [ DEPRECATED : Old floating header has been removed ] -->
-<!-- --------------------------------------------------------------- -->
-
 
 <!-- --------------------------------------------------------------- -->
-<!-- [ START : BLOCK HTML 2B - Layered Content System ] -->
+<!-- [ START : BLOCK HTML 2B - Layered Content System (Widgets Restored) ] -->
 <!-- --------------------------------------------------------------- -->
 <main class="content-viewport" id="main-content">
 
@@ -93,13 +108,33 @@
     <!-- ============================= -->
     <div id="home-dashboard-view" class="dashboard-view active">
         
-        <!-- [ NEW : UNIFIED MASTER HEADER ] -->
-        <div class="view-header">
-            <h1 class="page-indicator blue-accent" id="current-page-title">Home</h1>
-            <p class="greeting-text">
-                Good <span id="greeting-time">Day</span>, 
-                <span id="user-display-name" style="font-weight: 700;">Guest</span>
-            </p>
+        <!-- [ RESTORED : Premium Widgets Row ] -->
+        <div class="home-header-row">
+
+            <!-- Greeting Widget -->
+            <div class="home-widget-card spatial-glass">
+                <!-- App/Page Title is now INSIDE the widget for stability -->
+                <h1 class="page-indicator blue-accent" id="current-page-title">Home</h1>
+                <p class="greeting-text">
+                    Good <span id="greeting-time">Day</span>, 
+                    <span id="user-display-name" style="font-weight: 700;">Guest</span>
+                </p>
+                <p class="date-text" id="current-full-date">LOADING DATE...</p>
+            </div>
+
+            <!-- Weather Widget -->
+            <div class="home-widget-card spatial-glass">
+                <div class="weather-row">
+                    <div class="weather-info">
+                        <h2 id="weather-city">Location</h2>
+                        <p id="weather-temp" class="blue-accent">24°</p>
+                        <span id="weather-desc">Clearing Skies</span>
+                    </div>
+                    <div class="weather-icon-box">
+                        <i class="fa-solid fa-cloud-sun"></i>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- App Library (Ecosystem Grid) -->
@@ -111,7 +146,6 @@
         </div>
     </div>
 
-
     <!-- ============================= -->
     <!-- LAYER 2 → HOME APP STAGE     -->
     <!-- ============================= -->
@@ -120,7 +154,6 @@
     </div>
 
 </main>
-
 
 <!-- ============================= -->
 <!-- LAYER 3 → SIDEBAR FLOATING   -->

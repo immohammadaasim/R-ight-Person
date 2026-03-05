@@ -305,42 +305,32 @@ body.dark-mode .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
 
 
 /* ===================================================================== */
-/* ===>> BLOCK CSS 3: Layered Content Viewport & Unified Header <<=== */
+/* ===>> BLOCK CSS 3: Layered Content, Widgets & Unified Header <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3A : Content Viewport (Stable Base Layer) --- */
+/* --- Block 3A : Content Viewport & Layering --- */
 /* --------------------------------------------------------------------- */
 .content-viewport {
     margin-left: var(--sidebar-w);
     height: 100vh;
     position: relative;
-    overflow: hidden; /* Important for layered transitions */
+    overflow: hidden;
 }
 
-/* --------------------------------------------------------------------- */
-/* --- Block 3B : Dashboard View System (Layer 1 & 2) --- */
-/* --------------------------------------------------------------------- */
 .dashboard-view {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 3rem 3rem 3rem 3.5rem; /* Consistent Padding for all views */
+    top: 0; left: 0; right: 0; bottom: 0;
+    padding: 3rem 3rem 3rem 3.5rem;
     overflow-y: auto;
     overflow-x: hidden;
     
     opacity: 0;
     transform: translateX(30px);
     pointer-events: none;
-
-    transition: 
-        opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-/* Active View State */
 .dashboard-view.active {
     opacity: 1;
     transform: translateX(0);
@@ -349,34 +339,94 @@ body.dark-mode .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3C : Unified Master Header (The Fix) --- */
+/* --- Block 3B : Restored Premium Widgets (The 2 Caps) --- */
 /* --------------------------------------------------------------------- */
-.view-header {
-    margin-bottom: 2.5rem;
-    padding-top: 1rem; /* Space from top edge */
+.home-header-row {
+    display: flex;
+    gap: 1.8rem;
+    margin-bottom: 3.5rem;
+    flex-wrap: wrap; /* For responsiveness */
 }
 
-.view-header .page-indicator {
-    font-size: 2.4rem;
+.home-widget-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius-squircle);
+    border: 1px solid var(--glass-border);
+    padding: 2.2rem;
+    flex: 1;
+    min-width: 320px; /* Ensures widgets don't get too small */
+    max-width: 440px;
+    min-height: 200px;
+    box-shadow: var(--glass-shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 3C : Unified Header (Inside Greeting Widget) --- */
+/* --------------------------------------------------------------------- */
+.page-indicator {
+    font-size: 2.2rem;
     font-weight: 800;
     letter-spacing: -1.2px;
     color: var(--blue-accent);
-    margin: 0;
     line-height: 1.1;
+    margin-bottom: 0.2rem; /* Space below title */
 }
 
-.view-header .greeting-text {
-    margin-top: 0.5rem;
+.greeting-text {
     font-size: 1.1rem;
     font-weight: 500;
     color: var(--s-text);
+    margin: 0;
+}
+
+.date-text {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--blue-accent);
+    opacity: 0.8;
+    margin-top: 1rem;
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3D : App Library Spacing --- */
+/* --- Block 3D : Weather Widget Styling --- */
+/* --------------------------------------------------------------------- */
+.weather-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.weather-info h2 { font-size: 1.1rem; font-weight: 700; color: var(--p-text); margin: 0; opacity: 0.9; }
+.weather-info p { font-size: 2.8rem; font-weight: 800; color: var(--blue-accent); margin: 0.2rem 0; }
+.weather-info span { font-size: 0.8rem; font-weight: 600; color: var(--s-text); }
+
+.weather-icon-box {
+    font-size: 3.5rem;
+    color: var(--blue-accent);
+    filter: drop-shadow(0 0 15px rgba(0, 122, 255, 0.3));
+    animation: spatialFloat 5s ease-in-out infinite alternate;
+}
+
+@keyframes spatialFloat {
+    from { transform: translateY(0) rotate(0); }
+    to { transform: translateY(-10px) rotate(3deg); }
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 3E : App Library & Stage Styling --- */
 /* --------------------------------------------------------------------- */
 .app-library-section {
-    margin-top: 3.5rem; /* Proper space below the header */
+    margin-top: 3rem;
 }
 
 .section-label {
@@ -384,7 +434,7 @@ body.dark-mode .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
     font-weight: 700;
     color: var(--s-text);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     margin-bottom: 1.5rem;
 }
 
@@ -394,17 +444,10 @@ body.dark-mode .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
     gap: 2rem;
 }
 
-/* --------------------------------------------------------------------- */
-/* --- Block 3E : Home App Stage Wrapper --- */
-/* --------------------------------------------------------------------- */
 #home-app-stage {
-    background: var(--system-bg); /* Match the background */
+    background: var(--system-bg);
 }
 
-.home-app-wrapper {
-    width: 100%;
-    height: 100%;
-}
 /* --------------------------------------------------------------------- */
 /* --- End Block 3E file : 3-Dashboard/Dashboard.css --- */
 /* --------------------------------------------------------------------- */
