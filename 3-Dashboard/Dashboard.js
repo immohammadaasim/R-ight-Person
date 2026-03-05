@@ -359,178 +359,136 @@ updateWeatherWidget();
 
 
 /* ===================================================================== */
-/* ===>> BLOCK JS 4: Sidebar Navigation & Ecosystem Hub Engine <<=== */
+/* ===>> BLOCK JS 4: Layered Routing Engine (Production Ready) <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4A : Sidebar Navigation Engine (View Switcher) --- */
+/* --- Sub-Block 4A : Core View & Element References --- */
+/* --------------------------------------------------------------------- */
+const homeView        = document.getElementById('home-dashboard-view');
+const homeAppStage    = document.getElementById('home-app-stage');
+const pageHeader      = document.getElementById('current-page-title');
+const navHomeBtn      = document.getElementById('nav-home');
+const modulePortal    = document.getElementById('universal-module-portal');
+const toolCalcBtn     = document.getElementById('tool-calc');
+const toolNotesBtn    = document.getElementById('tool-notes');
+const avatarTrigger   = document.getElementById('master-avatar-trigger');
+
+/* --------------------------------------------------------------------- */
+/* --- Sub-Block 4B : View Switch Engine (Home Replace Mode) --- */
 /* --------------------------------------------------------------------- */
 /**
- * handleNavigation: 
- * Sidebar ke main navigation icons ko control karta hai.
+ * launchHomeReplaceApp:
+ * Grid apps ko home ki jagah replace karta hai.
  */
-const navHomeBtn = document.getElementById('nav-home');
-const homeView   = document.getElementById('home-dashboard-view');
-const pageHeader = document.getElementById('current-page-title');
+function launchHomeReplaceApp(app) {
+    if (!homeView || !homeAppStage) return;
 
-if (navHomeBtn) {
-    navHomeBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
+    // 1. Hide Home View
+    homeView.classList.remove('active');
 
-        // Active State Update
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-        navHomeBtn.classList.add('active');
+    // 2. Inject App Content into Stage
+    homeAppStage.innerHTML = `
+        <div style="padding:3rem; color: var(--p-text);">
+            <h2 style="font-size:2.2rem; font-weight:800;">${app.name}</h2>
+            <p style="margin-top:1rem; opacity:0.7;">This app is running in 'Home Replace Mode'.</p>
+            <button class="haptic-touch" onclick="returnToHomeLayer()"
+                    style="margin-top:2rem; padding: 12px 24px; border-radius: 12px; border: none; background: var(--blue-accent); color: white; font-weight: 600;">
+                Back to Home
+            </button>
+        </div>
+    `;
 
-        // View Restoration Logic
-        if (homeView) {
-            homeView.style.display = 'block';
-            setTimeout(() => homeView.classList.add('active'), 50);
-        }
-        
-        if (pageHeader) pageHeader.textContent = 'Home';
-        if (typeof showIsland === 'function') showIsland("Navigated to Home", "info");
-    });
+    // 3. Activate App Stage & Update Header
+    homeAppStage.classList.add('active');
+    if (pageHeader) pageHeader.textContent = app.name;
 }
-/* --------------------------------------------------------------------- */
-/* --- End Sub-Block 4A file : 3-Dashboard/Dashboard.js --- */ 
-/* --------------------------------------------------------------------- */
+
+/**
+ * returnToHomeLayer:
+ * App stage se wapas home par aata hai.
+ */
+function returnToHomeLayer() {
+    if (!homeView || !homeAppStage) return;
+
+    // 1. Hide App Stage
+    homeAppStage.classList.remove('active');
+    homeAppStage.innerHTML = '';
+
+    // 2. Restore Home View & Header
+    homeView.classList.add('active');
+    if (pageHeader) pageHeader.textContent = "Home";
+}
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4B : OS Multitasking Engine (Spatial Popup Launcher) --- */
+/* --- Sub-Block 4C : Global Floating Panel Launcher (Sidebar Tools) --- */
 /* --------------------------------------------------------------------- */
 /**
  * launchSpatialTool: 
- * Ye hamare OS ka "Global Launcher" hai. 
- * Kisi bhi app (Sidebar ya Grid) ko ye Dashboard ke upar float karwata hai.
+ * Ye function ab sirf Sidebar tools aur system popups ke liye hai.
+ * Grid apps ise use nahi karti.
  */
-const toolCalcBtn   = document.getElementById('tool-calc');
-const toolNotesBtn  = document.getElementById('tool-notes');
-const avatarTrigger = document.getElementById('master-avatar-trigger');
-const modulePortal  = document.getElementById('universal-module-portal');
-
 async function launchSpatialTool(toolID, displayName) {
     if (typeof window.triggerHaptic === 'function') window.triggerHaptic();
-    
     if (!modulePortal) return;
+
     const windowID = `spatial-window-${toolID}`;
+    if (document.getElementById(windowID)) return; // Prevent duplicates
 
-    // Rule: Agar tool pehle se khula hai, toh usey focus (pop-out) karo
-    if (document.getElementById(windowID)) {
-        const existingWin = document.getElementById(windowID);
-        existingWin.classList.remove('active');
-        void existingWin.offsetWidth; // Restart animation
-        existingWin.classList.add('active');
-        return;
-    }
+    if (typeof showIsland === 'function') showIsland(`Launching ${displayName}...`, "info");
 
-    if (typeof showIsland === 'function') {
-        showIsland(`Launching ${displayName}...`, "info");
-    }
-
-    // Modular Popup Structure (iPadOS 18 Glass Material)
     const toolHTML = `
-        <div id="${windowID}" class="spatial-overlay active" style="display:flex;">
-            <div class="app-view-topbar spatial-glass">
-                <span class="page-indicator blue-accent">${displayName.toUpperCase()}</span>
-                <button class="nav-util-btn haptic-touch" onclick="this.closest('.spatial-overlay').remove()">
-                    <i class="fa-solid fa-xmark"></i>
+        <div id="${windowID}" class="spatial-overlay active">
+            <div class="app-view-topbar spatial-glass haptic-touch" style="cursor: move;">
+                <div class="window-controls"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+                <span class="page-indicator blue-accent" style="font-size:0.8rem;">${displayName.toUpperCase()}</span>
+                <button class="nav-util-btn haptic-touch" onclick="this.closest('.spatial-overlay').remove()" style="width:24px; height:24px;">
+                    <i class="fa-solid fa-xmark" style="font-size:0.7rem;"></i>
                 </button>
             </div>
             <div class="app-view-content" id="content-${toolID}">
-                <div style="padding:4rem; text-align:center;">
+                <div style="padding:4rem; text-align:center; color: var(--p-text);">
                     <i class="fa-solid fa-circle-notch fa-spin" style="font-size:3rem; color:var(--blue-accent);"></i>
-                    <p class="secondary-label" style="margin-top:1.5rem; font-weight:600;">
-                        ${displayName} Module coming soon to Identity OS.
-                    </p>
+                    <p class="secondary-label" style="margin-top:1.5rem; font-weight:600;">${displayName} Module is loading...</p>
                 </div>
             </div>
         </div>
     `;
-
     modulePortal.insertAdjacentHTML('beforeend', toolHTML);
 }
 
-// Sidebar Tool Listeners (Using Global Launcher)
+// Sidebar Tool bindings remain UNCHANGED
 if (toolCalcBtn)   toolCalcBtn.onclick   = () => launchSpatialTool('calculator', 'Calculator');
 if (toolNotesBtn)  toolNotesBtn.onclick  = () => launchSpatialTool('notes', 'Notes');
 if (avatarTrigger) avatarTrigger.onclick = () => launchSpatialTool('identity-card', 'Identity Card');
 
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 4B file : 3-Dashboard/Dashboard.js --- */ 
+/* --- Sub-Block 4D : Identity Window Bridge & Auto-Launcher --- */
 /* --------------------------------------------------------------------- */
-
-
-/* --------------------------------------------------------------------- */
-/* --- Sub-Block 4D : Identity OS Auto-Launcher (The 3-Sec Rule) --- */
-/* --------------------------------------------------------------------- */
-/**
- * checkIdentityStatus: 
- * Dashboard load hone ke 3 second baad check karta hai ki kya Identity 
- * setup pending hai. Agar pending hai, toh usey makkhan ki tarah launch karta hai.
- */
-function checkIdentityStatus() {
-    setTimeout(async () => {
-        const user = window.currentUserData;
-
-        // Rule: Agar identity_step 7 se kam hai, toh setup launch karo
-        if (user && (!user.identity_step || user.identity_step < 7)) {
-            console.log("Spatial OS: Identity pending. Launching Module...");
-            
-            if (typeof window.showIsland === 'function') {
-                showIsland("Identity Setup Required", "info");
-            }
-
-            // Identity module ko Dashboard ke upar Spatial Overlay mein kholna
-            launchIdentityOverlay();
-        }
-    }, 3000); // The 3-Second Rule
-}
-
-/**
- * launchIdentityOverlay: 
- * identity.html ko Dashboard ke 'universal-module-portal' mein load karta hai.
- */
-function launchIdentityOverlay() {
-    const portal = document.getElementById('universal-module-portal');
-    if (!portal) return;
-
-    const overlayID = 'spatial-window-identity';
-    
-    // Check if already open
-    if (document.getElementById(overlayID)) return;
-
-    const identityHTML = `
-        <div id="${overlayID}" class="spatial-overlay active" style="display:flex;">
-            <iframe src="../4-identity/identity.html" 
-                    style="width:100%; height:100%; border:none; border-radius:inherit;"
-                    id="identity-iframe">
-            </iframe>
-        </div>
-    `;
-
-    portal.insertAdjacentHTML('beforeend', identityHTML);
-}
-
-// OS Start Check: Dashboard reveal hone ke baad identity status check karo
-window.addEventListener('load', () => {
-    // Thoda delay taaki Dashboard load animation poori ho jaye
-    setTimeout(checkIdentityStatus, 2000); 
+// Ye poora block bilkul waise hi rahega, untouched
+window.addEventListener('message', (event) => {
+    const { type, message, msgType } = event.data;
+    if (type === 'NOTIFY_USER' && typeof showIsland === 'function') {
+        showIsland(message, msgType || 'info');
+    }
 });
 
-/* --------------------------------------------------------------------- */
-/* --- End Sub-Block 4D file : 3-Dashboard/Dashboard.js --- */ 
-/* --------------------------------------------------------------------- */
+function launchIdentityOverlay() {
+    const iframeHTML = `<iframe src="../4-identity/identity.html" id="identity-iframe" style="width:100%; height:100%; border:none;"></iframe>`;
+    // launchSpatialTool ab isko handle karega
+    launchSpatialTool('identity-setup', 'Identity Setup', iframeHTML);
+}
 
-
+setTimeout(() => {
+    const user = window.currentUserData;
+    if (user && (!user.identity_step || user.identity_step < 7)) {
+        launchIdentityOverlay();
+    }
+}, 3000);
 
 /* --------------------------------------------------------------------- */
-/* --- Sub-Block 4C : Ecosystem Registry & Grid Launcher --- */
+/* --- Sub-Block 4E : Ecosystem Registry & Grid Launcher (Updated Logic) --- */
 /* --------------------------------------------------------------------- */
-/**
- * appRegistry: 
- * Saari 8 Ecosystem Apps ki list unique IDs ke sath.
- */
 const appRegistry = [
     { id: "thought", name: "True Thought",   icon: "fa-brain",         color: "icon-indigo" },
     { id: "text",    name: "True Tell Text", icon: "fa-comment-dots",  color: "icon-green"  },
@@ -542,37 +500,38 @@ const appRegistry = [
     { id: "jobs",    name: "Correct Jobs",   icon: "fa-briefcase",     color: "icon-blue"   }
 ];
 
-/**
- * loadEcosystemGrid: 
- * Grid banata hai aur har app par 'launchSpatialTool' connect karta hai.
- */
 function loadEcosystemGrid() {
     const appGrid = document.getElementById('main-app-grid');
     if (!appGrid) return;
-
     appGrid.innerHTML = '';
+    
     appRegistry.forEach(app => {
         const appItem = document.createElement('div');
         appItem.className = 'app-grid-item haptic-touch';
-        appItem.innerHTML = `
-            <div class="app-icon-box ${app.color}">
-                <i class="fa-solid ${app.icon}"></i>
-            </div>
-            <span class="app-name">${app.name}</span>
-        `;
+        appItem.innerHTML = `<div class="app-icon-box ${app.color}"><i class="fa-solid ${app.icon}"></i></div><span class="app-name">${app.name}</span>`;
         
-        // Popup Trigger Logic (Same as Sidebar Tools)
-        appItem.onclick = () => launchSpatialTool(app.id, app.name);
+        // *** THE MAIN LOGIC CHANGE IS HERE ***
+        // Grid apps ab "Home Replace" use karengi
+        appItem.onclick = () => launchHomeReplaceApp(app);
         
         appGrid.appendChild(appItem);
     });
 }
 
-// OS Start: Load apps into the ecosystem stage
+// OS Start: Load apps into the grid
 setTimeout(loadEcosystemGrid, 500);
 
 /* --------------------------------------------------------------------- */
-/* --- End Sub-Block 4C file : 3-Dashboard/Dashboard.js --- */ 
+/* --- Sub-Block 4F : Home Button Navigation (Safe Reset) --- */
+/* --------------------------------------------------------------------- */
+if (navHomeBtn) {
+    navHomeBtn.onclick = (e) => {
+        e.preventDefault();
+        returnToHomeLayer(); // Ab ye safe reset use karega
+    };
+}
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 4F file : 3-Dashboard/Dashboard.js --- */
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */

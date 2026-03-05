@@ -81,36 +81,34 @@ body {
 }
 
 /* --------------------------------------------------------------------- */
-/* --- Block 2B : The Spatial Identity Card --- */
+/* --- Block 2B : Fluid Identity Card (Resizable Support) --- */
 /* --------------------------------------------------------------------- */
 .identity-card {
     width: 100%;
-    max-width: var(--identity-card-w);
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border-radius: var(--radius-card);
-    border: 1px solid var(--glass-border);
-    padding: 2.8rem;
-    box-shadow: var(--glass-shadow);
-    
-    /* Initial State for "Arrive" Transition */
-    opacity: 0;
+    max-width: 100%; /* Ab ye window ke sath phulega aur pichkega */
+    background: transparent; /* Background parent window sambhal rahi hai */
+    border: none;
+    box-shadow: none;
+    padding: 1.5rem; /* Reduced padding for cleaner look in small windows */
     display: none;
-    transform: translateY(40px) scale(0.96) rotateX(5deg);
-    transition: opacity 0.8s var(--smooth-flow), 
-                transform 0.8s var(--spring-ease);
+    opacity: 0;
+    transition: opacity 0.6s ease;
 }
 
-/* Zero-Jerk Reveal Logic */
 .identity-card.active {
     display: block;
     opacity: 1;
-    transform: translateY(0) scale(1) rotateX(0deg);
 }
 
+/* Hide universal loader in identity to avoid overlap */
+.fullscreen-loader { display: none !important; }
+
+/* Header adjustments for resizable window */
+.card-header h1 { font-size: 1.6rem; }
+.card-header p { font-size: 0.9rem; }
+
 /* --------------------------------------------------------------------- */
-/* --- End Block 2B file : 4-identity/identity.html --- */ 
+/* --- End Block 2B file : 4-identity/identity.css --- */ 
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */

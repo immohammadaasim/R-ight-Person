@@ -305,182 +305,83 @@ body.dark-mode .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
 
 
 /* ===================================================================== */
-/* ===>> BLOCK CSS 3: Content Viewport & Normalized Widgets <<=== */
+/* ===>> BLOCK CSS 3: Layered Content Viewport & Replace Engine <<=== */
 /* ===================================================================== */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3A : Spatial Content Stage (Visibility Fix) --- */
+/* --- Block 3A : Content Viewport (Stable Base Layer) --- */
 /* --------------------------------------------------------------------- */
-/**
- * Content Viewport:
- * Sidebar ke baad bachi hui screen ko handle karta hai.
- * Fix: Ab ye display ko forcefully manage karega.
- */
 .content-viewport {
     margin-left: var(--sidebar-w);
-    padding-top: 8rem; /* Space for Floating Header */
+    padding-top: 8rem;
     padding-right: 3rem;
     padding-left: 3.5rem;
     height: 100vh;
+    position: relative;
+    overflow: hidden; /* Important for layered transitions */
+}
+
+/* --------------------------------------------------------------------- */
+/* --- Block 3B : Dashboard View System (Layer 1 & 2) --- */
+/* --------------------------------------------------------------------- */
+/**
+ * RULE:
+ * No display: none
+ * Always opacity + transform transitions
+ */
+
+.dashboard-view {
+    position: absolute;
+    inset: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    scroll-behavior: smooth;
-    transition: all 0.6s var(--smooth-flow);
-    position: relative;
+    
+    opacity: 0;
+    transform: translateX(40px);
+    pointer-events: none;
+
+    transition: 
+        opacity 0.6s ease,
+        transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Active View */
+.dashboard-view.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+    z-index: 2;
+}
+
+/* Previous View (for smooth back animation) */
+.dashboard-view.exiting {
+    opacity: 0;
+    transform: translateX(-40px);
+    pointer-events: none;
     z-index: 1;
 }
 
-/* Visibility Guard: Rule-based entrance */
-.dashboard-view {
-    display: none; /* Default state */
-    opacity: 0;
-    transform: translateY(30px) scale(0.98);
-    transition: opacity 0.8s var(--smooth-flow), 
-                transform 0.8s var(--spring-ease);
-    width: 100%;
-    max-width: 1200px;
-}
-
-/* Jab JS '.active' class degi toh content forcefully show hoga */
-.dashboard-view.active {
-    display: block !important;
-    opacity: 1 !important;
-    transform: translateY(0) scale(1) !important;
-}
-
-.content-viewport::-webkit-scrollbar { width: 0; background: transparent; }
 /* --------------------------------------------------------------------- */
-/* --- End Block 3A file : 3-Dashboard/Dashboard.css --- */ 
+/* --- Block 3C : Scroll Behavior --- */
 /* --------------------------------------------------------------------- */
+.dashboard-view::-webkit-scrollbar {
+    width: 0;
+}
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3B : Normalized Spatial Widgets (Compact Rules) --- */
+/* --- Block 3D : Home App Stage Special Handling --- */
 /* --------------------------------------------------------------------- */
-/**
- * Home Widgets:
- * Spatial Glass Cards with Deep Squircle (28px).
- */
-.home-header-row {
-    display: flex;
-    gap: 2rem;
-    margin-bottom: 4rem;
-    flex-wrap: wrap;
+#home-app-stage {
+    background: transparent;
 }
 
-.home-widget-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(40px) saturate(190%);
-    -webkit-backdrop-filter: blur(40px) saturate(190%);
-    border-radius: 30px; /* Super Squircle */
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    padding: 2.5rem;
-    flex: 1;
-    min-width: 320px;
-    max-width: 420px;
-    min-height: 200px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.4s var(--spring-ease), box-shadow 0.4s ease;
+/* When app stage active, hide home softly */
+#home-dashboard-view.active + #home-app-stage.active {
+    z-index: 3;
 }
-
-body.dark-mode .home-widget-card {
-    background: rgba(28, 28, 30, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.home-widget-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
-}
-
-/* Greeting Typography */
-.greeting-text {
-    font-size: 1.3rem;
-    font-weight: 500;
-    color: var(--s-text);
-    margin: 0;
-}
-
-.greeting-name {
-    font-size: 2.8rem;
-    font-weight: 800;
-    margin: 0.4rem 0 1rem 0;
-    letter-spacing: -1.5px;
-    color: var(--p-text);
-    line-height: 1.1;
-}
-
-.date-text {
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--blue-accent);
-    opacity: 0.9;
-}
-/* --------------------------------------------------------------------- */
-/* --- End Block 3B file : 3-Dashboard/Dashboard.css --- */ 
-/* --------------------------------------------------------------------- */
 
 /* --------------------------------------------------------------------- */
-/* --- Block 3C : Weather Intelligence & Float Animation --- */
-/* --------------------------------------------------------------------- */
-.weather-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-}
-
-.weather-info h2 { 
-    font-size: 1.2rem; 
-    font-weight: 700; 
-    color: var(--p-text); 
-    margin: 0; 
-    opacity: 0.8;
-}
-
-.weather-info p { 
-    font-size: 3rem; 
-    font-weight: 800; 
-    color: var(--blue-accent); 
-    margin: 0.3rem 0; 
-}
-
-.weather-info span { 
-    font-size: 0.85rem; 
-    font-weight: 600; 
-    color: var(--s-text); 
-}
-
-.weather-icon-box {
-    font-size: 3.8rem;
-    color: var(--blue-accent);
-    filter: drop-shadow(0 0 20px rgba(0, 122, 255, 0.3));
-    animation: spatialFloat 6s ease-in-out infinite alternate;
-}
-
-@keyframes spatialFloat {
-    0% { transform: translateY(0) rotate(0); }
-    100% { transform: translateY(-12px) rotate(5deg); }
-}
-
-/* Mobile Responsiveness Content Refinement */
-@media (max-width: 768px) {
-    .content-viewport { 
-        margin-left: 0; 
-        padding: 7rem 1.5rem 2rem 1.5rem; 
-    }
-    .home-header-row { flex-direction: column; gap: 1.5rem; }
-    .home-widget-card { max-width: 100%; min-height: 180px; padding: 2rem; }
-    .greeting-name { font-size: 2.2rem; }
-}
-/* --------------------------------------------------------------------- */
-/* --- End Block 3C file : 3-Dashboard/Dashboard.css --- */ 
+/* --- End Block 3D file : 3-Dashboard/Dashboard.css --- */
 /* --------------------------------------------------------------------- */
 
 /* ===================================================================== */

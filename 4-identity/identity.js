@@ -213,6 +213,45 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --- End Sub-Block 3B file : 4-identity/identity.js --- */ 
     /* --------------------------------------------------------------------- */
 
+
+    /* --------------------------------------------------------------------- */
+/* --- Sub-Block 3C : Cross-Origin Message Bridge --- */
+/* --------------------------------------------------------------------- */
+/**
+ * notifyDashboard:
+ * Iframe ke andar se notification ko Dashboard ke Island par bhejta hai.
+ */
+function notifyDashboard(msg, type = 'info') {
+    window.parent.postMessage({
+        type: 'NOTIFY_USER',
+        message: msg,
+        msgType: type
+    }, '*');
+}
+
+// Replace all local showIsland calls with notifyDashboard
+// Example in Sub-Block 3A:
+// if (!fullName) { notifyDashboard("Please fill all fields", "error"); return; }
+
+/**
+ * Theme Sync Listener:
+ * Dashboard se aane wale theme change ko sunta hai.
+ */
+window.addEventListener('message', (event) => {
+    if (event.data.type === 'SYNC_THEME') {
+        if (event.data.theme === 'dark') document.body.classList.add('dark-mode');
+        else document.body.classList.remove('dark-mode');
+    }
+});
+
+// Initial Theme Request
+window.parent.postMessage({ type: 'REQUEST_THEME' }, '*');
+
+/* --------------------------------------------------------------------- */
+/* --- End Sub-Block 3C file : 4-identity/identity.js --- */ 
+/* --------------------------------------------------------------------- */
+
+
 /* ===================================================================== */
 /* ===>> END OF BLOCK JS 3 file : 4-identity/identity.js <<=== */
 /* ===================================================================== */

@@ -43,57 +43,35 @@
 
 
 <!-- ===================================================================== -->
-<!-- ===>> BLOCK HTML 2: Dashboard Architecture & Content Stage <<=== -->
+<!-- ===>> BLOCK HTML 2: Dashboard Architecture & Layered Content Stage <<=== -->
 <!-- ===================================================================== -->
 
 <!-- --------------------------------------------------------------- -->
 <!-- [ START : BLOCK HTML 2A - Sidebar OS Architecture ] -->
 <!-- --------------------------------------------------------------- -->
 <aside class="sidebar-os spatial-glass" id="sidebar">
-    <!-- Top: Primary Identity Avatar -->
     <div class="sidebar-top">
-        <div class="profile-pill haptic-touch" id="master-avatar-trigger" title="Digital Identity">
+        <div class="profile-pill haptic-touch" id="master-avatar-trigger">
             <div class="profile-avatar" id="user-avatar-initial">U</div>
         </div>
     </div>
 
-    <!-- Middle: Primary Navigation -->
     <nav class="sidebar-nav">
-        <a href="#" class="nav-item active haptic-touch" title="Home" id="nav-home">
+        <a href="#" class="nav-item active haptic-touch" id="nav-home">
             <i class="fa-solid fa-house"></i>
         </a>
-        <a href="#" class="nav-item haptic-touch" title="Calculator" id="tool-calc">
+        <a href="#" class="nav-item haptic-touch" id="tool-calc">
             <i class="fa-solid fa-calculator"></i>
         </a>
-        <a href="#" class="nav-item haptic-touch" title="Notes" id="tool-notes">
+        <a href="#" class="nav-item haptic-touch" id="tool-notes">
             <i class="fa-solid fa-file-pen"></i>
         </a>
     </nav>
 
-    <!-- Bottom: System Status & Controls -->
     <div class="sidebar-bottom">
-        <div class="notif-pill-btn haptic-touch" id="notif-capsule-trigger" title="Notifications">
-            <i class="fa-solid fa-bell"></i>
-            <span class="notif-dot"></span>
-        </div>
-
-        <div class="system-controls">
-            <button class="nav-util-btn haptic-touch" id="global-theme-toggle">
-                <i id="theme-icon" class="fa-solid fa-moon"></i>
-            </button>
-
-            <div class="sidebar-status-pill">
-                <div class="status-time" id="dash-clock">--:--</div>
-                <div class="status-icons-list">
-                    <i class="fa-solid fa-wifi"></i>
-                    <div class="ios-battery-pill"></div>
-                </div>
-            </div>
-
-            <button class="nav-item logout-trigger haptic-touch" id="logout-btn-trigger" title="Logout">
-                <i class="fa-solid fa-power-off"></i>
-            </button>
-        </div>
+        <button class="nav-item logout-trigger haptic-touch" id="logout-btn-trigger">
+            <i class="fa-solid fa-power-off"></i>
+        </button>
     </div>
 </aside>
 <!-- --------------------------------------------------------------- -->
@@ -102,7 +80,7 @@
 
 
 <!-- --------------------------------------------------------------- -->
-<!-- [ START : BLOCK HTML 2B - Floating Azad Header ] -->
+<!-- [ START : BLOCK HTML 2B - Floating Header ] -->
 <!-- --------------------------------------------------------------- -->
 <header class="floating-page-header">
     <span class="page-indicator blue-accent" id="current-page-title">Home</span>
@@ -113,52 +91,49 @@
 
 
 <!-- --------------------------------------------------------------- -->
-<!-- [ START : BLOCK HTML 2C - Content Stage & Home Ecosystem ] -->
+<!-- [ START : BLOCK HTML 2C - Layered Content System ] -->
 <!-- --------------------------------------------------------------- -->
 <main class="content-viewport" id="main-content">
-    <div id="contentArea" class="spatial-entry-animation">
-        
-        <!-- Home Dashboard View (Now safely inside the Viewport) -->
-        <div id="home-dashboard-view" class="dashboard-view">
 
-            <!-- Top Row: Spatial Widgets -->
-            <div class="home-header-row">
-                <!-- Greeting Widget -->
-                <div class="home-widget-card spatial-glass haptic-touch" id="greeting-widget">
-                    <div class="greeting-content">
-                        <p class="greeting-text">Good <span id="greeting-time" class="blue-accent">Day</span>,</p>
-                        <h2 class="greeting-name" id="user-display-name">Guest</h2>
-                        <p class="date-text secondary-label" id="current-full-date">LOADING DATE...</p>
-                    </div>
-                </div>
-
-                <!-- Weather Widget -->
-                <div class="home-widget-card spatial-glass haptic-touch" id="weather-widget">
-                    <div class="weather-row">
-                        <div class="weather-info">
-                            <h2 id="weather-city" class="primary-text">Location</h2>
-                            <p id="weather-temp" class="blue-accent">24°</p>
-                            <span id="weather-desc" class="secondary-label">Clearing Skies</span>
-                        </div>
-                        <div class="weather-icon-box">
-                            <i class="fa-solid fa-cloud-sun-bright"></i>
-                        </div>
-                    </div>
-                </div>
+    <!-- ============================= -->
+    <!-- LAYER 1 → HOME DASHBOARD     -->
+    <!-- ============================= -->
+    <div id="home-dashboard-view" class="dashboard-view active">
+        <div class="home-header-row">
+            <div class="home-widget-card spatial-glass">
+                <p class="greeting-text">
+                    Good <span id="greeting-time" class="blue-accent">Day</span>,
+                </p>
+                <h2 class="greeting-name" id="user-display-name">Guest</h2>
+                <p class="date-text" id="current-full-date">LOADING DATE...</p>
             </div>
+        </div>
 
-            <!-- App Library Grid Section -->
-            <div class="app-library-section">
-                <h3 class="section-label">Your Secure Ecosystem</h3>
-                <div class="home-app-grid" id="main-app-grid">
-                    <!-- Icons will be injected here by Dashboard.js -->
-                </div>
+        <div class="app-library-section">
+            <h3 class="section-label">Your Secure Ecosystem</h3>
+            <div class="home-app-grid" id="main-app-grid">
+                <!-- Home apps injected here -->
             </div>
+        </div>
+    </div>
 
-        </div> <!-- End home-dashboard-view -->
 
-    </div> <!-- End contentArea -->
+    <!-- ============================= -->
+    <!-- LAYER 2 → HOME APP STAGE     -->
+    <!-- ============================= -->
+    <div id="home-app-stage" class="dashboard-view">
+        <!-- Jab user grid se app kholega
+             to content yahan inject hoga -->
+    </div>
+
 </main>
+
+
+<!-- ============================= -->
+<!-- LAYER 3 → SIDEBAR FLOATING   -->
+<!-- ============================= -->
+<div id="universal-module-portal"></div>
+
 <!-- --------------------------------------------------------------- -->
 <!-- [ END : BLOCK HTML 2C - file : 3-Dashboard/Dashboard.html ] -->
 <!-- --------------------------------------------------------------- -->
